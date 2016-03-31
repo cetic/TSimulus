@@ -40,13 +40,13 @@ object Main
 
       // model.series take 500 foreach (e => println(e.formatted("%2f")))
 
-      val daily = Daily(Map(
+      val daily = DailyTimeSeries(Map(
          new LocalTime(2, 0) -> 2D,
          new LocalTime(14, 0) -> 10D,
          new LocalTime(17, 0) -> 7D
       ))
 
-      val monthly = Monthly(Map(
+      val monthly = MonthlyTimeSeries(Map(
          DateTimeConstants.JANUARY -> -6.3,
          DateTimeConstants.FEBRUARY -> -6.9,
          DateTimeConstants.MARCH -> -2.7,
@@ -60,7 +60,7 @@ object Main
          DateTimeConstants.NOVEMBER -> -0.9,
          DateTimeConstants.DECEMBER -> -1))
 
-      val weekly = Weekly(Map(
+      val weekly = WeeklyTimeSeries(Map(
          DateTimeConstants.MONDAY -> 0,
          DateTimeConstants.TUESDAY -> 0.5,
          DateTimeConstants.WEDNESDAY -> 1,
@@ -70,7 +70,7 @@ object Main
          DateTimeConstants.SUNDAY -> 0.5
       ))
 
-      val yearly = Yearly(Map(
+      val yearly = YearlyTimeSeries(Map(
          2017 -> 5,
          2018 -> 17,
          2019 -> 21,
@@ -78,9 +78,15 @@ object Main
          2021 -> 5
       ))
 
-      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2017,1,1,0,0,0), new LocalDateTime(2017,1,30,23,59,59), Duration.standardHours(1))
+      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2013,5,30,23,59,59), Duration.standardHours(6))
 
-      val cycles = Seq(daily, weekly, monthly, yearly)
+      val cycles = Seq(
+         NoisyCyclicTimeSeries(monthly,
+                               ARMA(std=1, seed=42),
+                               origin = new LocalDateTime(2010, 1, 1, 0, 0, 0),
+                               timeStep = Duration.standardHours(1)
+         )
+      )
 
       val values = times.map(t => cycles.map(c => c.compute(t)).sum)
 

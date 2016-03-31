@@ -8,7 +8,7 @@ import org.joda.time._
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class Weekly(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
+case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
 {
    /**
      * @param day A day.

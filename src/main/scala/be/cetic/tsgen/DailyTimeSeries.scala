@@ -9,7 +9,7 @@ import org.joda.time.{LocalDateTime, LocalTime}
   * Represents cyclic variation of a time series on a daily basis.
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class Daily(val controlPoints : Map[LocalTime, Double]) extends TimeSeriesGenerator
+case class DailyTimeSeries(val controlPoints : Map[LocalTime, Double]) extends TimeSeriesGenerator
 {
    val interpolator = {
 
@@ -29,10 +29,5 @@ case class Daily(val controlPoints : Map[LocalTime, Double]) extends TimeSeriesG
       new AkimaSplineInterpolator().interpolate(times, values)
    }
 
-   /**
-     * Determines the value associated to a date time
-     * @param time the moment for which a value must be provided
-     * @return the value associated to time.
-     */
    def compute(time: LocalDateTime): Double = interpolator.value(time.getMillisOfDay)
 }

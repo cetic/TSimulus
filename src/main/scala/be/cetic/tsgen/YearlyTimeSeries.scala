@@ -11,7 +11,7 @@ import scala.annotation.tailrec
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class Yearly(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
+case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
 {
    private val beginning = controlPoints.keys.min
    private val end = controlPoints.keys.max
@@ -55,12 +55,6 @@ case class Yearly(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
       return time
    }
 
-   /**
-     * Determines the value associated to a date time
-     *
-     * @param time the moment for which a value must be provided
-     * @return the value associated to time.
-     */
    def compute(time: LocalDateTime): Double =
    {
       val current_time = correctedTime(time)
