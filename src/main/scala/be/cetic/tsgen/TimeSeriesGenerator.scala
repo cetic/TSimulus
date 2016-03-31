@@ -5,7 +5,7 @@ import org.joda.time.LocalDateTime
 /**
   * A cyclic time series
   */
-trait CyclicTimeSeries
+trait TimeSeriesGenerator
 {
    /**
      *
