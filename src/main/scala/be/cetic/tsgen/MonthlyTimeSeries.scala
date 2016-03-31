@@ -8,7 +8,7 @@ import org.joda.time._
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class Monthly(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
+case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
 {
    /**
      * @param month A month in a particular year.
@@ -40,11 +40,6 @@ case class Monthly(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
       new AkimaSplineInterpolator().interpolate(dates, values)
    }
 
-   /**
-     * Determines the value associated to a date time
-     * @param time the moment for which a value must be provided
-     * @return the value associated to time.
-     */
    def compute(time: LocalDateTime): Double = {
 
 
