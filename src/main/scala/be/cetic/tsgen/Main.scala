@@ -1,7 +1,5 @@
 package be.cetic.tsgen
 
-import java.text.SimpleDateFormat
-
 import org.joda.time._
 import org.joda.time.format.DateTimeFormat
 
@@ -62,9 +60,27 @@ object Main
          DateTimeConstants.NOVEMBER -> -0.9,
          DateTimeConstants.DECEMBER -> -1))
 
-      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2015,1,1,0,0,0), new LocalDateTime(2016,12,31,23,59,59), Duration.standardHours(2))
+      val weekly = Weekly(Map(
+         DateTimeConstants.MONDAY -> 0,
+         DateTimeConstants.TUESDAY -> 0.5,
+         DateTimeConstants.WEDNESDAY -> 1,
+         DateTimeConstants.THURSDAY -> 2,
+         DateTimeConstants.FRIDAY -> 2.5,
+         DateTimeConstants.SATURDAY -> 1.5,
+         DateTimeConstants.SUNDAY -> 0.5
+      ))
 
-      val cycles = Seq(daily, monthly)
+      val yearly = Yearly(Map(
+         2017 -> 5,
+         2018 -> 17,
+         2019 -> 21,
+         2020 -> 17,
+         2021 -> 5
+      ))
+
+      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2017,1,1,0,0,0), new LocalDateTime(2017,1,30,23,59,59), Duration.standardHours(1))
+
+      val cycles = Seq(daily, weekly, monthly, yearly)
 
       val values = times.map(t => cycles.map(c => c.compute(t)).sum)
 
