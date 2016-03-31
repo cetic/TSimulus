@@ -8,9 +8,8 @@ import org.joda.time.LocalDateTime
 trait TimeSeriesGenerator
 {
    /**
-     *
-     * @param time A point in the time series
-     * @return the value associated to the given time in the time series.
+     * @param times a series of time for which values must be computed.
+     * @return the values associated to the specified times.
      */
-   def compute(time: LocalDateTime): Double
+   def compute(times: Stream[LocalDateTime]): Stream[Double]
 }

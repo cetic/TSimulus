@@ -14,16 +14,17 @@ import org.joda.time.{DateTimeZone, Duration, LocalDateTime}
   *                  walk, which is typically the case with the ARMA model used as noise generator.
   * @param timeStep  The time interval between two steps of the noise generator.
   */
-case class NoisyCyclicTimeSeries(generator: TimeSeriesGenerator,
+case class NoisyCyclicTimeSeries(generator: ScalarTimeSeriesGenerator,
                                  noise: ARMA,
                                  origin: LocalDateTime,
-                                 timeStep: Duration) extends TimeSeriesGenerator
+                                 timeStep: Duration) extends ScalarTimeSeriesGenerator
 {
-   /**
-     * @param time A point in the time series
-     * @return the value associated to the given time in the time series.
-     */
-   override def compute(time: LocalDateTime): Double = generator.compute(time) + computeNoise(time)
+   override def compute(times: Stream[LocalDateTime]): Stream[Double] = (generator.compute(times) zip computeNoise(times)).map(e => e._1 + e._2)
+
+   def compute(time: LocalDateTime): Double = generator.compute(time) + computeNoise(time)
+
+   // TODO: provide a more efficient (O(n) instead of O(n^2)) way to compute this function by reusing steps in the random walk.
+   private def computeNoise(times: Stream[LocalDateTime]): Stream[Double] = times.map(computeNoise)
 
    private def computeNoise(time: LocalDateTime): Double =
    {

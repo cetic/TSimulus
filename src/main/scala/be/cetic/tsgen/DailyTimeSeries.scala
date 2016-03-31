@@ -1,15 +1,13 @@
 package be.cetic.tsgen
 
-import java.time.LocalDate
-
-import org.apache.commons.math3.analysis.interpolation.{AkimaSplineInterpolator, SplineInterpolator}
+import org.apache.commons.math3.analysis.interpolation.{AkimaSplineInterpolator}
 import org.joda.time.{LocalDateTime, LocalTime}
 
 /**
   * Represents cyclic variation of a time series on a daily basis.
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class DailyTimeSeries(val controlPoints : Map[LocalTime, Double]) extends TimeSeriesGenerator
+case class DailyTimeSeries(val controlPoints : Map[LocalTime, Double]) extends ScalarTimeSeriesGenerator
 {
    val interpolator = {
 

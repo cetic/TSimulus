@@ -8,7 +8,7 @@ import org.joda.time._
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends TimeSeriesGenerator
+case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends ScalarTimeSeriesGenerator
 {
    /**
      * @param month A month in a particular year.
