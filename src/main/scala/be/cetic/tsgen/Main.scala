@@ -80,15 +80,10 @@ object Main
 
       val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2013,5,30,23,59,59), Duration.standardHours(6))
 
-      val cycles = Seq(
-         NoisyCyclicTimeSeries(monthly,
-                               ARMA(std=1, seed=42),
-                               origin = new LocalDateTime(2010, 1, 1, 0, 0, 0),
-                               timeStep = Duration.standardHours(1)
-         )
-      )
+      val cycles = Seq(daily, monthly, weekly)
 
-      val values = times.map(t => cycles.map(c => c.compute(t)).sum)
+      val values = cycles  .map(c => c.compute(times))
+                           .reduce((a,b) => a.zip(b).map(e => e._1 + e._2))
 
       (times zip values).foreach(e => println(dtf.print(e._1) + ";" + e._2))
    }
