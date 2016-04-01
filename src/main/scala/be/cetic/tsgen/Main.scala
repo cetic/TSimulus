@@ -78,15 +78,18 @@ object Main
          2021 -> 5
       ))
 
-      val whiteNoise = NoisyCyclicTimeSeries(ConstantTimeSeries(0), ARMA(std=0.5), origin=new LocalDateTime(2010,1,1,0,0,0), timeStep=Duration.standardMinutes(1))
-
-      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2011,5,30,23,59,59), Duration.standardDays(1))
+      val noise = RandomWalkTimeSeries(ARMA(std=0.5, theta = Array(1)), timeStep = Duration.standardHours(1))
 
 
-      val generators = Seq(CompositeTimeSeriesGenerator(Seq(daily, monthly, whiteNoise)))
+      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2010,1,5,23,59,59), Duration.standardHours(1))
+
+      val generators = Seq(CompositeTimeSeries(daily, monthly), CompositeTimeSeries(daily, monthly, noise))
 
       val values = generators.map(g => g.compute(times))
 
-      values.map(v => (times zip v).foreach(e => println(dtf.print(e._1) + ";" + e._2)))
+      val displayValues = values.map(s => s.map(_.toString))
+                                .reduce((a,b) => (a zip b).map(e => e._1 + ";" + e._2))
+
+      (times zip displayValues).foreach(e => println(dtf.print(e._1) + ";" + e._2))
    }
 }
