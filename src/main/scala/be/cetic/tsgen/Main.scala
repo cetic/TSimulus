@@ -78,13 +78,15 @@ object Main
          2021 -> 5
       ))
 
-      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2013,5,30,23,59,59), Duration.standardHours(6))
+      val whiteNoise = NoisyCyclicTimeSeries(ConstantTimeSeries(0), ARMA(std=0.5), origin=new LocalDateTime(2010,1,1,0,0,0), timeStep=Duration.standardMinutes(1))
 
-      val cycles = Seq(daily, monthly, weekly)
+      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2011,5,30,23,59,59), Duration.standardDays(1))
 
-      val values = cycles  .map(c => c.compute(times))
-                           .reduce((a,b) => a.zip(b).map(e => e._1 + e._2))
 
-      (times zip values).foreach(e => println(dtf.print(e._1) + ";" + e._2))
+      val generators = Seq(CompositeTimeSeriesGenerator(Seq(daily, monthly, whiteNoise)))
+
+      val values = generators.map(g => g.compute(times))
+
+      values.map(v => (times zip v).foreach(e => println(dtf.print(e._1) + ";" + e._2)))
    }
 }
