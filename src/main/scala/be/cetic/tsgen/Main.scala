@@ -83,7 +83,7 @@ object Main
 
       val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2010,1,5,23,59,59), Duration.standardHours(1))
 
-      val generators = Seq(daily, CorrelatedTimeSeries(daily, 42, 0.8))
+      val generators = Seq(daily, LogisticTimeSeries(daily, 6, 1, 42))
 
       val values = generators.map(g => g.compute(times))
 

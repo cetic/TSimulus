@@ -11,7 +11,7 @@ import scala.annotation.tailrec
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends ScalarTimeSeriesGenerator
+case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends IndependantTimeSeriesGenerator[Double]
 {
    private val beginning = controlPoints.keys.min
    private val end = controlPoints.keys.max
