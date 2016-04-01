@@ -11,7 +11,7 @@ import org.joda.time.{DateTimeZone, Duration, LocalDateTime}
   * @param arma the ARMA model used to generate a time series based on a random walk.
   * @param timeStep the duration between two consecutive steps.
   */
-case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeriesGenerator
+case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeriesGenerator[Double]
 {
    override def compute(times: Stream[LocalDateTime]): Stream[Double] =
    {
