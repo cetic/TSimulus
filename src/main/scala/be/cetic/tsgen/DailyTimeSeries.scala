@@ -7,7 +7,7 @@ import org.joda.time.{LocalDateTime, LocalTime}
   * Represents cyclic variation of a time series on a daily basis.
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class DailyTimeSeries(val controlPoints : Map[LocalTime, Double]) extends IndependantTimeSeriesGenerator[Double]
+case class DailyTimeSeries(val controlPoints : Map[LocalTime, Double]) extends IndependantTimeSeries[Double]
 {
    val interpolator = {
 

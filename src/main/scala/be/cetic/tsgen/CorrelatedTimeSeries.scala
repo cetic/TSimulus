@@ -13,9 +13,9 @@ import scala.util.Random
   *             the correlated values are deterministically generated.
   * @param rho  the correlation coefficient determining the *strongness* of the correlation. Must be in [0, 1]
   */
-case class CorrelatedTimeSeries(base: TimeSeriesGenerator[Double],
+case class CorrelatedTimeSeries(base: TimeSeries[Double],
                                 seed: Int,
-                                rho: Double) extends TimeSeriesGenerator[Double]
+                                rho: Double) extends TimeSeries[Double]
 {
    val rho_square = rho*rho
 

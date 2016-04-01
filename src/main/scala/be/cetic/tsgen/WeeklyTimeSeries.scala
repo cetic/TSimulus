@@ -1,14 +1,15 @@
 package be.cetic.tsgen
 
 import org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
-import org.joda.time._
+import com.github.nscala_time.time.Imports._
+import org.joda.time.Seconds
 
 /**
   * Represents cyclic variation of a time series on a weekly basis.
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends IndependantTimeSeriesGenerator[Double]
+case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends IndependantTimeSeries[Double]
 {
    /**
      * @param day A day.
@@ -20,9 +21,9 @@ case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val end = day.toLocalDateTime(new LocalTime(23, 59, 59))
 
       val duration = new Duration(begining.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
-      val half_duration = duration dividedBy 2
+      val half_duration = duration / 2
 
-      return begining plus half_duration
+      return begining + half_duration
    }
 
    val interpolator =
@@ -51,10 +52,10 @@ case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
 
       val current_day = time.toLocalDate
 
-      val active_day =  if(time isBefore day_threshold(current_day)) current_day minusDays 1
+      val active_day =  if(time isBefore day_threshold(current_day)) current_day - 1.day
                         else current_day
 
-      val next_day = active_day plusDays 1
+      val next_day = active_day + 1.day
 
       val max_duration = Seconds.secondsBetween(day_threshold(active_day),day_threshold(next_day))
       val current_duration = Seconds.secondsBetween(day_threshold(active_day), time)

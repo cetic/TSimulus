@@ -16,10 +16,10 @@ import scala.util.Random
   *               the binary variable and the continuous one.
   * @param seed the seed used to produce random values deterministically.
   */
-case class LogisticTimeSeries(generator: TimeSeriesGenerator[Double],
+case class LogisticTimeSeries(generator: TimeSeries[Double],
                               location: Double,
                               scale: Double,
-                              seed: Int) extends TimeSeriesGenerator[Boolean]
+                              seed: Int) extends TimeSeries[Boolean]
 {
    /**
      * @param times a series of time for which values must be computed. Each time must be greater than or equal to
