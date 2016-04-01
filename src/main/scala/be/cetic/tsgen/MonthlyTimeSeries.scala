@@ -1,14 +1,15 @@
 package be.cetic.tsgen
 
 import org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
-import org.joda.time._
+import com.github.nscala_time.time.Imports._
+import org.joda.time.Seconds
 
 /**
   * Represents cyclic variation of a time series on a monthly basis.
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends IndependantTimeSeriesGenerator[Double]
+case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends IndependantTimeSeries[Double]
 {
    /**
      * @param month A month in a particular year.
@@ -17,12 +18,12 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
    private def month_threshold(month : YearMonth): LocalDateTime =
    {
       val begining = (month.toLocalDate(1).toLocalDateTime(new LocalTime(0,0,0)))
-      val end = (begining plus Months.ONE minus Days.ONE) withTime(23,59,49,999)
+      val end = (begining + 1.month - 1.day) withTime(23,59,49,999)
 
       val duration = new Duration(begining.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
-      val half_duration = duration dividedBy 2
+      val half_duration = duration / 2
 
-      return begining plus half_duration
+      return begining + half_duration
    }
 
    val interpolator = {
@@ -45,10 +46,10 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
 
       val current_year_month = new YearMonth(time.getYear, time.getMonthOfYear)
 
-      val active_year_month = if(time isBefore month_threshold(current_year_month)) current_year_month minusMonths 1
+      val active_year_month = if(time < month_threshold(current_year_month)) current_year_month minus 1.month
                               else current_year_month
 
-      val next_year_month = active_year_month plusMonths 1
+      val next_year_month = active_year_month plus 1.month
 
       val max_duration = Seconds.secondsBetween(month_threshold(active_year_month), month_threshold(next_year_month))
       val current_duration = Seconds.secondsBetween(month_threshold(active_year_month), time)

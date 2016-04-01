@@ -1,9 +1,8 @@
 package be.cetic.tsgen
 
 import org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
-import org.joda.time._
-
-import scala.annotation.tailrec
+import com.github.nscala_time.time.Imports._
+import org.joda.time.Seconds
 
 /**
   * Represents cyclic variation of a time series on a yearly basis.
@@ -11,7 +10,7 @@ import scala.annotation.tailrec
   *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends IndependantTimeSeriesGenerator[Double]
+case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends IndependantTimeSeries[Double]
 {
    private val beginning = controlPoints.keys.min
    private val end = controlPoints.keys.max
@@ -27,9 +26,9 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val end = new LocalDateTime(year, 12, 31, 23, 59, 59)
 
       val duration = new Duration(begining.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
-      val half_duration = duration dividedBy 2
+      val half_duration = duration / 2
 
-      return begining plus half_duration
+      return begining + half_duration
    }
 
    val interpolator =
@@ -50,8 +49,8 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
 
    private def correctedTime(time: LocalDateTime): LocalDateTime =
    {
-      if (time isBefore year_threshold(beginning-1)) return correctedTime(time plus length)
-      if (time isAfter year_threshold(end)) return correctedTime(time minus length)
+      if (time < year_threshold(beginning-1)) return correctedTime(time + length)
+      if (time > year_threshold(end)) return correctedTime(time + length)
       return time
    }
 
@@ -60,7 +59,7 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val current_time = correctedTime(time)
       val current_year = current_time.getYear
 
-      val active_year = if(current_time isBefore year_threshold(current_year)) current_year - 1
+      val active_year = if(current_time < year_threshold(current_year)) current_year - 1
                         else current_year
 
       val next_year = active_year + 1

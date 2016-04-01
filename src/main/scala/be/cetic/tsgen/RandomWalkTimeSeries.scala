@@ -1,6 +1,7 @@
 package be.cetic.tsgen
 
 import org.joda.time.{DateTimeZone, Duration, LocalDateTime}
+import com.github.nscala_time.time.Imports._
 
 /**
   * A time series based on an ARMA model.
@@ -11,7 +12,7 @@ import org.joda.time.{DateTimeZone, Duration, LocalDateTime}
   * @param arma the ARMA model used to generate a time series based on a random walk.
   * @param timeStep the duration between two consecutive steps.
   */
-case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeriesGenerator[Double]
+case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeries[Double]
 {
    override def compute(times: Stream[LocalDateTime]): Stream[Double] =
    {
@@ -29,7 +30,7 @@ case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeri
          {
             val time = times.head
             val dataRest = data.dropWhile({ case ((timeStart: LocalDateTime, timeEnd: LocalDateTime),
-            (valStart: Double, valEnd: Double)) => time isAfter timeEnd
+            (valStart: Double, valEnd: Double)) => time > timeEnd
             })
 
             val tStart = dataRest.head._1._1
@@ -55,7 +56,7 @@ case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeri
      * @param time
      * @return
      */
-   private def computeTimes(time: LocalDateTime) :Stream[LocalDateTime] = time #:: computeTimes(time plus timeStep)
+   private def computeTimes(time: LocalDateTime) :Stream[LocalDateTime] = time #:: computeTimes(time + timeStep)
 
    private def intervals[T](xs: Stream[T]) = xs zip xs.tail
 }

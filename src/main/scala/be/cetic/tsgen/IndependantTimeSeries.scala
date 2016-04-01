@@ -3,9 +3,9 @@ package be.cetic.tsgen
 import org.joda.time.LocalDateTime
 
 /**
-  * A time series generator able to provide each value of the time series independantly.
+  * A time series generator able to provide each value of the time series independently.
   */
-trait IndependantTimeSeriesGenerator[T] extends TimeSeriesGenerator[T]
+trait IndependantTimeSeries[T] extends TimeSeries[T]
 {
    /**
      * @param time A point in the time series

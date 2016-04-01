@@ -5,7 +5,7 @@ import org.joda.time.LocalDateTime
 /**
   * A cyclic time series
   */
-trait TimeSeriesGenerator[T]
+trait TimeSeries[T]
 {
    /**
      * @param times a series of time for which values must be computed. Each time must be greater than or equal to
