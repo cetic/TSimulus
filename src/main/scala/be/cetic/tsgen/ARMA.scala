@@ -11,7 +11,7 @@ import scala.util.Random
   *
   * The time series is built as follows:
   *
-  * X_t = c + epsilon_t + Sum(phi_i * X_(t-1)) + Sum(theta_i * epsilon_(t-1))
+  * X_t = c + epsilon_t + ∑(phi_i * X_(t-1)) + ∑(theta_i * epsilon_(t-1))
   *
   * Where epsilon is generated from a white noise of a specified standard deviation.
   *

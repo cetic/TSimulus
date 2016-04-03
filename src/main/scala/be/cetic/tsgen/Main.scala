@@ -1,7 +1,8 @@
 package be.cetic.tsgen
 
-import org.joda.time._
-import org.joda.time.format.DateTimeFormat
+import com.github.nscala_time.time.Imports._
+import org.joda.time.DateTimeConstants
+
 
 object Main
 {
@@ -81,22 +82,31 @@ object Main
       val noise = RandomWalkTimeSeries(ARMA(std=0.5, theta = Array(1)), timeStep = Duration.standardHours(1))
 
 
-      val times: Stream[LocalDateTime] = sampling(new LocalDateTime(2010,1,1,0,0,0), new LocalDateTime(2010,1,5,23,59,59), Duration.standardHours(1))
+      val times: Stream[LocalDateTime] = sampling( new LocalDateTime(2016,1,1,0,0,0),
+                                                   new LocalDateTime(2016,12,31,23,59,59),
+                                                   Duration.standardHours(1))
 
-      val generators = Seq(
-         daily,
-         TimeSeriesFilter(daily,
-                          Some(new LocalDateTime(2010,1,2,0,0,0)),
-                          Some(new LocalDateTime(2010,1,3,0,0,0)),
-                          Duration.standardHours(12),
-                          Duration.standardHours(12)
-         )
-      )
+      val gen = DailyTimeSeries(Map(
+         new LocalTime(11, 0, 0) -> 6,
+         new LocalTime(13, 0, 0) -> 8,
+         new LocalTime(17, 0, 0) -> 13,
+         new LocalTime(21, 0, 0) -> 3))
+
+      val filter = TimeSeriesFilter(
+         gen,
+         Some(new LocalDateTime(2015, 1, 1, 0, 0, 0)),
+         Some(new LocalDateTime(2017, 1, 1, 0, 0, 0)),
+         60 seconds,
+         120 seconds)
+
+      val generators = Seq(daily, monthly, CompositeTimeSeries({s: Seq[Double] => s.sum / s.size}, daily, monthly))
 
       val values = generators.map(g => g.compute(times))
 
       val displayValues = values.map(s => s.map(_.toString))
                                 .reduce((a,b) => (a zip b).map(e => e._1 + ";" + e._2))
+
+
 
       (times zip displayValues).foreach(e => println(dtf.print(e._1) + ";" + e._2))
    }
