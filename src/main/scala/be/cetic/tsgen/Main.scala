@@ -99,7 +99,7 @@ object Main
          60 seconds,
          120 seconds)
 
-      val generators = Seq(daily, monthly, CompositeTimeSeries({s: Seq[Double] => s.sum / s.size}, daily, monthly))
+      val generators = Seq(daily, RelativeTimeSeries(daily, {v: Double => math.sin(v) + 2}))
 
       val values = generators.map(g => g.compute(times))
 
