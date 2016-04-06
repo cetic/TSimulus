@@ -1,4 +1,6 @@
-package be.cetic.tsgen
+package be.cetic.tsgen.test
+
+import be.cetic.tsgen.TimeSeries
 import org.joda.time.LocalDateTime
 
 import scala.util.Random
