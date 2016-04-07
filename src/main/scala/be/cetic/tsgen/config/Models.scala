@@ -190,6 +190,8 @@ object GeneratorFormat extends JsonFormat[Generator]
             case JsString("daily") => dailyFormat.read(known)
             case JsString("weekly") => weeklyFormat.read(known)
             case JsString("monthly") => monthlyFormat.read(known)
+            case JsString("yearly") => yearlyFormat.read(known)
+            case JsString("constant") => constantFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -201,6 +203,8 @@ object GeneratorFormat extends JsonFormat[Generator]
       case x: DailyGenerator => dailyFormat.write(x)
       case x: WeeklyGenerator => weeklyFormat.write(x)
       case x: MonthlyGenerator => monthlyFormat.write(x)
+      case x: YearlyGenerator => yearlyFormat.write(x)
+      case x: ConstantGenerator => constantFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }
