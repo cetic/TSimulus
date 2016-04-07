@@ -50,6 +50,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val yearlySource =
+      """
+        |{
+        |   "name": "yearly-generator",
+        |   "type": "yearly",
+        |   "points": {"2015": 42.12, "2016": 13.37, "2017": 6.022}
+        |}
+        |
+      """.stripMargin
+
    "An ARMA generator" should "be correctly read from a json document" in {
       val document = armaSource.parseJson
 
@@ -132,5 +142,26 @@ class ConfigurationTest extends FlatSpec with Matchers {
       ))
 
       generator shouldBe generator.toJson.convertTo[MonthlyGenerator]
+   }
+
+   val test = YearlyGenerator(Some("coucou"), "yearly", Map(42 -> 17, 28 -> 89632))
+
+
+   "A yearly generator" should "be correctly read from a json document" in {
+      val document = yearlySource.parseJson
+
+      val generator = document.convertTo[YearlyGenerator]
+
+      generator.name shouldBe Some("yearly-generator")
+      generator.`type` shouldBe "yearly"
+      generator.points shouldBe Map(2015 -> 42.12, 2016 -> 13.37, 2017 -> 6.022)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = YearlyGenerator(Some("yearly-generator"), "daily", Map(2015 -> 42.12,
+         2016 -> 13.37,
+         2017 -> 6.022))
+
+      generator shouldBe generator.toJson.convertTo[YearlyGenerator]
    }
 }

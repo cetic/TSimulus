@@ -113,6 +113,36 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   implicit object YearlyFormat extends RootJsonFormat[YearlyGenerator] {
+
+      override def write(obj: YearlyGenerator): JsValue = {
+         val name = obj.name.toJson
+         val `type` = obj.`type`.toJson
+         val points = obj.points map {case (k, v) => (k.toString, v)} toJson
+
+         new JsObject(Map("name" -> name, "type" -> `type`, "points" -> points))
+      }
+
+      override def read(json: JsValue): YearlyGenerator = {
+         val name = json.asJsObject.fields("name") match {
+            case JsString(x) => Some(x)
+            case _ => None
+         }
+
+         val `type` = json.asJsObject.fields("type") match {
+            case JsString(x) => x
+         }
+
+         val points = json.asJsObject.fields("points") match {
+            case JsObject(x) => x
+         }
+
+         val r = points map { case (k,v) => (k.toInt, v match { case JsNumber(x) => x.toDouble })}
+
+         YearlyGenerator(name, `type`, r)
+      }
+   }
+
    implicit object DurationFormat extends RootJsonFormat[Duration] {
       def write(d: Duration) = d.getMillis.toJson
       def read(value: JsValue) = new Duration(value.toString.toLong)
