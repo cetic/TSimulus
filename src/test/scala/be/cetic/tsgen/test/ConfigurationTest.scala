@@ -69,6 +69,17 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val functionSource =
+      """
+        |{
+        |   "name": "function-generator",
+        |   "type": "function",
+        |   "generator": { "type" : "constant", "value" : 42 },
+        |   "coef": 1.4,
+        |   "offset" : 9.2
+        |}
+      """.stripMargin
+
    "An ARMA generator" should "be correctly read from a json document" in {
       val document = armaSource.parseJson
 
@@ -184,5 +195,28 @@ class ConfigurationTest extends FlatSpec with Matchers {
    it should "be correctly exported to a json document" in {
       val generator = ConstantGenerator(Some("constant-generator"), "constant", 17.5)
       generator shouldBe generator.toJson.convertTo[ConstantGenerator]
+   }
+
+   "A function generator" should "be correctly read from a json document" in {
+      val document = functionSource.parseJson
+
+      val generator = document.convertTo[FunctionGenerator]
+
+      generator.name shouldBe Some("function-generator")
+      generator.`type` shouldBe "function"
+      generator.coef shouldBe 1.4
+      generator.offset shouldBe 9.2
+      generator.generator shouldBe Right(ConstantGenerator(None, "constant", 42))
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = FunctionGenerator(
+         Some("function-generator"),
+         "function",
+         Right(ConstantGenerator(None, "constant", 42)),
+         1.4,
+         9.2
+      )
+      generator shouldBe generator.toJson.convertTo[FunctionGenerator]
    }
 }
