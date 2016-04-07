@@ -1,6 +1,6 @@
 package be.cetic.tsgen.test
 
-import be.cetic.tsgen.config.{ARMAGenerator, ARMAModel, DailyGenerator}
+import be.cetic.tsgen.config._
 import org.joda.time.{Duration, LocalTime}
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
@@ -29,6 +29,24 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |    "name": "daily-generator",
         |    "type": "daily",
         |    "points": {"11:00:00.000" : 6, "17:00:00.000" : 8, "07:00:00.000" : 2}
+        |}
+      """.stripMargin
+
+   val monthlySource =
+      """
+        |{
+        |   "name": "monthly-generator",
+        |   "type": "monthly",
+        |   "points":  {"january": -6.3, "february": -6.9, "june" : -2.7}
+        |}
+      """.stripMargin
+
+   val weeklySource =
+      """
+        |{
+        |   "name": "weekly-generator",
+        |   "type": "weekly",
+        |   "points": {"monday": 8.7, "friday": -3.6, "sunday" : 10.9}
         |}
       """.stripMargin
 
@@ -70,5 +88,49 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator shouldBe generator.toJson.convertTo[DailyGenerator]
    }
 
+   "A weekly generator" should "be correctly read from a json document" in {
+      val document = weeklySource.parseJson
 
+      val generator = document.convertTo[WeeklyGenerator]
+
+      generator.name shouldBe Some("weekly-generator")
+      generator.`type` shouldBe "weekly"
+      generator.points shouldBe Map(
+         "monday" -> 8.7,
+         "friday" -> -3.6,
+         "sunday" -> 10.9)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = WeeklyGenerator(Some("weekly-generator"), "weekly", Map(
+         "monday" -> 8.7,
+         "friday" -> -3.6,
+         "sunday" -> 10.9))
+
+      generator shouldBe generator.toJson.convertTo[WeeklyGenerator]
+   }
+
+   "A monthly generator" should "be correctly read from a json document" in {
+      val document = monthlySource.parseJson
+
+      val generator = document.convertTo[MonthlyGenerator]
+
+      generator.name shouldBe Some("monthly-generator")
+      generator.`type` shouldBe "monthly"
+      generator.points shouldBe Map(
+         "january" -> -6.3,
+         "february" -> -6.9,
+         "june" -> -2.7
+      )
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = MonthlyGenerator(Some("monthly-generator"), "daily", Map(
+         "january" -> -6.3,
+         "february" -> -6.9,
+         "june" -> -2.7
+      ))
+
+      generator shouldBe generator.toJson.convertTo[MonthlyGenerator]
+   }
 }
