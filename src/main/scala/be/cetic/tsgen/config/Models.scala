@@ -47,47 +47,41 @@ case class ConstantGenerator(name: Option[String],
                              val value: Double) extends Generator(name, `type`)
 
 case class FunctionGenerator(name: Option[String],
-                             `type`: String,
+                             val `type`: String,
                              val generator: Either[String, Generator],
                              val coef: Double,
-                             val offset: Double) extends Generator(name, `type`)
+                             val offset: Double) extends Generator(name, "function")
 
 case class AggregateGenerator(name: Option[String],
-                              `type`: String,
                               val aggregator: String,
-                              val generators: Seq[Either[String, Generator]]) extends Generator(name, `type`)
+                              val generators: Seq[Either[String, Generator]]) extends Generator(name, "aggregate")
 
 case class CorrelatedGenerator(name: Option[String],
-                               `type`: String,
                                val generator: Either[String, Generator],
-                               val coef: Double) extends Generator(name, `type`)
+                               val coef: Double) extends Generator(name, "correlated")
 
 case class LogisticGenerator(name: Option[String],
-                             `type`: String,
                              val generator: Either[String, Generator],
                              val location: Double,
                              val scale: Double,
-                             val seed: Option[Long]) extends Generator(name, `type`)
+                             val seed: Option[Long]) extends Generator(name, "logistic")
 
 case class TransitionGenerator(name: Option[String],
-                               `type`: String,
                                val origin: Either[String, Generator],
-                               val transitions: Seq[Transition]) extends Generator(name, `type`)
+                               val transitions: Seq[Transition]) extends Generator(name, "transition")
 
 case class Transition(generator: Either[String, Generator], start: LocalDateTime, delay: Option[Duration])
 
 case class LimitedGenerator(name: Option[String],
-                            `type`: String,
                             val generator: Either[String, Generator],
                             val from: Option[LocalDateTime],
                             val to: Option[LocalDateTime],
-                            val missingRate: Option[Double]) extends Generator(name, `type`)
+                            val missingRate: Option[Double]) extends Generator(name, "limited")
 
 case class PartialGenerator(name: Option[String],
-                            `type`: String,
                             val generator: Either[String, Generator],
                             val from: Option[LocalDateTime],
-                            val to: Option[LocalDateTime]) extends Generator(name, `type`)
+                            val to: Option[LocalDateTime]) extends Generator(name, "partial")
 
 /*
  * http://stackoverflow.com/questions/32721636/spray-json-serializing-inheritance-case-class
@@ -152,7 +146,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: AggregateGenerator) =
       {
          val name = obj.name.toJson
-         val `type` = obj.`type`.toJson
          val aggregator = obj.aggregator.toJson
          val generators = obj.generators.map(g => g match {
             case Left(s) => s.toJson
@@ -161,7 +154,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          new JsObject(Map(
             "name" -> name,
-            "type" -> `type`,
+            "type" -> "aggregate".toJson,
             "aggregator" -> aggregator,
             "generators" -> generators
          ))
@@ -177,7 +170,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
                     else None
 
-         val `type` = fields("type").convertTo[String]
          val aggregator = fields("aggregator").convertTo[String]
          val generators = fields("generators") match {
             case JsArray(x) => x.map(v => v match {
@@ -186,7 +178,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             }).toList
          }
 
-         AggregateGenerator(name, `type`, aggregator, generators)
+         AggregateGenerator(name, aggregator, generators)
       }
    }
 
@@ -195,7 +187,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: CorrelatedGenerator) =
       {
          val name = obj.name.toJson
-         val `type` = obj.`type`.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
             case Right(g) => g.toJson
@@ -204,7 +195,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          new JsObject(Map(
             "name" -> name,
-            "type" -> `type`,
+            "type" -> "correlated".toJson,
             "generator" -> generator,
             "coef" -> coef
          ))
@@ -227,7 +218,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
          val coef = fields("coef").convertTo[Double]
 
-         CorrelatedGenerator(name, `type`, generator, coef)
+         CorrelatedGenerator(name, generator, coef)
       }
    }
 
@@ -236,7 +227,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: LogisticGenerator) =
       {
          val name = obj.name.toJson
-         val `type` = obj.`type`.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
             case Right(g) => g.toJson
@@ -247,7 +237,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          new JsObject(Map(
             "name" -> name,
-            "type" -> `type`,
+            "type" -> "logistic".toJson,
             "generator" -> generator,
             "location" -> location,
             "scale" -> scale,
@@ -265,7 +255,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
                     else None
 
-         val `type` = fields("type").convertTo[String]
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
             case g => Right(g.convertTo[Generator])
@@ -274,7 +263,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val scale = fields("scale").convertTo[Double]
          val seed = fields.get("seed").map(_.convertTo[Long])
 
-         LogisticGenerator(name, `type`, generator, location, scale, seed)
+         LogisticGenerator(name, generator, location, scale, seed)
       }
    }
 
@@ -316,7 +305,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: TransitionGenerator) =
       {
          val name = obj.name.toJson
-         val `type` = obj.`type`.toJson
          val origin = (obj.origin match {
             case Left(s) => s.toJson
             case Right(g) => g.toJson
@@ -325,7 +313,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          new JsObject(Map(
             "name" -> name,
-            "type" -> `type`,
+            "type" -> "transition".toJson,
             "origin" -> origin,
             "transitions" -> transitions
          ))
@@ -341,14 +329,13 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
                     else None
 
-         val `type` = fields("type").convertTo[String]
          val origin = fields("origin") match {
             case JsString(s) => Left(s)
             case g => Right(g.convertTo[Generator])
          }
          val transitions = fields("transitions").convertTo[Seq[Transition]]
 
-         TransitionGenerator(name, `type`, origin, transitions)
+         TransitionGenerator(name, origin, transitions)
       }
    }
 
@@ -357,7 +344,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: LimitedGenerator) =
       {
          val name = obj.name.toJson
-         val `type` = obj.`type`.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
             case Right(g) => g.toJson
@@ -368,7 +354,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          new JsObject(Map(
             "name" -> name,
-            "type" -> `type`,
+            "type" -> "limited".toJson,
             "generator" -> generator,
             "from" -> from,
             "to" -> to,
@@ -386,7 +372,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
                     else None
 
-         val `type` = fields("type").convertTo[String]
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
             case g => Right(g.convertTo[Generator])
@@ -395,7 +380,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val to = fields.get("to").map(_.convertTo[LocalDateTime])
          val missingRate = fields.get("missing-rate").map(_.convertTo[Double])
 
-         LimitedGenerator(name, `type`, generator, from, to, missingRate)
+         LimitedGenerator(name, generator, from, to, missingRate)
       }
    }
 
@@ -404,7 +389,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: PartialGenerator) =
       {
          val name = obj.name.toJson
-         val `type` = obj.`type`.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
             case Right(g) => g.toJson
@@ -414,7 +398,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          new JsObject(Map(
             "name" -> name,
-            "type" -> `type`,
+            "type" -> "partial".toJson,
             "generator" -> generator,
             "from" -> from,
             "to" -> to
@@ -431,7 +415,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
                     else None
 
-         val `type` = fields("type").convertTo[String]
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
             case g => Right(g.convertTo[Generator])
@@ -439,7 +422,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val from = fields.get("from").map(_.convertTo[LocalDateTime])
          val to = fields.get("to").map(_.convertTo[LocalDateTime])
 
-         PartialGenerator(name, `type`, generator, from, to)
+         PartialGenerator(name, generator, from, to)
       }
    }
 
