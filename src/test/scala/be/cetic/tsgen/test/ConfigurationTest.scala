@@ -90,6 +90,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val correlatedSource =
+      """
+        |{
+        |   "name": "corr-generator",
+        |   "type": "correlated",
+        |   "generator": "daily-generator",
+        |   "coef": 0.8
+        |}
+      """.stripMargin
+
    "An ARMA generator" should "be correctly read from a json document" in {
       val document = armaSource.parseJson
 
@@ -250,5 +260,27 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Seq(Left("daily-generator"), Left("monthly-generator"))
       )
       generator shouldBe generator.toJson.convertTo[AggregateGenerator]
+   }
+
+   "An correlated generator" should "be correctly read from a json document" in {
+      val document = correlatedSource.parseJson
+
+      val generator = document.convertTo[CorrelatedGenerator]
+
+      generator.name shouldBe Some("corr-generator")
+      generator.`type` shouldBe "correlated"
+      generator.generator shouldBe Left("daily-generator")
+      generator.coef shouldBe 0.8
+
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = CorrelatedGenerator(
+         Some("corr-generator"),
+         "correlated",
+         Left("daily-generator"),
+         0.8
+      )
+      generator shouldBe generator.toJson.convertTo[CorrelatedGenerator]
    }
 }
