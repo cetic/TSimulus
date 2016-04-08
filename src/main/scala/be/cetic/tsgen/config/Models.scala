@@ -231,6 +231,53 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   object LogisticFormat extends RootJsonFormat[LogisticGenerator]
+   {
+      def write(obj: LogisticGenerator) =
+      {
+         val name = obj.name.toJson
+         val `type` = obj.`type`.toJson
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => g.toJson
+         }).toJson
+         val location = obj.location.toJson
+         val scale = obj.scale.toJson
+         val seed = obj.seed.toJson
+
+         new JsObject(Map(
+            "name" -> name,
+            "type" -> `type`,
+            "generator" -> generator,
+            "location" -> location,
+            "scale" -> scale,
+            "seed" -> seed
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = if(fields contains "name") fields("name") match {
+            case JsString(s) => Some(s)
+            case _ => None
+         }
+                    else None
+
+         val `type` = fields("type").convertTo[String]
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(g.convertTo[Generator])
+         }
+         val location = fields("location").convertTo[Double]
+         val scale = fields("scale").convertTo[Double]
+         val seed = fields.get("seed").map(_.convertTo[Long])
+
+         LogisticGenerator(name, `type`, generator, location, scale, seed)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
    implicit val armaFormat = jsonFormat4(ARMAGenerator)
@@ -243,7 +290,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    implicit val functionFormat = lazyFormat(jsonFormat5(FunctionGenerator))
    implicit val aggregateFormat = lazyFormat(AggregateFormat)
    implicit val correlatedFormat = lazyFormat(CorrelatedFormat)
-   implicit val logisticFormat = lazyFormat(jsonFormat6(LogisticGenerator))
+   implicit val logisticFormat = lazyFormat(LogisticFormat)
    implicit val transitionModelFormat = jsonFormat3(Transition)
    implicit val transitionFormat = lazyFormat(jsonFormat4(TransitionGenerator))
    implicit val limitedFormat = lazyFormat(jsonFormat6(LimitedGenerator))
@@ -277,6 +324,7 @@ object GeneratorFormat extends JsonFormat[Generator]
             case JsString("constant") => constantFormat.read(known)
             case JsString("aggregate") => aggregateFormat.read(known)
             case JsString("correlated") => correlatedFormat.read(known)
+            case JsString("logistic") => logisticFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -292,6 +340,7 @@ object GeneratorFormat extends JsonFormat[Generator]
       case x: ConstantGenerator => constantFormat.write(x)
       case x: AggregateGenerator => aggregateFormat.write(x)
       case x: CorrelatedGenerator => correlatedFormat.write(x)
+      case x: LogisticGenerator => logisticFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }

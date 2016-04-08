@@ -100,6 +100,20 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val logisticSource =
+      """
+        |{
+        |   "name": "logistic-generator",
+        |   "type": "logistic",
+        |   "generator": "daily-generator",
+        |   "location": 6,
+        |   "scale": 2.4,
+        |   "seed": 1809
+        |}
+      """.stripMargin
+
+
+
    "An ARMA generator" should "be correctly read from a json document" in {
       val document = armaSource.parseJson
 
@@ -262,7 +276,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator shouldBe generator.toJson.convertTo[AggregateGenerator]
    }
 
-   "An correlated generator" should "be correctly read from a json document" in {
+   "A correlated generator" should "be correctly read from a json document" in {
       val document = correlatedSource.parseJson
 
       val generator = document.convertTo[CorrelatedGenerator]
@@ -282,5 +296,30 @@ class ConfigurationTest extends FlatSpec with Matchers {
          0.8
       )
       generator shouldBe generator.toJson.convertTo[CorrelatedGenerator]
+   }
+
+   "A logistic generator" should "be correctly read from a json document" in {
+      val document = logisticSource.parseJson
+
+      val generator = document.convertTo[LogisticGenerator]
+
+      generator.name shouldBe Some("logistic-generator")
+      generator.`type` shouldBe "logistic"
+      generator.generator shouldBe Left("daily-generator")
+      generator.location shouldBe 6
+      generator.scale shouldBe 2.4
+      generator.seed shouldBe Some(1809)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = LogisticGenerator(
+         Some("logistic-generator"),
+         "logistic",
+         Left("daily-generator"),
+         6,
+         2.4,
+         Some(1809)
+      )
+      generator shouldBe generator.toJson.convertTo[LogisticGenerator]
    }
 }
