@@ -148,6 +148,48 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def read(value: JsValue) = new Duration(value.toString.toLong)
    }
 
+   implicit object AggregateFormat extends RootJsonFormat[AggregateGenerator] {
+      def write(obj: AggregateGenerator) =
+      {
+         val name = obj.name.toJson
+         val `type` = obj.`type`.toJson
+         val aggregator = obj.aggregator.toJson
+         val generators = obj.generators.map(g => g match {
+            case Left(s) => s.toJson
+            case Right(g) => g.toJson
+         }).toJson
+
+         new JsObject(Map(
+            "name" -> name,
+            "type" -> `type`,
+            "aggregator" -> aggregator,
+            "generators" -> generators
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = if(fields contains "name") fields("name") match {
+            case JsString(s) => Some(s)
+            case _ => None
+         }
+                    else None
+
+         val `type` = fields("type").convertTo[String]
+         val aggregator = fields("aggregator").convertTo[String]
+         val generators = fields("generators") match {
+            case JsArray(x) => x.map(v => v match {
+               case JsString(s) => Left(s)
+               case g => Right(g.convertTo[Generator])
+            })
+         }
+
+         AggregateGenerator(name, `type`, aggregator, generators)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
    implicit val armaFormat = jsonFormat4(ARMAGenerator)
@@ -158,7 +200,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    implicit val yearlyFormat = jsonFormat3(YearlyGenerator)
    implicit val constantFormat = jsonFormat3(ConstantGenerator)
    implicit val functionFormat = lazyFormat(jsonFormat5(FunctionGenerator))
-   implicit val aggregateFormat = lazyFormat(jsonFormat4(AggregateGenerator))
+   implicit val aggregateFormat = lazyFormat(AggregateFormat)
    implicit val correlatedFormat = lazyFormat(jsonFormat4(CorrelatedGenerator))
    implicit val logisticFormat = lazyFormat(jsonFormat6(LogisticGenerator))
    implicit val transitionModelFormat = jsonFormat3(Transition)
@@ -192,6 +234,7 @@ object GeneratorFormat extends JsonFormat[Generator]
             case JsString("monthly") => monthlyFormat.read(known)
             case JsString("yearly") => yearlyFormat.read(known)
             case JsString("constant") => constantFormat.read(known)
+            case JsString("aggregate") => aggregateFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -205,6 +248,7 @@ object GeneratorFormat extends JsonFormat[Generator]
       case x: MonthlyGenerator => monthlyFormat.write(x)
       case x: YearlyGenerator => yearlyFormat.write(x)
       case x: ConstantGenerator => constantFormat.write(x)
+      case x: AggregateGenerator => aggregateFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }

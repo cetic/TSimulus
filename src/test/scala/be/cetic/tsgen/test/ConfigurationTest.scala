@@ -80,6 +80,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val aggregateSource =
+      """
+        |{
+        |   "name": "aggregate-generator",
+        |   "type": "aggregate",
+        |   "aggregator": "sum",
+        |   "generators": ["daily-generator", "monthly-generator"]
+        |}
+      """.stripMargin
+
    "An ARMA generator" should "be correctly read from a json document" in {
       val document = armaSource.parseJson
 
@@ -218,5 +228,27 @@ class ConfigurationTest extends FlatSpec with Matchers {
          9.2
       )
       generator shouldBe generator.toJson.convertTo[FunctionGenerator]
+   }
+
+   "An aggregate generator" should "be correctly read from a json document" in {
+      val document = aggregateSource.parseJson
+
+      val generator = document.convertTo[AggregateGenerator]
+
+      generator.name shouldBe Some("aggregate-generator")
+      generator.`type` shouldBe "aggregate"
+      generator.aggregator shouldBe "sum"
+      generator.generators shouldBe Seq(Left("daily-generator"), Left("monthly-generator"))
+
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = AggregateGenerator(
+         Some("aggregate-generator"),
+         "aggregate",
+         "sum",
+         Seq(Left("daily-generator"), Left("monthly-generator"))
+      )
+      generator shouldBe generator.toJson.convertTo[AggregateGenerator]
    }
 }
