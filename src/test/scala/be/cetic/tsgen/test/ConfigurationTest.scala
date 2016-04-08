@@ -446,4 +446,27 @@ class ConfigurationTest extends FlatSpec with Matchers {
       )
       generator shouldBe generator.toJson.convertTo[LimitedGenerator]
    }
+
+   "A partial generator" should "be correctly read from a json document" in {
+      val document = partialSource.parseJson
+
+      val generator = document.convertTo[PartialGenerator]
+
+      generator.name shouldBe Some("partial-generator")
+      generator.`type` shouldBe "partial"
+      generator.generator shouldBe Left("daily-generator")
+      generator.from shouldBe Some(new LocalDateTime(2016, 4, 6, 0, 0, 0))
+      generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = PartialGenerator(
+         Some("partial-generator"),
+         "partial",
+         Left("daily-generator"),
+         Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+      )
+      generator shouldBe generator.toJson.convertTo[PartialGenerator]
+   }
 }
