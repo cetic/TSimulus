@@ -278,6 +278,80 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   implicit object TransitionModelFormat extends RootJsonFormat[Transition]
+   {
+      def write(obj: Transition) =
+      {
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => g.toJson
+         }).toJson
+         val start = obj.start.toJson
+         val delay = obj.delay.toJson
+
+         new JsObject(Map(
+            "generator" -> generator,
+            "start" -> start,
+            "delay" -> delay
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(g.convertTo[Generator])
+         }
+         val start = fields("start").convertTo[LocalDateTime]
+         val delay = fields.get("delay").map(_.convertTo[Duration])
+
+         Transition(generator, start, delay)
+      }
+   }
+
+   object TransitionFormat extends RootJsonFormat[TransitionGenerator]
+   {
+      def write(obj: TransitionGenerator) =
+      {
+         val name = obj.name.toJson
+         val `type` = obj.`type`.toJson
+         val origin = (obj.origin match {
+            case Left(s) => s.toJson
+            case Right(g) => g.toJson
+         }).toJson
+         val transitions = obj.transitions.toJson
+
+         new JsObject(Map(
+            "name" -> name,
+            "type" -> `type`,
+            "origin" -> origin,
+            "transitions" -> transitions
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = if(fields contains "name") fields("name") match {
+            case JsString(s) => Some(s)
+            case _ => None
+         }
+                    else None
+
+         val `type` = fields("type").convertTo[String]
+         val origin = fields("origin") match {
+            case JsString(s) => Left(s)
+            case g => Right(g.convertTo[Generator])
+         }
+         val transitions = fields("transitions").convertTo[Seq[Transition]]
+
+         TransitionGenerator(name, `type`, origin, transitions)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
    implicit val armaFormat = jsonFormat4(ARMAGenerator)
@@ -292,7 +366,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    implicit val correlatedFormat = lazyFormat(CorrelatedFormat)
    implicit val logisticFormat = lazyFormat(LogisticFormat)
    implicit val transitionModelFormat = jsonFormat3(Transition)
-   implicit val transitionFormat = lazyFormat(jsonFormat4(TransitionGenerator))
+   implicit val transitionFormat = lazyFormat(TransitionFormat)
    implicit val limitedFormat = lazyFormat(jsonFormat6(LimitedGenerator))
    implicit val partialFormat = lazyFormat(jsonFormat5(PartialGenerator))
 }
@@ -325,6 +399,7 @@ object GeneratorFormat extends JsonFormat[Generator]
             case JsString("aggregate") => aggregateFormat.read(known)
             case JsString("correlated") => correlatedFormat.read(known)
             case JsString("logistic") => logisticFormat.read(known)
+            case JsString("transition") => transitionFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -341,6 +416,7 @@ object GeneratorFormat extends JsonFormat[Generator]
       case x: AggregateGenerator => aggregateFormat.write(x)
       case x: CorrelatedGenerator => correlatedFormat.write(x)
       case x: LogisticGenerator => logisticFormat.write(x)
+      case x: TransitionGenerator => transitionFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }
