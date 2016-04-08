@@ -8,12 +8,12 @@ class Generator(name: Option[String], `type`: String)
 
 case class InvalidGenerator(name: String) extends Generator(Some(name), "ERROR")
 
-case class Configuration(generators: Seq[Generator],
+case class Configuration(generators: Option[Seq[Generator]],
                          series: Seq[Series],
                          from: LocalDateTime,
                          to: LocalDateTime)
 
-case class Series(generator: Either[String, Generator], frequency: Long)
+case class Series(generator: Either[String, Generator], frequency: Duration)
 
 case class ARMAGenerator(name: Option[String],
                          `type`: String,
@@ -183,7 +183,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             case JsArray(x) => x.map(v => v match {
                case JsString(s) => Left(s)
                case g => Right(g.convertTo[Generator])
-            })
+            }).toList
          }
 
          AggregateGenerator(name, `type`, aggregator, generators)
@@ -440,6 +440,64 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val to = fields.get("to").map(_.convertTo[LocalDateTime])
 
          PartialGenerator(name, `type`, generator, from, to)
+      }
+   }
+
+   implicit object SeriesFormat extends RootJsonFormat[Series]
+   {
+      def write(obj: Series) =
+      {
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => g.toJson
+         }).toJson
+         val frequency = obj.frequency.toJson
+
+         new JsObject(Map(
+            "generator" -> generator,
+            "frequency" -> frequency
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(g.convertTo[Generator])
+         }
+         val frequency = fields("frequency").convertTo[Duration]
+
+         Series(generator, frequency)
+      }
+   }
+
+   implicit object ConfigurationFormat extends RootJsonFormat[Configuration]
+   {
+      def write(obj: Configuration) =
+      {
+         new JsObject(Map(
+            "generators" -> obj.generators.toJson,
+            "series" -> obj.series.toJson,
+            "from" -> obj.from.toJson,
+            "to" -> obj.to.toJson
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val generators = fields.get("generators").map(_.convertTo[Seq[Generator]])
+         val series = fields("series") match {
+            case JsArray(x) => x.map(_.convertTo[Series]).toSeq
+         }
+
+         val from = fields("from").convertTo[LocalDateTime]
+         val to = fields("to").convertTo[LocalDateTime]
+
+         Configuration(generators, series, from, to)
       }
    }
 
