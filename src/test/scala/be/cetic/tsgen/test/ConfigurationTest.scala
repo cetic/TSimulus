@@ -163,6 +163,59 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val seriesSource =
+      """
+        |{
+        |   "generator": "daily-generator",
+        |   "frequency": 60000
+        |}
+      """.stripMargin
+
+   val configurationSource =
+      """
+        |{
+        |   "generators": [
+        |      {
+        |         "name": "daily-generator",
+        |         "type": "daily",
+        |         "points": {"10:00:00.000": 4, "17:00:00.000": 32}
+        |      },
+        |      {
+        |         "name": "noisy-daily",
+        |         "type": "aggregate",
+        |         "aggregator": "sum",
+        |         "generators": [
+        |            "daily-generator",
+        |            {
+        |                "type": "arma",
+        |                "model": { "phi": [0.5], "std": 0.25, "c": 0, "seed": 159357},
+        |                "timestep": 180000
+        |            }
+        |         ]
+        |      },
+        |      {
+        |         "name":  "partial-daily",
+        |         "type": "partial",
+        |         "generator": "daily-generator",
+        |         "from": "2016-01-01 00:00:00.000",
+        |         "to": "2017-01-01 00:00:00.000"
+        |      }
+        |   ],
+        |   "series": [
+        |      {
+        |         "generator": "daily-generator",
+        |         "frequency": 60000
+        |      },
+        |      {
+        |         "generator": "noisy-daily",
+        |         "frequency": 30000
+        |      }
+        |   ],
+        |   "from": "2016-01-01 00:00:00.000",
+        |   "to": "2016-10-01 00:00:00.000"
+        |}
+      """.stripMargin
+
 
 
    "An ARMA generator" should "be correctly read from a json document" in {
@@ -457,6 +510,112 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator.generator shouldBe Left("daily-generator")
       generator.from shouldBe Some(new LocalDateTime(2016, 4, 6, 0, 0, 0))
       generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = PartialGenerator(
+         Some("partial-generator"),
+         "partial",
+         Left("daily-generator"),
+         Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+      )
+      generator shouldBe generator.toJson.convertTo[PartialGenerator]
+   }
+
+   "A series" should "be correctly read from a json document" in {
+      val document = seriesSource.parseJson
+
+      val series = document.convertTo[Series]
+
+      series.generator shouldBe Left("daily-generator")
+      series.frequency shouldBe new Duration(60000)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val series = Series(
+         Left("daily-generator"),
+         new Duration(60000)
+      )
+      series shouldBe series.toJson.convertTo[Series]
+   }
+
+   "A configuration" should "be correctly read from a json document" in {
+      val document = configurationSource.parseJson
+
+      val configuration = document.convertTo[Configuration]
+      println(configuration.generators)
+
+      println(Some(Seq(
+         DailyGenerator(
+            Some("daily-generator"),
+            "daily",
+            Map(new LocalTime(10,0,0) -> 4, new LocalTime(17,0,0) -> 32)
+         ),
+         AggregateGenerator(
+            Some("noisy-daily"),
+            "aggregate",
+            "sum",
+            Seq(
+               Left("daily-generator"),
+               Right(ARMAGenerator(
+                  None,
+                  "arma",
+                  ARMAModel(Some(Seq(0.5)), None, 0.25, 0, Some(159357)),
+                  new Duration(180000)
+               )
+               )
+            )
+         ),
+         PartialGenerator(
+            Some("partial-daily"),
+            "partial",
+            Left("daily-generator"),
+            Some(new LocalDateTime(2016,1,1,0,0,0)),
+            Some(new LocalDateTime(2017,1,1,0,0,0))
+         )
+      )))
+
+      configuration.generators.get.size shouldBe 3
+
+      configuration.generators shouldBe Some(Seq(
+         DailyGenerator(
+            Some("daily-generator"),
+            "daily",
+            Map(new LocalTime(10, 0, 0) -> 4, new LocalTime(17, 0, 0) -> 32)
+         ),
+         AggregateGenerator(
+            Some("noisy-daily"),
+            "aggregate",
+            "sum",
+            Seq(
+               Left("daily-generator"),
+               Right(ARMAGenerator(
+                  None,
+                  "arma",
+                  ARMAModel(Some(Seq(0.5)), None, 0.25, 0, Some(159357)),
+                  new Duration(180000)
+               )
+               )
+            )
+         ),
+         PartialGenerator(
+            Some("partial-daily"),
+            "partial",
+            Left("daily-generator"),
+            Some(new LocalDateTime(2016, 1, 1, 0, 0, 0)),
+            Some(new LocalDateTime(2017, 1, 1, 0, 0, 0))
+         )
+      ))
+
+
+      configuration.series shouldBe Seq(
+         Series(Left("daily-generator"), new Duration(60000)),
+         Series(Left("noisy-daily"), new Duration(30000))
+      )
+
+      configuration.from shouldBe new LocalDateTime(2016, 1, 1, 0, 0, 0)
+      configuration.to shouldBe new LocalDateTime(2016, 10, 1, 0, 0, 0)
    }
 
    it should "be correctly exported to a json document" in {
