@@ -399,6 +399,50 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   object PartialFormat extends RootJsonFormat[PartialGenerator]
+   {
+      def write(obj: PartialGenerator) =
+      {
+         val name = obj.name.toJson
+         val `type` = obj.`type`.toJson
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => g.toJson
+         }).toJson
+         val from = obj.from.toJson
+         val to = obj.to.toJson
+
+         new JsObject(Map(
+            "name" -> name,
+            "type" -> `type`,
+            "generator" -> generator,
+            "from" -> from,
+            "to" -> to
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = if(fields contains "name") fields("name") match {
+            case JsString(s) => Some(s)
+            case _ => None
+         }
+                    else None
+
+         val `type` = fields("type").convertTo[String]
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(g.convertTo[Generator])
+         }
+         val from = fields.get("from").map(_.convertTo[LocalDateTime])
+         val to = fields.get("to").map(_.convertTo[LocalDateTime])
+
+         PartialGenerator(name, `type`, generator, from, to)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
    implicit val armaFormat = jsonFormat4(ARMAGenerator)
@@ -415,7 +459,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    implicit val transitionModelFormat = jsonFormat3(Transition)
    implicit val transitionFormat = lazyFormat(TransitionFormat)
    implicit val limitedFormat = lazyFormat(LimitedFormat)
-   implicit val partialFormat = lazyFormat(jsonFormat5(PartialGenerator))
+   implicit val partialFormat = lazyFormat(PartialFormat)
 }
 
 object GeneratorFormat extends JsonFormat[Generator]
@@ -448,6 +492,7 @@ object GeneratorFormat extends JsonFormat[Generator]
             case JsString("logistic") => logisticFormat.read(known)
             case JsString("transition") => transitionFormat.read(known)
             case JsString("limited") => limitedFormat.read(known)
+            case JsString("partial") => partialFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -466,6 +511,7 @@ object GeneratorFormat extends JsonFormat[Generator]
       case x: LogisticGenerator => logisticFormat.write(x)
       case x: TransitionGenerator => transitionFormat.write(x)
       case x: LimitedGenerator => limitedFormat.write(x)
+      case x: PartialGenerator => partialFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }
