@@ -140,6 +140,29 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val limitedSource =
+      """
+        |{
+        |   "name" : "limited-generator",
+        |   "type": "limited",
+        |   "generator": "daily-generator",
+        |   "from": "2016-04-06 00:00:00.000",
+        |   "to": "2016-04-23 00:00:00.000",
+        |   "missing-rate" : 0.001
+        |}
+      """.stripMargin
+
+   val partialSource =
+      """
+        |{
+        |   "name" : "partial-generator",
+        |   "type" : "partial",
+        |   "generator": "daily-generator",
+        |   "from": "2016-04-06 00:00:00.000",
+        |   "to": "2016-04-23 00:00:00.000"
+        |}
+      """.stripMargin
+
 
 
    "An ARMA generator" should "be correctly read from a json document" in {
@@ -396,5 +419,31 @@ class ConfigurationTest extends FlatSpec with Matchers {
          )
       )
       generator shouldBe generator.toJson.convertTo[TransitionGenerator]
+   }
+
+
+   "A limited generator" should "be correctly read from a json document" in {
+      val document = limitedSource.parseJson
+
+      val generator = document.convertTo[LimitedGenerator]
+
+      generator.name shouldBe Some("limited-generator")
+      generator.`type` shouldBe "limited"
+      generator.generator shouldBe Left("daily-generator")
+      generator.from shouldBe Some(new LocalDateTime(2016, 4, 6, 0, 0, 0))
+      generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+      generator.missingRate shouldBe Some(0.001)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = LimitedGenerator(
+         Some("limited-generator"),
+         "limited",
+         Left("daily-generator"),
+         Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
+         Some(0.001)
+      )
+      generator shouldBe generator.toJson.convertTo[LimitedGenerator]
    }
 }
