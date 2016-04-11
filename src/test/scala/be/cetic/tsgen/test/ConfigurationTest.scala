@@ -275,7 +275,17 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = ARMAGenerator(Some("g3"), "arma", new ARMAModel(Some(Seq(1,2,3)), Some(Seq(4,3,2,1)), 0.5, 4.2, Some(1809)), new Duration(180000))
+      val generator = new ARMAGenerator(
+         Some("g3"),
+         new ARMAModel(
+            Some(Seq(1,2,3)),
+            Some(Seq(4,3,2,1)),
+            0.5,
+            4.2,
+            Some(1809)
+         ),
+         new Duration(180000)
+      )
       generator shouldBe generator.toJson.convertTo[ARMAGenerator]
    }
 
@@ -293,7 +303,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = DailyGenerator(Some("daily-generator"), "daily", Map(
+      val generator = new DailyGenerator(Some("daily-generator"), Map(
          new LocalTime(11,0,0) -> 6,
          new LocalTime(17,0,0) -> 8,
          new LocalTime(7,0,0) -> 2))
@@ -315,7 +325,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = WeeklyGenerator(Some("weekly-generator"), "weekly", Map(
+      val generator = new WeeklyGenerator(Some("weekly-generator"), Map(
          "monday" -> 8.7,
          "friday" -> -3.6,
          "sunday" -> 10.9))
@@ -338,7 +348,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = MonthlyGenerator(Some("monthly-generator"), "daily", Map(
+      val generator = new MonthlyGenerator(Some("monthly-generator"), Map(
          "january" -> -6.3,
          "february" -> -6.9,
          "june" -> -2.7
@@ -358,9 +368,11 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = YearlyGenerator(Some("yearly-generator"), "daily", Map(2015 -> 42.12,
+      val generator = new YearlyGenerator(Some("yearly-generator"), Map(
+         2015 -> 42.12,
          2016 -> 13.37,
-         2017 -> 6.022))
+         2017 -> 6.022)
+      )
 
       generator shouldBe generator.toJson.convertTo[YearlyGenerator]
    }
@@ -376,7 +388,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = ConstantGenerator(Some("constant-generator"), "constant", 17.5)
+      val generator = new ConstantGenerator(Some("constant-generator"), 17.5)
       generator shouldBe generator.toJson.convertTo[ConstantGenerator]
    }
 
@@ -389,18 +401,19 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator.`type` shouldBe "function"
       generator.slope shouldBe 1.4
       generator.intercept shouldBe 9.2
-      generator.generator shouldBe Right(ConstantGenerator(None, "constant", 42))
+      generator.generator shouldBe Right(new ConstantGenerator(None, 42))
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = FunctionGenerator(
+      val generator = new FunctionGenerator(
          Some("function-generator"),
-         "function",
-         Right(ConstantGenerator(None, "constant", 42)),
+         Right(new ConstantGenerator(None, 42)),
          1.4,
          9.2
       )
-      generator shouldBe generator.toJson.convertTo[FunctionGenerator]
+      val a = generator.toJson
+
+      val b = generator shouldBe a.convertTo[FunctionGenerator]
    }
 
    "An aggregate generator" should "be correctly read from a json document" in {
@@ -415,7 +428,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = AggregateGenerator(
+      val generator = new AggregateGenerator(
          Some("aggregate-generator"),
          "sum",
          Seq(Left("daily-generator"), Left("monthly-generator"))
@@ -434,7 +447,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = CorrelatedGenerator(
+      val generator = new CorrelatedGenerator(
          Some("corr-generator"),
          Left("daily-generator"),
          0.8
@@ -455,7 +468,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = LogisticGenerator(
+      val generator = new LogisticGenerator(
          Some("logistic-generator"),
          Left("daily-generator"),
          6,
@@ -499,7 +512,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = TransitionGenerator(
+      val generator = new TransitionGenerator(
          Some("transition-generator"),
          Left("daily-generator"),
          Seq(
@@ -524,7 +537,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = LimitedGenerator(
+      val generator = new LimitedGenerator(
          Some("limited-generator"),
          Left("daily-generator"),
          Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
@@ -546,7 +559,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = PartialGenerator(
+      val generator = new PartialGenerator(
          Some("partial-generator"),
          Left("daily-generator"),
          Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
@@ -578,26 +591,25 @@ class ConfigurationTest extends FlatSpec with Matchers {
       val configuration = document.convertTo[Configuration]
 
       configuration.generators shouldBe Some(Seq(
-         DailyGenerator(
+         new DailyGenerator(
             Some("daily-generator"),
-            "daily",
             Map(new LocalTime(10, 0, 0) -> 4, new LocalTime(17, 0, 0) -> 32)
          ),
-         AggregateGenerator(
+         new AggregateGenerator(
             Some("noisy-daily"),
             "sum",
             Seq(
                Left("daily-generator"),
-               Right(ARMAGenerator(
-                  None,
-                  "arma",
-                  ARMAModel(Some(Seq(0.5)), None, 0.25, 0, Some(159357)),
-                  new Duration(180000)
-               )
+               Right(
+                  new ARMAGenerator(
+                     None,
+                     ARMAModel(Some(Seq(0.5)), None, 0.25, 0, Some(159357)),
+                     new Duration(180000)
+                  )
                )
             )
          ),
-         PartialGenerator(
+         new PartialGenerator(
             Some("partial-daily"),
             Left("daily-generator"),
             Some(new LocalDateTime(2016, 1, 1, 0, 0, 0)),
@@ -616,7 +628,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = PartialGenerator(
+      val generator = new PartialGenerator(
          Some("partial-generator"),
          Left("daily-generator"),
          Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
@@ -628,7 +640,6 @@ class ConfigurationTest extends FlatSpec with Matchers {
    "A complete configuration" should "be correctly read from a json document" in {
       val document = completeSource.parseJson
 
-      println(document)
-
+      document shouldBe document.convertTo[Configuration].toJson
    }
 }
