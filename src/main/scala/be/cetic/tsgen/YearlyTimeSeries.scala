@@ -54,7 +54,7 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       return time
    }
 
-   def compute(time: LocalDateTime): Double =
+   def compute(time: LocalDateTime): Option[Double] =
    {
       val current_time = correctedTime(time)
       val current_year = current_time.getYear
@@ -69,6 +69,6 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
 
       val ratio = current_duration.getSeconds.toDouble / max_duration.getSeconds
 
-      return interpolator.value(active_year + ratio)
+      return Some(interpolator.value(active_year + ratio))
    }
 }

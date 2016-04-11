@@ -1,87 +1,231 @@
 package be.cetic.tsgen.config
 
+import be.cetic.tsgen._
 import com.github.nscala_time.time.Imports._
-import org.joda.time.{LocalDateTime, LocalTime}
+import org.joda.time.{DateTimeConstants, LocalDateTime, LocalTime}
 import spray.json._
 
-class Generator(name: Option[String], `type`: String)
+import scala.util.Random
 
-case class InvalidGenerator(name: String) extends Generator(Some(name), "ERROR")
 
-case class Configuration(generators: Option[Seq[Generator]],
-                         series: Seq[Series],
+abstract class Generator[+T](name: Option[String], `type`: String)
+{
+   /**
+     * @param generators an entity able to discover all the first-level generators on the
+     *                   basis of their name.
+     * @return the time series associated to this generator
+     */
+   def timeseries(generators: String => Generator[Any]): TimeSeries[T]
+}
+
+object Model
+{
+   def generator(generators: String => Generator[Any])(element: Either[String, Generator[Any]]): Generator[Any] =
+      element match {
+         case Left(s) => generators(s)
+         case Right(g) => g
+      }
+}
+
+case class InvalidGenerator(name: String) extends Generator[Any](Some(name), "ERROR")
+{
+   override def timeseries(generators: String => Generator[Any]) = ???
+}
+
+case class Configuration(generators: Option[Seq[Generator[Any]]],
+                         series: Seq[Series[Any]],
                          from: LocalDateTime,
                          to: LocalDateTime)
 
-case class Series(generator: Either[String, Generator], frequency: Duration)
+case class Series[T](generator: Either[String, Generator[Any]], frequency: Duration)
 
 case class ARMAGenerator(name: Option[String],
                          `type`: String,
                          val model: ARMAModel,
-                         val timestep: Duration) extends Generator(name, `type`)
+                         val timestep: Duration) extends Generator[Double](name, `type`)
+{
+   override def timeseries(generators: String => Generator[Any]) =
+      RandomWalkTimeSeries(
+         new ARMA(
+            model.phi.getOrElse(Seq()).toArray,
+            model.theta.getOrElse(Seq()).toArray,
+            model.std,
+            model.c,
+            model.seed.getOrElse(Random.nextLong())
+         ),
+         timestep
+      )
+}
 
 case class ARMAModel(phi: Option[Seq[Double]],
                      theta: Option[Seq[Double]],
                      std: Double,
                      c: Double,
-                     seed: Option[Int])
+                     seed: Option[Long])
 
 case class DailyGenerator(name: Option[String],
                           `type`: String,
-                          val points: Map[LocalTime, Double]) extends Generator(name, `type`)
+                          val points: Map[LocalTime, Double]) extends Generator[Double](name, `type`)
+{
+   override def timeseries(generators: String => Generator[Any]) = DailyTimeSeries(points)
+}
 
 case class WeeklyGenerator(name: Option[String],
                            `type`: String,
-                           val points: Map[String, Double]) extends Generator(name, `type`)
+                           val points: Map[String, Double]) extends Generator[Double](name, `type`)
+{
+   override def timeseries(generators: String => Generator[Any]) =
+   {
+      val day = Map(
+         "monday" -> DateTimeConstants.MONDAY,
+         "tuesday" -> DateTimeConstants.TUESDAY,
+         "wednesday" -> DateTimeConstants.WEDNESDAY,
+         "thurdsay" -> DateTimeConstants.THURSDAY,
+         "friday" -> DateTimeConstants.FRIDAY,
+         "saturday" -> DateTimeConstants.SATURDAY,
+         "sunday" -> DateTimeConstants.SUNDAY
+      )
+
+      WeeklyTimeSeries(points map {case (k,v) => (day(k), v)})
+   }
+}
 
 case class MonthlyGenerator(name: Option[String],
                             `type`: String,
-                            val points: Map[String, Double]) extends Generator(name, `type`)
+                            val points: Map[String, Double]) extends Generator[Double](name, `type`)
+{
+   override def timeseries(generators: String => Generator[Any]) =
+   {
+      val month = Map(
+         "january" -> DateTimeConstants.JANUARY,
+         "february" -> DateTimeConstants.FEBRUARY,
+         "march" -> DateTimeConstants.MARCH,
+         "april" -> DateTimeConstants.APRIL,
+         "may" -> DateTimeConstants.MAY,
+         "june" -> DateTimeConstants.JUNE,
+         "july" -> DateTimeConstants.JULY,
+         "august" -> DateTimeConstants.AUGUST,
+         "september" -> DateTimeConstants.SEPTEMBER,
+         "october" -> DateTimeConstants.OCTOBER,
+         "december" -> DateTimeConstants.DECEMBER
+      )
+
+      MonthlyTimeSeries(points map {case (k,v) => (month(k), v)})
+   }
+}
 
 case class YearlyGenerator(name: Option[String],
                            `type`: String,
-                           val points: Map[Int, Double]) extends Generator(name, `type`)
+                           val points: Map[Int, Double]) extends Generator[Double](name, `type`)
+{
+   override def timeseries(generators: String => Generator[Any]) = YearlyTimeSeries(points)
+}
 
 case class ConstantGenerator(name: Option[String],
                              `type`: String,
-                             val value: Double) extends Generator(name, `type`)
+                             val value: Double) extends Generator[Double](name, `type`)
+{
+   override def timeseries(generators: String => Generator[Any]) = ConstantTimeSeries(value)
+}
+
 
 case class FunctionGenerator(name: Option[String],
                              val `type`: String,
-                             val generator: Either[String, Generator],
-                             val coef: Double,
-                             val offset: Double) extends Generator(name, "function")
+                             val generator: Either[String, Generator[Any]],
+                             val slope: Double,
+                             val intercept: Double) extends Generator[Double](name, "function")
+{
+   override def timeseries(generators: String => Generator[Any]) =
+   {
+      Model.generator(generators)(generator) match {
+         case g: Generator[Double] => FunctionTimeSeries[Double](g.timeseries(generators), x => Some(slope * x + intercept))
+         case _ => throw new ClassCastException
+      }
+   }
+}
 
 case class AggregateGenerator(name: Option[String],
                               val aggregator: String,
-                              val generators: Seq[Either[String, Generator]]) extends Generator(name, "aggregate")
+                              val generators: Seq[Either[String, Generator[Any]]]) extends Generator[Double](name, "aggregate")
+{
+   override def timeseries(gen: String => Generator[Any]) =
+   {
+      val agg = aggregator match {
+         case "sum" => s: Seq[Double] => s.sum
+         case "product" => s: Seq[Double] => s.reduce((x,y) => x*y)
+         case "min" => s: Seq[Double] => s.min
+         case "max" => s: Seq[Double] => s.max
+         case "mean" => s: Seq[Double] => s.sum / s.length
+      }
+
+      val ts = generators.map(x => x match {
+         case Left(s) => gen(s).timeseries(gen)
+         case Right(g) => g.timeseries(gen)
+      })
+
+      val series = ts flatMap {
+         case d : TimeSeries[Double] => Some(d)
+         case _ => None
+      }
+
+      new CompositeTimeSeries[Double](agg, series)
+   }
+}
 
 case class CorrelatedGenerator(name: Option[String],
-                               val generator: Either[String, Generator],
-                               val coef: Double) extends Generator(name, "correlated")
+                               val generator: Either[String, Generator[Any]],
+                               val coef: Double) extends Generator[Double](name, "correlated")
+{
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      Model.generator(generators)(generator) match {
+         case dDouble : Generator[Double] => CorrelatedTimeSeries(dDouble.timeseries(generators), Random.nextInt(), coef)
+         case _ => throw new ClassCastException
+      }
+   }
+}
 
 case class LogisticGenerator(name: Option[String],
-                             val generator: Either[String, Generator],
+                             val generator: Either[String, Generator[Any]],
                              val location: Double,
                              val scale: Double,
-                             val seed: Option[Long]) extends Generator(name, "logistic")
+                             val seed: Option[Int]) extends Generator[Boolean](name, "logistic")
+{
+
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      Model.generator(generators)(generator) match {
+         case dTS: TimeSeries[Double] => LogisticTimeSeries(dTS, location, scale, seed.getOrElse(Random.nextInt()))
+         case _ => throw new ClassCastException
+      }
+   }
+}
 
 case class TransitionGenerator(name: Option[String],
-                               val origin: Either[String, Generator],
+                               val origin: Either[String, Generator[Any]],
                                val transitions: Seq[Transition]) extends Generator(name, "transition")
+{
+   override def timeseries(generators: (String) => Generator[Any]) = ???
+}
 
-case class Transition(generator: Either[String, Generator], start: LocalDateTime, delay: Option[Duration])
+case class Transition(generator: Either[String, Generator[Any]], start: LocalDateTime, delay: Option[Duration])
 
 case class LimitedGenerator(name: Option[String],
-                            val generator: Either[String, Generator],
+                            val generator: Either[String, Generator[Any]],
                             val from: Option[LocalDateTime],
                             val to: Option[LocalDateTime],
                             val missingRate: Option[Double]) extends Generator(name, "limited")
+{
+   override def timeseries(generators: (String) => Generator[Any]) = ???
+}
 
 case class PartialGenerator(name: Option[String],
-                            val generator: Either[String, Generator],
+                            val generator: Either[String, Generator[Any]],
                             val from: Option[LocalDateTime],
                             val to: Option[LocalDateTime]) extends Generator(name, "partial")
+{
+   override def timeseries(generators: (String) => Generator[Any]) = ???
+}
 
 /*
  * http://stackoverflow.com/questions/32721636/spray-json-serializing-inheritance-case-class
@@ -125,10 +269,12 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val `type` = json.asJsObject.fields("type") match {
             case JsString(x) => x
+            case _ => throw new ClassCastException
          }
 
          val points = json.asJsObject.fields("points") match {
             case JsObject(x) => x
+            case _ => throw new ClassCastException
          }
 
          val r = points map { case (k,v) => (k.toInt, v match { case JsNumber(x) => x.toDouble })}
@@ -149,7 +295,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val aggregator = obj.aggregator.toJson
          val generators = obj.generators.map(g => g match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(x) => GeneratorFormat.write(x)
          }).toJson
 
          new JsObject(Map(
@@ -174,7 +320,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val generators = fields("generators") match {
             case JsArray(x) => x.map(v => v match {
                case JsString(s) => Left(s)
-               case g => Right(g.convertTo[Generator])
+               case g => Right(GeneratorFormat.read(g))
             }).toList
          }
 
@@ -189,7 +335,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val name = obj.name.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(g) => GeneratorFormat.write(g)
          }).toJson
          val coef = obj.coef.toJson
 
@@ -214,7 +360,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val `type` = fields("type").convertTo[String]
          val generator = fields("generator") match {
                case JsString(s) => Left(s)
-               case g => Right(g.convertTo[Generator])
+               case g => Right(GeneratorFormat.read(g))
          }
          val coef = fields("coef").convertTo[Double]
 
@@ -229,7 +375,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val name = obj.name.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(g) => GeneratorFormat.write(g)
          }).toJson
          val location = obj.location.toJson
          val scale = obj.scale.toJson
@@ -257,11 +403,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
-            case g => Right(g.convertTo[Generator])
+            case g => Right(GeneratorFormat.read(g))
          }
          val location = fields("location").convertTo[Double]
          val scale = fields("scale").convertTo[Double]
-         val seed = fields.get("seed").map(_.convertTo[Long])
+         val seed = fields.get("seed").map(_.convertTo[Int])
 
          LogisticGenerator(name, generator, location, scale, seed)
       }
@@ -273,7 +419,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val generator = (obj.generator match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(g) => GeneratorFormat.write(g)
          }).toJson
          val start = obj.start.toJson
          val delay = obj.delay.toJson
@@ -291,7 +437,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
-            case g => Right(g.convertTo[Generator])
+            case g => Right(GeneratorFormat.read(g))
          }
          val start = fields("start").convertTo[LocalDateTime]
          val delay = fields.get("delay").map(_.convertTo[Duration])
@@ -307,7 +453,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val name = obj.name.toJson
          val origin = (obj.origin match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(g) => GeneratorFormat.write(g)
          }).toJson
          val transitions = obj.transitions.toJson
 
@@ -331,7 +477,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val origin = fields("origin") match {
             case JsString(s) => Left(s)
-            case g => Right(g.convertTo[Generator])
+            case g => Right(GeneratorFormat.read(g))
          }
          val transitions = fields("transitions").convertTo[Seq[Transition]]
 
@@ -346,7 +492,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val name = obj.name.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(g) => GeneratorFormat.write(g)
          }).toJson
          val from = obj.from.toJson
          val to = obj.to.toJson
@@ -374,7 +520,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
-            case g => Right(g.convertTo[Generator])
+            case g => Right(GeneratorFormat.read(g))
          }
          val from = fields.get("from").map(_.convertTo[LocalDateTime])
          val to = fields.get("to").map(_.convertTo[LocalDateTime])
@@ -391,7 +537,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val name = obj.name.toJson
          val generator = (obj.generator match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(g) => GeneratorFormat.write(g)
          }).toJson
          val from = obj.from.toJson
          val to = obj.to.toJson
@@ -417,7 +563,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
-            case g => Right(g.convertTo[Generator])
+            case g => Right(GeneratorFormat.read(g))
          }
          val from = fields.get("from").map(_.convertTo[LocalDateTime])
          val to = fields.get("to").map(_.convertTo[LocalDateTime])
@@ -426,13 +572,13 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
-   implicit object SeriesFormat extends RootJsonFormat[Series]
+   implicit object SeriesFormat extends RootJsonFormat[Series[Any]]
    {
-      def write(obj: Series) =
+      def write(obj: Series[Any]) =
       {
          val generator = (obj.generator match {
             case Left(s) => s.toJson
-            case Right(g) => g.toJson
+            case Right(g) => GeneratorFormat.write(g)
          }).toJson
          val frequency = obj.frequency.toJson
 
@@ -448,7 +594,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
-            case g => Right(g.convertTo[Generator])
+            case g => Right(GeneratorFormat.read(g))
          }
          val frequency = fields("frequency").convertTo[Duration]
 
@@ -461,7 +607,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: Configuration) =
       {
          new JsObject(Map(
-            "generators" -> obj.generators.toJson,
+            "generators" -> obj.generators.map(g => g.map(GeneratorFormat.write(_))).toJson,
             "series" -> obj.series.toJson,
             "from" -> obj.from.toJson,
             "to" -> obj.to.toJson
@@ -472,9 +618,14 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val generators = fields.get("generators").map(_.convertTo[Seq[Generator]])
+         val generators = fields.get("generators").map(gens => gens match {
+            case JsArray(l) => l.map(GeneratorFormat.read(_))
+            case _ => throw new ClassCastException
+         })
+
          val series = fields("series") match {
-            case JsArray(x) => x.map(_.convertTo[Series]).toSeq
+            case JsArray(x) => x.map(_.convertTo[Series[Any]]).toSeq
+            case _ => throw new ClassCastException
          }
 
          val from = fields("from").convertTo[LocalDateTime]
@@ -503,11 +654,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    implicit val partialFormat = lazyFormat(PartialFormat)
 }
 
-object GeneratorFormat extends JsonFormat[Generator]
+object GeneratorFormat extends JsonFormat[Generator[Any]]
 {
    import GeneratorLeafFormat._
 
-   def deserializationError(s: String): Generator =
+   def deserializationError(s: String): Generator[Any] =
    {
       println(s)
       InvalidGenerator(s)
@@ -519,7 +670,7 @@ object GeneratorFormat extends JsonFormat[Generator]
       JsString(s)
    }
 
-   override def read(json: JsValue): Generator = json match {
+   override def read(json: JsValue): Generator[Any] = json match {
       case known:JsObject if known.fields.contains("type") =>
          known.fields.get("type").get match{
             case JsString("arma") => armaFormat.read(known)
@@ -539,8 +690,7 @@ object GeneratorFormat extends JsonFormat[Generator]
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
    }
 
-
-   override def write(obj: Generator): JsValue = obj match {
+   override def write(obj: Generator[Any]): JsValue = obj match {
       case x: ARMAGenerator => armaFormat.write(x)
       case x: DailyGenerator => dailyFormat.write(x)
       case x: WeeklyGenerator => weeklyFormat.write(x)

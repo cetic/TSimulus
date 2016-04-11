@@ -1,6 +1,5 @@
-package be.cetic.tsgen.test
+package be.cetic.tsgen
 
-import be.cetic.tsgen.TimeSeries
 import org.joda.time.LocalDateTime
 
 import scala.util.Random
@@ -21,13 +20,10 @@ case class CorrelatedTimeSeries(base: TimeSeries[Double],
 {
    val rho_square = rho*rho
 
-   /**
-     * @param times a series of time for which values must be computed.
-     * @return the values associated to the specified times.
-     */
-   override def compute(times: Stream[LocalDateTime]): Stream[Double] =
+   override def compute(times: Stream[LocalDateTime]) =
    {
       val r = new Random(seed)
-      base.compute(times).map(x => (rho * x) + (math.sqrt(1 - rho_square) * r.nextGaussian))
+      base.compute(times)
+          .map {case(t,v) => (t, v.map(a => (rho * a) + (math.sqrt(1 - rho_square) * r.nextGaussian)))}
    }
 }

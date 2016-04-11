@@ -6,5 +6,5 @@ import org.joda.time.LocalDateTime
   */
 case class ConstantTimeSeries(value: Double) extends IndependantTimeSeries[Double]
 {
-   override def compute(time: LocalDateTime): Double = value
+   override def compute(time: LocalDateTime) = Some(value)
 }

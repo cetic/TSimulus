@@ -92,22 +92,6 @@ object Main
          new LocalTime(17, 0, 0) -> 13,
          new LocalTime(21, 0, 0) -> 3))
 
-      val filter = TimeSeriesFilter(
-         gen,
-         Some(new LocalDateTime(2015, 1, 1, 0, 0, 0)),
-         Some(new LocalDateTime(2017, 1, 1, 0, 0, 0)),
-         60 seconds,
-         120 seconds)
 
-      val generators = Seq(daily, RelativeTimeSeries(daily, {v: Double => math.sin(v) + 2}))
-
-      val values = generators.map(g => g.compute(times))
-
-      val displayValues = values.map(s => s.map(_.toString))
-                                .reduce((a,b) => (a zip b).map(e => e._1 + ";" + e._2))
-
-
-
-      (times zip displayValues).foreach(e => println(dtf.print(e._1) + ";" + e._2))
    }
 }

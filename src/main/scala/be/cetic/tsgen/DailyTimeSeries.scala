@@ -27,5 +27,5 @@ case class DailyTimeSeries(val controlPoints : Map[LocalTime, Double]) extends I
       new AkimaSplineInterpolator().interpolate(times, values)
    }
 
-   def compute(time: LocalDateTime): Double = interpolator.value(time.getMillisOfDay)
+   def compute(time: LocalDateTime) = Some(interpolator.value(time.getMillisOfDay))
 }
