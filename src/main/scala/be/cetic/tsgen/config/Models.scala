@@ -41,11 +41,16 @@ case class Configuration(generators: Option[Seq[Generator[Any]]],
      * @return the final time series associated to the configuration files.
      *         A name is associated to each time series.
      */
-   def timeSeries: Map[String, TimeSeries[Any]] =
+   def timeSeries: Map[String, (TimeSeries[Any], Duration)] =
    {
-      println(firstOrderGenerators)
+      val memory = firstOrderGenerators
 
-      Map()
+      series.map(s => {
+         val duration = s.frequency
+         val generator = Model.generator(memory)(s.generator)
+
+         s.name -> (generator.timeseries(memory), duration)
+      }).toMap
    }
 
    private def firstOrderGenerators: Map[String, Generator[Any]] =
@@ -65,7 +70,7 @@ case class Configuration(generators: Option[Seq[Generator[Any]]],
    }
 }
 
-case class Series[T](generator: Either[String, Generator[Any]], frequency: Duration)
+case class Series[T](name: String, generator: Either[String, Generator[Any]], frequency: Duration)
 
 class ARMAGenerator(name: Option[String],
                          val model: ARMAModel,
@@ -910,6 +915,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val frequency = obj.frequency.toJson
 
          new JsObject(Map(
+            "name" -> obj.name.toJson,
             "generator" -> generator,
             "frequency" -> frequency
          ))
@@ -925,7 +931,9 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
          val frequency = fields("frequency").convertTo[Duration]
 
-         Series(generator, frequency)
+         val name = fields("name").convertTo[String]
+
+         Series(name, generator, frequency)
       }
    }
 
