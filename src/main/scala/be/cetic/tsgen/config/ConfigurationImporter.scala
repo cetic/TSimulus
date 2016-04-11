@@ -39,8 +39,5 @@ object ConfigurationImporter
          """.stripMargin.parseJson
 
 
-      println(document.convertTo[DailyGenerator])
-      println("---")
-      println(document.convertTo[DailyGenerator].toJson)
    }
 }
