@@ -109,6 +109,12 @@ object Main
            |         ]
            |      },
            |      {
+           |         "name": "noise-generator",
+           |         "type": "arma",
+           |         "model": { "std": 0.75, "c": 0, "seed": 159357},
+           |         "timestep": 3600000
+           |      },
+           |      {
            |         "name":  "partial-daily",
            |         "type": "partial",
            |         "generator": "daily-generator",
@@ -119,6 +125,14 @@ object Main
            |         "type": "limited",
            |         "generator": "daily-generator",
            |         "from": "2016-01-01 10:00:00.000"
+           |      },
+           |      {
+           |         "name":  "transition-daily-noise",
+           |         "type": "transition",
+           |         "first": "daily-generator",
+           |         "second": "noise-generator",
+           |         "time": "2016-01-01 10:00:00.000",
+           |         "transition": 7200000
            |      },
            |      {
            |         "name":  "logistic-daily",
@@ -136,7 +150,12 @@ object Main
            |      },
            |      {
            |         "name": "series-B",
-           |         "generator": "limited-daily",
+           |         "generator": "noise-generator",
+           |         "frequency": 300000
+           |      },
+           |      {
+           |         "name": "series-C",
+           |         "generator": "transition-daily-noise",
            |         "frequency": 300000
            |      }
            |   ],

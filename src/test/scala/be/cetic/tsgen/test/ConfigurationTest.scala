@@ -112,31 +112,14 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
-   val transitionModelSource =
-      """
-        |{
-        |   "generator" : "corr-generator",
-        |   "start" : "2016-06-07 03:45:00.000",
-        |   "delay" : 3600000
-        |}
-      """.stripMargin
-
    val transitionSource =
       """
         |{
-        |   "name": "transition-generator",
+        |   "name" : "transition-generator",
+        |   "first" : "first-generator",
+        |   "second" : "second-generator",
         |   "type": "transition",
-        |   "origin": "daily-generator",
-        |   "transitions": [ {
-        |         "generator" : "corr-generator",
-        |         "start" : "2016-06-07 03:45:00.000",
-        |         "delay" : 3600000
-        |   },
-        |   {
-        |      "generator" : "daily-generator",
-        |      "start" : "2016-07-01 01:23:45.000",
-        |      "delay" : 1500000
-        |   }]
+        |   "time" : "2016-06-07 03:45:00.000"
         |}
       """.stripMargin
 
@@ -484,47 +467,25 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator shouldBe generator.toJson.convertTo[LogisticGenerator]
    }
 
-   "A transition model" should "be correctly read from a json document" in {
-      val document = transitionModelSource.parseJson
-
-      val transition = document.convertTo[Transition]
-
-      transition.generator shouldBe Left("corr-generator")
-      transition.start shouldBe new LocalDateTime(2016, 6, 7, 3, 45, 0)
-      transition.delay shouldBe new Some(new Duration(3600000))
-   }
-
-   it should "be correctly exported to a json document" in {
-      val transition = Transition(
-         Left("corr-generator"),
-         new LocalDateTime(2016, 6, 7, 3, 45, 0),
-         Some(new Duration(3600000))
-      )
-      transition shouldBe transition.toJson.convertTo[Transition]
-   }
-
-
    "A transition generator" should "be correctly read from a json document" in {
       val document = transitionSource.parseJson
 
       val generator = document.convertTo[TransitionGenerator]
 
       generator.name shouldBe Some("transition-generator")
-      generator.origin shouldBe Left("daily-generator")
-      generator.transitions shouldBe Seq(
-         Transition(Left("corr-generator"), new LocalDateTime(2016, 6, 7, 3, 45, 0), Some(new Duration(3600000))),
-         Transition(Left("daily-generator"), new LocalDateTime(2016, 7, 1, 1, 23, 45), Some(new Duration(1500000)))
-      )
+      generator.first shouldBe Left("first-generator")
+      generator.second shouldBe Left("second-generator")
+      generator.time shouldBe new LocalDateTime(2016, 6, 7, 3, 45, 0)
+      generator.transition shouldBe None
    }
 
    it should "be correctly exported to a json document" in {
       val generator = new TransitionGenerator(
          Some("transition-generator"),
-         Left("daily-generator"),
-         Seq(
-            Transition(Left("corr-generator"), new LocalDateTime(2016, 6, 7, 3, 45, 0), Some(new Duration(3600000))),
-            Transition(Left("daily-generator"), new LocalDateTime(2016, 7, 1, 1, 23, 45), Some(new Duration(1500000)))
-         )
+         Left("first-generator"),
+         Left("second-generator"),
+         new LocalDateTime(2016, 6, 7, 3, 45, 0),
+         None
       )
       generator shouldBe generator.toJson.convertTo[TransitionGenerator]
    }
