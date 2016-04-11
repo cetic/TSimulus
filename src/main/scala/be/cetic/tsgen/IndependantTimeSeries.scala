@@ -11,7 +11,7 @@ trait IndependantTimeSeries[T] extends TimeSeries[T]
      * @param time A point in the time series
      * @return the value associated to the given time in the time series.
      */
-   def compute(time: LocalDateTime): T
+   def compute(time: LocalDateTime): Option[T]
 
-   def compute(times: Stream[LocalDateTime]): Stream[T] = times.map(compute)
+   def compute(times: Stream[LocalDateTime]) = times.map(t => (t, compute(t)))
 }

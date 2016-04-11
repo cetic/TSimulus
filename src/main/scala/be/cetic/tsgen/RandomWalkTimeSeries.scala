@@ -14,7 +14,7 @@ import com.github.nscala_time.time.Imports._
   */
 case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeries[Double]
 {
-   override def compute(times: Stream[LocalDateTime]): Stream[Double] =
+   override def compute(times: Stream[LocalDateTime]) =
    {
       val deltaT = timeStep.getMillis.toDouble
 
@@ -24,7 +24,7 @@ case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeri
       val data = timeInterval zip valueInterval
 
       def process(times: Stream[LocalDateTime],
-                  data: Stream[((LocalDateTime, LocalDateTime) , (Double, Double))]) : Stream[Double] = times match {
+                  data: Stream[((LocalDateTime, LocalDateTime) , (Double, Double))]) : Stream[(LocalDateTime, Some[Double])] = times match {
          case Stream.Empty => Stream.empty
          case time #:: timeRest =>
          {
@@ -44,19 +44,14 @@ case class RandomWalkTimeSeries(arma: ARMA, timeStep: Duration) extends TimeSeri
 
             val value = vStart + (vEnd - vStart) * timeRatio
 
-            value #:: process(timeRest, dataRest)
+            (time, Some(value)) #:: process(timeRest, dataRest)
          }
       }
 
       process(times, data)
    }
 
-   /**
-     * Generate a stream of the datetimes at which a random value is generated
-     * @param time
-     * @return
-     */
-   private def computeTimes(time: LocalDateTime) :Stream[LocalDateTime] = time #:: computeTimes(time + timeStep)
+   private def computeTimes(time: LocalDateTime): Stream[LocalDateTime] = time #:: computeTimes(time + timeStep)
 
    private def intervals[T](xs: Stream[T]) = xs zip xs.tail
 }

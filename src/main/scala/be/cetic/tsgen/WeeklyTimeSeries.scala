@@ -42,12 +42,7 @@ case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       new AkimaSplineInterpolator().interpolate(dates, values)
    }
 
-   /**
-     * Determines the value associated to a date time
-     * @param time the moment for which a value must be provided
-     * @return the value associated to time.
-     */
-   def compute(time: LocalDateTime): Double =
+   def compute(time: LocalDateTime): Option[Double] =
    {
 
       val current_day = time.toLocalDate
@@ -62,6 +57,6 @@ case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
 
       val ratio = current_duration.getSeconds.toDouble / max_duration.getSeconds
 
-      return interpolator.value((active_day.getDayOfWeek - 1) + ratio)
+      return Some(interpolator.value((active_day.getDayOfWeek - 1) + ratio))
    }
 }

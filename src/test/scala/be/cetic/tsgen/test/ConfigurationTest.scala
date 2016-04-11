@@ -75,8 +75,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |   "name": "function-generator",
         |   "type": "function",
         |   "generator": { "type" : "constant", "value" : 42 },
-        |   "coef": 1.4,
-        |   "offset" : 9.2
+        |   "slope": 1.4,
+        |   "intercept" : 9.2
         |}
       """.stripMargin
 
@@ -216,6 +216,51 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val completeSource =
+      """
+        |{
+        |   "generators" : [
+        |      {
+        |         "name": "daily-generator",
+        |         "type": "daily",
+        |         "points": {"10:00:00.000": 4, "17:00:00.000": 32}
+        |      },
+        |      {
+        |         "name": "noisy-daily",
+        |         "type": "aggregate",
+        |         "aggregator" : "sum",
+        |         "generators": [
+        |            "daily-generator",
+        |            {
+        |                "type": "arma",
+        |                "model": { "phi": [0.5], "std": 0.25, "c" : 0, "seed": 159357},
+        |                "timestep": 180000
+        |            }
+        |         ]
+        |      },
+        |      {
+        |         "name":  "partial-daily",
+        |         "type": "partial",
+        |         "generator" : "daily-generator",
+        |         "from": "2016-01-01 00:00:00.000",
+        |         "to": "2017-01-01 00:00:00.000"
+        |      }
+        |   ],
+        |   "series" : [
+        |      {
+        |         "generator": "daily-generator",
+        |         "frequency": 60000
+        |      },
+        |      {
+        |         "generator": "noisy-daily",
+        |         "frequency": 30000
+        |      }
+        |   ],
+        |   "from" : "2016-01-01 00:00:00.000",
+        |   "to" : "2016-10-01 00:00:00.000"
+        |}
+      """.stripMargin
+
 
 
    "An ARMA generator" should "be correctly read from a json document" in {
@@ -342,8 +387,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
 
       generator.name shouldBe Some("function-generator")
       generator.`type` shouldBe "function"
-      generator.coef shouldBe 1.4
-      generator.offset shouldBe 9.2
+      generator.slope shouldBe 1.4
+      generator.intercept shouldBe 9.2
       generator.generator shouldBe Right(ConstantGenerator(None, "constant", 42))
    }
 
@@ -513,18 +558,18 @@ class ConfigurationTest extends FlatSpec with Matchers {
    "A series" should "be correctly read from a json document" in {
       val document = seriesSource.parseJson
 
-      val series = document.convertTo[Series]
+      val series = document.convertTo[Series[Any]]
 
       series.generator shouldBe Left("daily-generator")
       series.frequency shouldBe new Duration(60000)
    }
 
    it should "be correctly exported to a json document" in {
-      val series = Series(
+      val series = Series[Any](
          Left("daily-generator"),
          new Duration(60000)
       )
-      series shouldBe series.toJson.convertTo[Series]
+      series shouldBe SeriesFormat.read(SeriesFormat.write(series))
    }
 
    "A configuration" should "be correctly read from a json document" in {
@@ -578,5 +623,12 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
       )
       generator shouldBe generator.toJson.convertTo[PartialGenerator]
+   }
+
+   "A complete configuration" should "be correctly read from a json document" in {
+      val document = completeSource.parseJson
+
+      println(document)
+
    }
 }

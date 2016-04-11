@@ -41,7 +41,7 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
       new AkimaSplineInterpolator().interpolate(dates, values)
    }
 
-   def compute(time: LocalDateTime): Double = {
+   def compute(time: LocalDateTime): Option[Double] = {
 
 
       val current_year_month = new YearMonth(time.getYear, time.getMonthOfYear)
@@ -56,6 +56,6 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
 
       val ratio = current_duration.getSeconds.toDouble / max_duration.getSeconds
 
-      return interpolator.value((active_year_month.getMonthOfYear - 1) + ratio)
+      return Some(interpolator.value((active_year_month.getMonthOfYear - 1) + ratio))
    }
 }
