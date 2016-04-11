@@ -1,4 +1,4 @@
-package be.cetic.tsgen
+package be.cetic.tsgen.timeseries
 
 import scala.util.Random
 

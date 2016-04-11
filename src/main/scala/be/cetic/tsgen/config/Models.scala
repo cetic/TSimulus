@@ -1,6 +1,7 @@
 package be.cetic.tsgen.config
 
 import be.cetic.tsgen._
+import be.cetic.tsgen.timeseries._
 import com.github.nscala_time.time.Imports._
 import org.joda.time.{DateTimeConstants, LocalDateTime, LocalTime}
 import spray.json._
