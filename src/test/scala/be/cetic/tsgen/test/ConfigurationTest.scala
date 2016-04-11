@@ -147,8 +147,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |   "type": "limited",
         |   "generator": "daily-generator",
         |   "from": "2016-04-06 00:00:00.000",
-        |   "to": "2016-04-23 00:00:00.000",
-        |   "missing-rate" : 0.001
+        |   "to": "2016-04-23 00:00:00.000"
         |}
       """.stripMargin
 
@@ -159,7 +158,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |   "type" : "partial",
         |   "generator": "daily-generator",
         |   "from": "2016-04-06 00:00:00.000",
-        |   "to": "2016-04-23 00:00:00.000"
+        |   "to": "2016-04-23 00:00:00.000",
+        |   "missing-rate" : 0.001
         |}
       """.stripMargin
 
@@ -199,7 +199,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |         "type": "partial",
         |         "generator": "daily-generator",
         |         "from": "2016-01-01 00:00:00.000",
-        |         "to": "2017-01-01 00:00:00.000"
+        |         "to": "2017-01-01 00:00:00.000",
+        |         "missing-rate": 0.01
         |      }
         |   ],
         |   "series": [
@@ -538,7 +539,6 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator.generator shouldBe Left("daily-generator")
       generator.from shouldBe Some(new LocalDateTime(2016, 4, 6, 0, 0, 0))
       generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
-      generator.missingRate shouldBe Some(0.001)
    }
 
    it should "be correctly exported to a json document" in {
@@ -546,8 +546,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Some("limited-generator"),
          Left("daily-generator"),
          Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
-         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
-         Some(0.001)
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
       )
       generator shouldBe generator.toJson.convertTo[LimitedGenerator]
    }
@@ -561,6 +560,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator.generator shouldBe Left("daily-generator")
       generator.from shouldBe Some(new LocalDateTime(2016, 4, 6, 0, 0, 0))
       generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+      generator.missingRate shouldBe Some(0.001)
    }
 
    it should "be correctly exported to a json document" in {
@@ -568,7 +568,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Some("partial-generator"),
          Left("daily-generator"),
          Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
-         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
+         Some(0.2)
       )
       generator shouldBe generator.toJson.convertTo[PartialGenerator]
    }
@@ -620,7 +621,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
             Some("partial-daily"),
             Left("daily-generator"),
             Some(new LocalDateTime(2016, 1, 1, 0, 0, 0)),
-            Some(new LocalDateTime(2017, 1, 1, 0, 0, 0))
+            Some(new LocalDateTime(2017, 1, 1, 0, 0, 0)),
+            Some(0.01)
          )
       ))
 
@@ -639,7 +641,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Some("partial-generator"),
          Left("daily-generator"),
          Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
-         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
+         Some(0.001)
       )
       generator shouldBe generator.toJson.convertTo[PartialGenerator]
    }

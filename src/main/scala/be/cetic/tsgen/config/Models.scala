@@ -324,19 +324,17 @@ case class Transition(generator: Either[String, Generator[Any]], start: LocalDat
 class LimitedGenerator(name: Option[String],
                        val generator: Either[String, Generator[Any]],
                        val from: Option[LocalDateTime],
-                       val to: Option[LocalDateTime],
-                       val missingRate: Option[Double]) extends Generator(name, "limited")
+                       val to: Option[LocalDateTime]) extends Generator(name, "limited")
 {
    override def timeseries(generators: (String) => Generator[Any]) = ???
 
-   override def toString() = "LimitedGenerator(" + name + "," + generator + "," + from + "," + to + "," + missingRate + ")"
+   override def toString() = "LimitedGenerator(" + name + "," + generator + "," + from + "," + to + ")"
 
    override def equals(o: Any) = o match {
       case that: LimitedGenerator => that.name == this.name &&
          that.generator == this.generator &&
          that.from == this.from &&
-         that.to == this.to &&
-         that.missingRate == this.missingRate
+         that.to == this.to
       case _ => false
    }
 }
@@ -344,17 +342,23 @@ class LimitedGenerator(name: Option[String],
 class PartialGenerator(name: Option[String],
                        val generator: Either[String, Generator[Any]],
                        val from: Option[LocalDateTime],
-                       val to: Option[LocalDateTime]) extends Generator(name, "partial")
+                       val to: Option[LocalDateTime],
+                       val missingRate: Option[Double]) extends Generator[Any](name, "partial")
 {
-   override def timeseries(generators: (String) => Generator[Any]) = ???
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      val ts = Model.generator(generators)(generator).timeseries(generators)
+      PartialTimeSeries(ts, from, to, missingRate)
+   }
 
-   override def toString() = "PartialGenerator(" + name + "," + generator + "," + from + "," + to
+   override def toString() = "PartialGenerator(" + name + "," + generator + "," + from + "," + to + "," + missingRate + ")"
 
    override def equals(o: Any) = o match {
       case that: PartialGenerator => that.name == this.name &&
          that.generator == this.generator &&
          that.from == this.from &&
-         that.to == this.to
+         that.to == this.to &&
+         that.missingRate == this.missingRate
       case _ => false
    }
 }
@@ -827,52 +831,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }).toJson
          val from = obj.from.toJson
          val to = obj.to.toJson
-         val missingRate = obj.missingRate.toJson
-
-         val t = Map(
-            "type" -> obj.`type`.toJson,
-            "generator" -> generator,
-            "from" -> from,
-            "to" -> to,
-            "missing-rate" -> missingRate
-         )
-
-         new JsObject(
-            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
-         )
-      }
-
-      def read(value: JsValue) =
-      {
-         val fields = value.asJsObject.fields
-
-         val name = fields.get("name") .map(f => f match {
-            case JsString(x) => x
-         })
-
-         val generator = fields("generator") match {
-            case JsString(s) => Left(s)
-            case g => Right(GeneratorFormat.read(g))
-         }
-         val from = fields.get("from").map(_.convertTo[LocalDateTime])
-         val to = fields.get("to").map(_.convertTo[LocalDateTime])
-         val missingRate = fields.get("missing-rate").map(_.convertTo[Double])
-
-         new LimitedGenerator(name, generator, from, to, missingRate)
-      }
-   }
-
-   object PartialFormat extends RootJsonFormat[PartialGenerator]
-   {
-      def write(obj: PartialGenerator) =
-      {
-         val name = obj.name.toJson
-         val generator = (obj.generator match {
-            case Left(s) => s.toJson
-            case Right(g) => GeneratorFormat.write(g)
-         }).toJson
-         val from = obj.from.toJson
-         val to = obj.to.toJson
 
          val t = Map(
             "type" -> obj.`type`.toJson,
@@ -900,8 +858,56 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
          val from = fields.get("from").map(_.convertTo[LocalDateTime])
          val to = fields.get("to").map(_.convertTo[LocalDateTime])
+         val missingRate = fields.get("missing-rate").map(_.convertTo[Double])
 
-         new PartialGenerator(name, generator, from, to)
+         new LimitedGenerator(name, generator, from, to)
+      }
+   }
+
+   object PartialFormat extends RootJsonFormat[PartialGenerator]
+   {
+      def write(obj: PartialGenerator) =
+      {
+         val name = obj.name
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         }).toJson
+         val from = obj.from.toJson
+         val to = obj.to.toJson
+         val missingRate = obj.missingRate
+
+
+         var t = Map(
+            "type" -> obj.`type`.toJson,
+            "generator" -> generator,
+            "from" -> from,
+            "to" -> to
+         )
+
+         if(missingRate.isDefined) t = t.updated("missing-rate" , missingRate.toJson)
+         if(name.isDefined) t = t.updated("name", name.toJson)
+
+         new JsObject(t)
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+         val from = fields.get("from").map(_.convertTo[LocalDateTime])
+         val to = fields.get("to").map(_.convertTo[LocalDateTime])
+         val missingRate = fields.get("missing-rate").map(_.convertTo[Double])
+
+         new PartialGenerator(name, generator, from, to, missingRate)
       }
    }
 

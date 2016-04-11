@@ -112,8 +112,7 @@ object Main
            |         "name":  "partial-daily",
            |         "type": "partial",
            |         "generator": "daily-generator",
-           |         "from": "2016-01-01 00:00:00.000",
-           |         "to": "2017-01-01 00:00:00.000"
+           |         "missing-rate": 0.8
            |      },
            |      {
            |         "name":  "logistic-daily",
@@ -131,7 +130,7 @@ object Main
            |      },
            |      {
            |         "name": "series-B",
-           |         "generator": "noisy-daily",
+           |         "generator": "partial-daily",
            |         "frequency": 300000
            |      }
            |   ],
