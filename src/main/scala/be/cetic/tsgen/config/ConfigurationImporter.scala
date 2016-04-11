@@ -5,11 +5,13 @@ import java.io.File
 import com.github.nscala_time.time.Imports._
 import spray.json._
 import DefaultJsonProtocol._
+import be.cetic.tsgen.Main
 
 import scala.io.Source
-
-
 import be.cetic.tsgen.config.GeneratorLeafFormat._
+
+import scala.annotation.tailrec
+import scala.util.Random
 
 /**
   * An importer of a configuration from a JSON document.
@@ -32,7 +34,7 @@ object ConfigurationImporter
            |      {
            |         "name": "daily-generator",
            |         "type": "daily",
-           |         "points": {"10:00:00.000": 4, "17:00:00.000": 32, "20:00:00.000": 27}
+           |         "points": {"10:00:00.000": 12, "17:00:00.000": 15, "20:00:00.000": 12}
            |      },
            |      {
            |         "name": "noisy-daily",
@@ -42,8 +44,8 @@ object ConfigurationImporter
            |            "daily-generator",
            |            {
            |                "type": "arma",
-           |                "model": { "phi": [0.5], "std": 0.25, "c": 0, "seed": 159357},
-           |                "timestep": 180000
+           |                "model": { "std": 0.1, "c": 0, "seed": 159357},
+           |                "timestep": 3600000
            |            }
            |         ]
            |      },
@@ -59,24 +61,18 @@ object ConfigurationImporter
            |      {
            |         "name": "series-A",
            |         "generator": "daily-generator",
-           |         "frequency": 60000
+           |         "frequency": 300000
            |      },
            |      {
            |         "name": "series-B",
            |         "generator": "noisy-daily",
-           |         "frequency": 30000
+           |         "frequency": 300000
            |      }
            |   ],
            |   "from": "2016-01-01 00:00:00.000",
-           |   "to": "2016-10-01 00:00:00.000"
+           |   "to": "2016-01-07 00:00:00.000"
            |}
          """.stripMargin.parseJson
-
-      val config = document.convertTo[Configuration]
-
-      println(config.timeSeries)
-
-
 
 
    }

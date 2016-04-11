@@ -286,9 +286,9 @@ class LogisticGenerator(name: Option[String],
 
    override def timeseries(generators: (String) => Generator[Any]) =
    {
-      Model.generator(generators)(generator) match {
+      Model.generator(generators)(generator).timeseries(generators) match {
          case dTS: TimeSeries[Double] => LogisticTimeSeries(dTS, location, scale, seed.getOrElse(Random.nextInt()))
-         case _ => throw new ClassCastException
+         case other => throw new ClassCastException(other.toString)
       }
    }
 
