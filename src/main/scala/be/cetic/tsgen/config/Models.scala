@@ -306,15 +306,38 @@ class LogisticGenerator(name: Option[String],
 }
 
 class TransitionGenerator(name: Option[String],
-                          val origin: Either[String, Generator[Any]],
-                          val transitions: Seq[Transition]) extends Generator(name, "transition")
+                          val first: Either[String, Generator[Any]],
+                          val second: Either[String, Generator[Any]],
+                          val time: LocalDateTime,
+                          val transition: Option[Duration]) extends Generator[Double](name, "transition")
 {
-   override def timeseries(generators: (String) => Generator[Any]) = ???
+   override def timeseries(generators: (String) => Generator[Any]) = {
 
-   override def toString() = "TransitionGenerator(" + name + "," + origin + "," + transitions + ")"
+      val f = (a: Double, b: Double, ratio: Double) => a*ratio + (1-ratio)*b
+
+      val firstBase = Model.generator(generators)(first).timeseries(generators) match {
+         case t: TimeSeries[Double] => t
+      }
+
+      val secondBase = Model.generator(generators)(second).timeseries(generators) match {
+         case t: TimeSeries[Double] => t
+      }
+
+      val t = transition.map(x =>  {
+         (x, f)
+      })
+
+      TransitionTimeSeries[Double](firstBase, secondBase, time, t)
+   }
+
+   override def toString() = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + transition
 
    override def equals(o: Any) = o match {
-      case that: TransitionGenerator => that.name == this.name && that.origin == this.origin && that.transitions == this.transitions
+      case that: TransitionGenerator => that.name == this.name &&
+         that.first == this.first &&
+         that.second == this.second &&
+         that.time == this.time &&
+         that.transition == this.transition
       case _ => false
    }
 }
@@ -786,21 +809,31 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: TransitionGenerator) =
       {
-         val origin = (obj.origin match {
+         val first = (obj.first match {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
          }).toJson
-         val transitions = obj.transitions.toJson
+         val second = (obj.second match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         }).toJson
 
-         val t = Map(
+         val time = obj.time.toJson
+
+         var t = Map(
             "type" -> obj.`type`.toJson,
-            "origin" -> origin,
-            "transitions" -> transitions
+            "first" -> first,
+            "second" -> second,
+            "time" -> time
          )
 
-         new JsObject(
-            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
-         )
+         if(obj.transition.isDefined)
+            t = t.updated("transition" , obj.transition.get.toJson)
+
+         if(obj.name.isDefined)
+            t = t.updated("name" , obj.name.get.toJson)
+
+         new JsObject(t)
       }
 
       def read(value: JsValue) =
@@ -811,13 +844,20 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             case JsString(x) => x
          })
 
-         val origin = fields("origin") match {
+         val first = fields("first") match {
             case JsString(s) => Left(s)
             case g => Right(GeneratorFormat.read(g))
          }
-         val transitions = fields("transitions").convertTo[Seq[Transition]]
+         val second = fields("second") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
 
-         new TransitionGenerator(name, origin, transitions)
+         val time = fields("time").convertTo[LocalDateTime]
+
+         val transition = fields.get("transition").map(_.convertTo[Duration])
+
+         new TransitionGenerator(name, first, second, time, transition)
       }
    }
 
