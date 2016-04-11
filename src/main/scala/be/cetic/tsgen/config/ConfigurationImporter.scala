@@ -28,15 +28,55 @@ object ConfigurationImporter
       val document =
          """
            |{
-           |    "name": "daily-generator",
-           |    "type": "daily",
-           |    "points": {
-           |      "11:00:00.000" : 6,
-           |      "17:00:00.000" : 8,
-           |      "07:00:00.000": 2
+           |   "generators": [
+           |      {
+           |         "name": "daily-generator",
+           |         "type": "daily",
+           |         "points": {"10:00:00.000": 4, "17:00:00.000": 32}
+           |      },
+           |      {
+           |         "name": "noisy-daily",
+           |         "type": "aggregate",
+           |         "aggregator": "sum",
+           |         "generators": [
+           |            "daily-generator",
+           |            {
+           |                "type": "arma",
+           |                "model": { "phi": [0.5], "std": 0.25, "c": 0, "seed": 159357},
+           |                "timestep": 180000
+           |            }
+           |         ]
+           |      },
+           |      {
+           |         "name":  "partial-daily",
+           |         "type": "partial",
+           |         "generator": "daily-generator",
+           |         "from": "2016-01-01 00:00:00.000",
+           |         "to": "2017-01-01 00:00:00.000"
            |      }
+           |   ],
+           |   "series": [
+           |      {
+           |         "name": "series-A",
+           |         "generator": "daily-generator",
+           |         "frequency": 60000
+           |      },
+           |      {
+           |         "name": "series-B",
+           |         "generator": "noisy-daily",
+           |         "frequency": 30000
+           |      }
+           |   ],
+           |   "from": "2016-01-01 00:00:00.000",
+           |   "to": "2016-10-01 00:00:00.000"
            |}
          """.stripMargin.parseJson
+
+      val config = document.convertTo[Configuration]
+
+      println(config.timeSeries)
+
+
 
 
    }

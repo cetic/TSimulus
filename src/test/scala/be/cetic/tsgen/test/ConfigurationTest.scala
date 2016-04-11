@@ -166,6 +166,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
    val seriesSource =
       """
         |{
+        |   "name": "myName",
         |   "generator": "daily-generator",
         |   "frequency": 60000
         |}
@@ -203,10 +204,12 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |   ],
         |   "series": [
         |      {
+        |         "name": "series-A",
         |         "generator": "daily-generator",
         |         "frequency": 60000
         |      },
         |      {
+        |         "name": "series-B",
         |         "generator": "noisy-daily",
         |         "frequency": 30000
         |      }
@@ -248,10 +251,12 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |   ],
         |   "series" : [
         |      {
+        |         "name": "series-A",
         |         "generator": "daily-generator",
         |         "frequency": 60000
         |      },
         |      {
+        |         "name": "series-B",
         |         "generator": "noisy-daily",
         |         "frequency": 30000
         |      }
@@ -573,12 +578,14 @@ class ConfigurationTest extends FlatSpec with Matchers {
 
       val series = document.convertTo[Series[Any]]
 
+      series.name shouldBe "myName"
       series.generator shouldBe Left("daily-generator")
       series.frequency shouldBe new Duration(60000)
    }
 
    it should "be correctly exported to a json document" in {
       val series = Series[Any](
+         "myName",
          Left("daily-generator"),
          new Duration(60000)
       )
@@ -619,8 +626,8 @@ class ConfigurationTest extends FlatSpec with Matchers {
 
 
       configuration.series shouldBe Seq(
-         Series(Left("daily-generator"), new Duration(60000)),
-         Series(Left("noisy-daily"), new Duration(30000))
+         Series("series-A", Left("daily-generator"), new Duration(60000)),
+         Series("series-B", Left("noisy-daily"), new Duration(30000))
       )
 
       configuration.from shouldBe new LocalDateTime(2016, 1, 1, 0, 0, 0)
