@@ -32,7 +32,7 @@ object ConfigurationImporter
            |      {
            |         "name": "daily-generator",
            |         "type": "daily",
-           |         "points": {"10:00:00.000": 4, "17:00:00.000": 32}
+           |         "points": {"10:00:00.000": 4, "17:00:00.000": 32, "20:00:00.000": 27}
            |      },
            |      {
            |         "name": "noisy-daily",
