@@ -324,9 +324,10 @@ case class Transition(generator: Either[String, Generator[Any]], start: LocalDat
 class LimitedGenerator(name: Option[String],
                        val generator: Either[String, Generator[Any]],
                        val from: Option[LocalDateTime],
-                       val to: Option[LocalDateTime]) extends Generator(name, "limited")
+                       val to: Option[LocalDateTime]) extends Generator[Any](name, "limited")
 {
-   override def timeseries(generators: (String) => Generator[Any]) = ???
+   override def timeseries(generators: (String) => Generator[Any]) =
+      LimitedTimeSeries(Model.generator(generators)(generator).timeseries(generators), from, to)
 
    override def toString() = "LimitedGenerator(" + name + "," + generator + "," + from + "," + to + ")"
 
