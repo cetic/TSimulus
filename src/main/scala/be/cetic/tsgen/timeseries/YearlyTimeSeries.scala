@@ -1,7 +1,7 @@
-package be.cetic.tsgen
+package be.cetic.tsgen.timeseries
 
-import org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
 import com.github.nscala_time.time.Imports._
+import org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
 import org.joda.time.Seconds
 
 /**

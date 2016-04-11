@@ -1,7 +1,7 @@
-package be.cetic.tsgen
+package be.cetic.tsgen.timeseries
 
-import org.joda.time.{DateTimeZone, Duration, LocalDateTime}
 import com.github.nscala_time.time.Imports._
+import org.joda.time.{DateTimeZone, Duration, LocalDateTime}
 
 /**
   * A time series based on an ARMA model.

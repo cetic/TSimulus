@@ -6,6 +6,7 @@ import org.joda.time.DateTimeConstants
 import spray.json._
 import DefaultJsonProtocol._
 import be.cetic.tsgen.config.GeneratorLeafFormat._
+import be.cetic.tsgen.timeseries._
 
 
 object Main
@@ -102,7 +103,7 @@ object Main
            |            "daily-generator",
            |            {
            |                "type": "arma",
-           |                "model": { "std": 0.1, "c": 0, "seed": 159357},
+           |                "model": { "std": 0.5, "c": 0, "seed": 159357},
            |                "timestep": 3600000
            |            }
            |         ]
@@ -130,7 +131,7 @@ object Main
            |      },
            |      {
            |         "name": "series-B",
-           |         "generator": "logistic-daily",
+           |         "generator": "noisy-daily",
            |         "frequency": 300000
            |      }
            |   ],
