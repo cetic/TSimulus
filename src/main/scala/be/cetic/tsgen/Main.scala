@@ -115,6 +115,12 @@ object Main
            |         "missing-rate": 0.8
            |      },
            |      {
+           |         "name":  "limited-daily",
+           |         "type": "limited",
+           |         "generator": "daily-generator",
+           |         "from": "2016-01-01 10:00:00.000"
+           |      },
+           |      {
            |         "name":  "logistic-daily",
            |         "type": "logistic",
            |         "generator": "daily-generator",
@@ -130,7 +136,7 @@ object Main
            |      },
            |      {
            |         "name": "series-B",
-           |         "generator": "partial-daily",
+           |         "generator": "limited-daily",
            |         "frequency": 300000
            |      }
            |   ],
