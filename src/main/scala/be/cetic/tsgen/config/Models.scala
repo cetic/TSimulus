@@ -313,7 +313,7 @@ class TransitionGenerator(name: Option[String],
 {
    override def timeseries(generators: (String) => Generator[Any]) = {
 
-      val f = (a: Double, b: Double, ratio: Double) => a*ratio + (1-ratio)*b
+      val f = (a: Double, b: Double, ratio: Double) => a*(1-ratio) + ratio*b
 
       val firstBase = Model.generator(generators)(first).timeseries(generators) match {
          case t: TimeSeries[Double] => t
@@ -323,9 +323,7 @@ class TransitionGenerator(name: Option[String],
          case t: TimeSeries[Double] => t
       }
 
-      val t = transition.map(x =>  {
-         (x, f)
-      })
+      val t = transition.map(x =>  (x, f))
 
       TransitionTimeSeries[Double](firstBase, secondBase, time, t)
    }
