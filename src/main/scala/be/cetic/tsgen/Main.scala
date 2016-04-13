@@ -48,13 +48,7 @@ object Main
 
       // model.series take 500 foreach (e => println(e.formatted("%2f")))
 
-      val daily = DailyTimeSeries(Map(
-         new LocalTime(2, 0) -> 2D,
-         new LocalTime(14, 0) -> 10D,
-         new LocalTime(17, 0) -> 7D
-      ))
-
-      val monthly = MonthlyTimeSeries(Map(
+     val monthly = MonthlyTimeSeries(Map(
          DateTimeConstants.JANUARY -> -6.3,
          DateTimeConstants.FEBRUARY -> -6.9,
          DateTimeConstants.MARCH -> -2.7,
@@ -93,7 +87,12 @@ object Main
            |      {
            |         "name": "daily-generator",
            |         "type": "daily",
-           |         "points": {"10:00:00.000": 12, "17:00:00.000": 15, "20:00:00.000": 12}
+           |         "points": {"10:00:00.000": 12, "17:00:00.000": 15, "20:00:00.000": 11, "02:00:00.000": 5, "04:00:00.000": 7}
+           |      },
+           |      {
+           |         "name": "weekly-generator",
+           |         "type": "weekly",
+           |         "points": {"monday": 12, "tuesday": 15, "friday": 12, "saturday": 5}
            |      },
            |      {
            |         "name": "noisy-daily",
@@ -127,11 +126,17 @@ object Main
            |         "from": "2016-01-01 10:00:00.000"
            |      },
            |      {
-           |         "name":  "transition-daily-noise",
+           |         "name":  "transition-daily-noise-daily",
            |         "type": "transition",
-           |         "first": "daily-generator",
-           |         "second": "noise-generator",
-           |         "time": "2016-01-01 10:00:00.000",
+           |         "first": {
+           |            "type": "transition",
+           |            "first": "daily-generator",
+           |            "second": "noise-generator",
+           |            "time": "2016-01-01 12:00:00.000",
+           |            "transition": 7200000
+           |         },
+           |         "second": "daily-generator",
+           |         "time": "2016-01-02 12:00:00.000",
            |         "transition": 7200000
            |      },
            |      {
@@ -147,20 +152,10 @@ object Main
            |         "name": "series-A",
            |         "generator": "daily-generator",
            |         "frequency": 300000
-           |      },
-           |      {
-           |         "name": "series-B",
-           |         "generator": "noise-generator",
-           |         "frequency": 300000
-           |      },
-           |      {
-           |         "name": "series-C",
-           |         "generator": "transition-daily-noise",
-           |         "frequency": 300000
            |      }
            |   ],
            |   "from": "2016-01-01 00:00:00.000",
-           |   "to": "2016-01-07 00:00:00.000"
+           |   "to": "2016-01-4 00:00:00.000"
            |}
          """.stripMargin.parseJson
 
