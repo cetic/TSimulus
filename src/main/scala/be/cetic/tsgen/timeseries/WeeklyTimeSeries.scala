@@ -32,12 +32,16 @@ case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val entries = controlPoints.map { case (key, value) => ((key-1).toDouble, value)}.toSeq.sortBy(entry => entry._1)
 
       val tempo_date = entries.map(_._1)
-      val before_date = - (6 - tempo_date.last + 1)
+      val before_date = - (7 - tempo_date.last)
+      val penultimate_date = - (7 - tempo_date.takeRight(2).head)
+
       val after_date = tempo_date.head + 7
-      val dates = (before_date +: tempo_date :+ after_date).toArray
+      val after_after_date = tempo_date(1) + 7
+
+      val dates = (penultimate_date +: before_date +: tempo_date :+ after_date :+ after_after_date).toArray
 
       val tempo_values = entries.map(_._2)
-      val values = (tempo_values.last +: tempo_values :+ tempo_values.head).toArray
+      val values = (tempo_values.takeRight(2).head +: tempo_values.last +: tempo_values :+ tempo_values.head :+ tempo_values(2)).toArray
 
       new AkimaSplineInterpolator().interpolate(dates, values)
    }
