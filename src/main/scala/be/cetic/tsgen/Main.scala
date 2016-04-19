@@ -72,14 +72,6 @@ object Main
          DateTimeConstants.SUNDAY -> 0.5
       ))
 
-      val yearly = YearlyTimeSeries(Map(
-         2017 -> 5,
-         2018 -> 17,
-         2019 -> 21,
-         2020 -> 17,
-         2021 -> 5
-      ))
-
       val document =
          """
            |{
@@ -93,6 +85,11 @@ object Main
            |         "name": "weekly-generator",
            |         "type": "weekly",
            |         "points": {"monday": 12, "tuesday": 15, "friday": 12, "saturday": 5}
+           |      },
+           |      {
+           |         "name": "yearly-generator",
+           |         "type": "yearly",
+           |         "points": {"2016": 12, "2017": 15}
            |      },
            |      {
            |         "name": "noisy-daily",
@@ -133,11 +130,12 @@ object Main
            |            "first": "daily-generator",
            |            "second": "noise-generator",
            |            "time": "2016-01-01 12:00:00.000",
-           |            "transition": 7200000
+           |            "duration": 7200000,
+           |            "transition": "sigmoid"
            |         },
            |         "second": "daily-generator",
            |         "time": "2016-01-02 12:00:00.000",
-           |         "transition": 7200000
+           |         "duration": 7200000
            |      },
            |      {
            |         "name":  "logistic-daily",
@@ -145,17 +143,33 @@ object Main
            |         "generator": "daily-generator",
            |         "location": 13,
            |         "scale": 8
+           |      },
+           |      {
+           |         "name": "transition-0-1-0",
+           |         "type": "transition",
+           |         "first": { "type": "constant", "value":0 },
+           |         "second": {
+           |            "type": "transition",
+           |            "first": {"type": "constant", "value":1 },
+           |            "second": {"type": "constant", "value":0 },
+           |            "time": "2016-01-01 07:30:00.000",
+           |            "duration": 4000000,
+           |            "transition": "sigmoid"
+           |         },
+           |         "time": "2016-01-01 03:30:00.000",
+           |         "duration": 4000000,
+           |         "transition": "sigmoid"
            |      }
            |   ],
            |   "series": [
            |      {
            |         "name": "series-A",
-           |         "generator": "daily-generator",
-           |         "frequency": 300000
+           |         "generator": "transition-0-1-0",
+           |         "frequency": 60000
            |      }
            |   ],
            |   "from": "2016-01-01 00:00:00.000",
-           |   "to": "2016-01-4 00:00:00.000"
+           |   "to": "2016-01-01 10:00:00.000"
            |}
          """.stripMargin.parseJson
 

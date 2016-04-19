@@ -24,7 +24,8 @@ import com.github.nscala_time.time.Imports._
   *                   how values from both base time series are mixed. The two first parameters of this function
   *                   are the values of the first and the second base time series (respectivelly), and the third
   *                   parameter is a value between 0 and 1 expression the status of the transition from the first
-  *                   base time series (0) to the second one (1).
+  *                   base time series (0) to the second one (1). If no transition is specified, the new time series
+  *                   instantaneously prevails.
   */
 case class TransitionTimeSeries[T](first: TimeSeries[T],
                                    second: TimeSeries[T],

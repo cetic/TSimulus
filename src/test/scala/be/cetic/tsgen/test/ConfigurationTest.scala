@@ -476,7 +476,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator.first shouldBe Left("first-generator")
       generator.second shouldBe Left("second-generator")
       generator.time shouldBe new LocalDateTime(2016, 6, 7, 3, 45, 0)
-      generator.transition shouldBe None
+      generator.interval shouldBe None
    }
 
    it should "be correctly exported to a json document" in {
@@ -485,6 +485,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Left("first-generator"),
          Left("second-generator"),
          new LocalDateTime(2016, 6, 7, 3, 45, 0),
+         None,
          None
       )
       generator shouldBe generator.toJson.convertTo[TransitionGenerator]
