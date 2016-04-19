@@ -3,6 +3,7 @@ package be.cetic.tsgen.config
 import be.cetic.tsgen._
 import be.cetic.tsgen.timeseries._
 import com.github.nscala_time.time.Imports._
+import org.apache.commons.math3.stat.StatUtils
 import org.joda.time.{DateTimeConstants, LocalDateTime, LocalTime}
 import spray.json._
 
@@ -229,12 +230,15 @@ class AggregateGenerator(name: Option[String],
 {
    override def timeseries(gen: String => Generator[Any]) =
    {
+      import scala.collection.JavaConversions._
+
       val agg = aggregator match {
          case "sum" => s: Seq[Double] => s.sum
          case "product" => s: Seq[Double] => s.reduce((x,y) => x*y)
          case "min" => s: Seq[Double] => s.min
          case "max" => s: Seq[Double] => s.max
          case "mean" => s: Seq[Double] => s.sum / s.length
+         case "median" => s: Seq[Double] => StatUtils.percentile(s.toArray, 50);
       }
 
       val ts = generators.map(x => x match {
