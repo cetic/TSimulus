@@ -23,6 +23,8 @@ case class LogisticTimeSeries(base: TimeSeries[Double],
                               scale: Double,
                               seed: Int) extends TimeSeries[Boolean]
 {
+
+
    /**
      * @param times a series of time for which values must be computed. Each time must be greater than or equal to
      *              the previous one.
@@ -31,8 +33,8 @@ case class LogisticTimeSeries(base: TimeSeries[Double],
    override def compute(times: Stream[LocalDateTime]) =
    {
       val r = new Random(seed)
+      def logit(x: Double) = 1 / (1 + Math.exp(- ((x - location) / scale)))
 
-      base.compute(times).map { case (t,v) => (t, v.map(a => 1 / (1 + Math.exp(- ((a - location) / scale)))))}
-                         .map { case (t, odds) => (t, odds.map(o => r.nextDouble() < o)) }
+      base.compute(times).map { case (t,v) => (t, v.map(x => r.nextDouble() < logit(x) ))}
    }
 }
