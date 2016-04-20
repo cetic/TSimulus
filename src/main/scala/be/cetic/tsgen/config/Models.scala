@@ -319,11 +319,11 @@ class TransitionGenerator(name: Option[String],
    override def timeseries(generators: (String) => Generator[Any]) = {
 
       def interpolation = (a: Double, b: Double, ratio: Double) => a*(1-ratio) + ratio*b
-      def linear = (a: Double, b: Double, ratio: Double) => interpolation(a,b,ratio)
 
       def smooth(x: Double) = 3*x*x - 2*x*x*x // smooth is ~= cossig
       def cossig(x: Double) = (1 - math.cos(math.Pi*x)) / 2
 
+      def linear = (a: Double, b: Double, ratio: Double) => interpolation(a,b,ratio)
       def sigmoid = (a: Double, b: Double, ratio: Double) => interpolation(a,b,cossig(ratio))
 
       val transition = f match {
@@ -350,7 +350,7 @@ class TransitionGenerator(name: Option[String],
       TransitionTimeSeries[Double](firstBase, secondBase, time, t)
    }
 
-   override def toString() = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + interval
+   override def toString() = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + interval + ")"
 
    override def equals(o: Any) = o match {
       case that: TransitionGenerator => that.name == this.name &&
@@ -358,6 +358,36 @@ class TransitionGenerator(name: Option[String],
          that.second == this.second &&
          that.time == this.time &&
          that.interval == this.interval
+      case _ => false
+   }
+}
+
+class ThresholdGenerator(name: Option[String],
+                         val generator: Either[String, Generator[Any]],
+                         val threshold: Double,
+                         val included: Option[Boolean]) extends Generator[Any](name, "threshold")
+{
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      val base = Model.generator(generators)(generator).timeseries(generators) match {
+         case t: TimeSeries[Double] => t
+      }
+
+      val predicate = included match {
+         case Some(false) => (x: Double) => x > threshold
+         case _ => (x: Double) => x >= threshold
+      }
+
+      ArbitraryBinaryTimeSeries(base, predicate)
+   }
+
+   override def toString() = "ThresholdGenerator(" + name + "," + generator + "," + threshold + "," + included + ")"
+
+   override def equals(o: Any) = o match {
+      case that: ThresholdGenerator => that.name == this.name &&
+         that.generator == this.generator &&
+         that.threshold == this.threshold &&
+         that.included == this.included
       case _ => false
    }
 }
@@ -1063,6 +1093,49 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   implicit object ThresholdFormat extends RootJsonFormat[ThresholdGenerator]
+   {
+      def write(obj: ThresholdGenerator) =
+      {
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         })
+
+         val threshold = obj.threshold.toJson
+         val included = obj.included.toJson
+
+         val name = obj.name
+
+         var t = Map(
+            "generator" -> generator,
+            "threshold" -> threshold,
+            "included" -> included
+         )
+
+         if(name.isDefined) t = t.updated("name", name.toJson)
+
+         new JsObject(t)
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name").map(_.convertTo[String])
+
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         val threshold = fields("threshold").convertTo[Double]
+         val included = fields.get("included").map(_.convertTo[Boolean])
+
+         new ThresholdGenerator(name, generator, threshold, included)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
 
@@ -1100,6 +1173,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("limited") => limitedFormat.read(known)
             case JsString("partial") => partialFormat.read(known)
             case JsString("time-shift") => TimeShiftFormat.read(known)
+            case JsString("threshold") => ThresholdFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -1119,6 +1193,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: LimitedGenerator => limitedFormat.write(x)
       case x: PartialGenerator => partialFormat.write(x)
       case x: TimeShiftGenerator => TimeShiftFormat.write(x)
+      case x: ThresholdGenerator => ThresholdFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }

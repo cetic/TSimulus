@@ -165,6 +165,17 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val thresholdSource =
+      """
+        |{
+        |   "name": "threshold-generator",
+        |   "type": "threshold",
+        |   "generator": "daily-generator",
+        |   "threshold": 42,
+        |   "included": true
+        |}
+      """.stripMargin
+
    val configurationSource =
       """
         |{
@@ -544,6 +555,27 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Some(0.2)
       )
       generator shouldBe generator.toJson.convertTo[PartialGenerator]
+   }
+
+   "A threshold generator" should "be correctly read from a json document" in {
+      val document = thresholdSource.parseJson
+
+      val generator = document.convertTo[ThresholdGenerator]
+
+      generator.name shouldBe Some("threshold-generator")
+      generator.generator shouldBe Left("daily-generator")
+      generator.threshold shouldBe 42
+      generator.included shouldBe Some(true)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new ThresholdGenerator(
+         Some("threshold-generator"),
+         Left("daily-generator"),
+         42,
+         Some(false)
+      )
+      generator shouldBe generator.toJson.convertTo[ThresholdGenerator]
    }
 
    "A time shifted generator" should "be correctly read from a json document" in {
