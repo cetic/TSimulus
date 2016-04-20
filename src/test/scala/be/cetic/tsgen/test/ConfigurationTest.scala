@@ -155,6 +155,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val timeShiftedSource =
+      """
+        |{
+        |   "name": "time-shifted-generator",
+        |   "type": "time-shift",
+        |   "generator": "daily-generator",
+        |   "shift": -8000
+        |}
+      """.stripMargin
+
    val configurationSource =
       """
         |{
@@ -535,6 +545,26 @@ class ConfigurationTest extends FlatSpec with Matchers {
       )
       generator shouldBe generator.toJson.convertTo[PartialGenerator]
    }
+
+   "A time shifted generator" should "be correctly read from a json document" in {
+      val document = timeShiftedSource.parseJson
+
+      val generator = document.convertTo[TimeShiftGenerator]
+
+      generator.name shouldBe Some("time-shifted-generator")
+      generator.generator shouldBe Left("daily-generator")
+      generator.shift shouldBe new Duration(-8000)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new TimeShiftGenerator(
+         Some("time-shifted-generator"),
+         Left("daily-generator"),
+         new Duration(-8000)
+      )
+      generator shouldBe generator.toJson.convertTo[TimeShiftGenerator]
+   }
+
 
    "A series" should "be correctly read from a json document" in {
       val document = seriesSource.parseJson

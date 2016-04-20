@@ -1034,10 +1034,16 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             case Right(g) => GeneratorFormat.write(g)
          })
 
-         new JsObject(Map(
+         val name = obj.name
+
+         var t = Map(
             "generator" -> generator,
             "shift" -> DurationFormat.write(obj.shift)
-         ))
+         )
+
+         if(name.isDefined) t = t.updated("name", name.toJson)
+
+         new JsObject(t)
       }
 
       def read(value: JsValue) =
