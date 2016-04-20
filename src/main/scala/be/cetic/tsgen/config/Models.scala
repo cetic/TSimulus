@@ -405,6 +405,25 @@ class PartialGenerator(name: Option[String],
    }
 }
 
+class TimeShiftGenerator(name: Option[String],
+                         val generator: Either[String, Generator[Any]],
+                         val shift: Duration) extends Generator[Any](name, "time-shift")
+{
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      val ts = Model.generator(generators)(generator).timeseries(generators)
+      TimeShiftTimeSeries(ts, shift)
+   }
+
+   override def toString() = "TimeShiftGenerator(" + name + "," + shift.getMillis + ")"
+
+   override def equals(o: Any) = o match {
+      case that: TimeShiftGenerator => that.name == this.name && that.shift == this.shift
+      case _ => false
+   }
+}
+
+
 /*
  * http://stackoverflow.com/questions/32721636/spray-json-serializing-inheritance-case-class
  */
@@ -856,7 +875,8 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val generator = (obj.generator match {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         }).toJson
+         })
+
          val from = obj.from.toJson
          val to = obj.to.toJson
 
@@ -946,7 +966,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          val generator = (obj.generator match {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         }).toJson
+         })
          val frequency = obj.frequency.toJson
 
          new JsObject(Map(
@@ -1005,6 +1025,38 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   implicit object TimeShiftFormat extends RootJsonFormat[TimeShiftGenerator]
+   {
+      def write(obj: TimeShiftGenerator) =
+      {
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         })
+
+         new JsObject(Map(
+            "generator" -> generator,
+            "shift" -> DurationFormat.write(obj.shift)
+         ))
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name").map(_.convertTo[String])
+
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         val shift = fields("shift").convertTo[Duration]
+
+         new TimeShiftGenerator(name, generator, shift)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
 
@@ -1041,6 +1093,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("transition") => transitionFormat.read(known)
             case JsString("limited") => limitedFormat.read(known)
             case JsString("partial") => partialFormat.read(known)
+            case JsString("time-shift") => TimeShiftFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -1059,6 +1112,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: TransitionGenerator => transitionFormat.write(x)
       case x: LimitedGenerator => limitedFormat.write(x)
       case x: PartialGenerator => partialFormat.write(x)
+      case x: TimeShiftGenerator => TimeShiftFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }

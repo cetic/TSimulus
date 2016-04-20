@@ -153,11 +153,11 @@ object Main
            |            "first": {"type": "constant", "value":1 },
            |            "second": {"type": "constant", "value":0 },
            |            "time": "2016-01-01 07:30:00.000",
-           |            "duration": 4000000,
+           |            "duration": 8000000,
            |            "transition": "sigmoid"
            |         },
            |         "time": "2016-01-01 03:30:00.000",
-           |         "duration": 4000000,
+           |         "duration": 8000000,
            |         "transition": "sigmoid"
            |      }
            |   ],
