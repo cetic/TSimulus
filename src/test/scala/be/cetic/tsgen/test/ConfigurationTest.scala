@@ -176,6 +176,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val andSource =
+      """
+        |{
+        |   "name": "and-generator",
+        |   "type": "and",
+        |   "a": "daily-generator",
+        |   "b": "monthly-generator"
+        |}
+      """.stripMargin
+
    val configurationSource =
       """
         |{
@@ -595,6 +605,25 @@ class ConfigurationTest extends FlatSpec with Matchers {
          new Duration(-8000)
       )
       generator shouldBe generator.toJson.convertTo[TimeShiftGenerator]
+   }
+
+   "A AND generator" should "be correctly read from a json document" in {
+      val document = andSource.parseJson
+
+      val generator = document.convertTo[AndGenerator]
+
+      generator.name shouldBe Some("and-generator")
+      generator.a shouldBe Left("daily-generator")
+      generator.b shouldBe Left("monthly-generator")
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new AndGenerator(
+         Some("and-generator"),
+         Left("daily-generator"),
+         Left("monthly-generator")
+      )
+      generator shouldBe generator.toJson.convertTo[AndGenerator]
    }
 
 
