@@ -196,6 +196,15 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val notSource =
+      """
+        |{
+        |   "name": "not-generator",
+        |   "type": "not",
+        |   "generator": "binary-generator"
+        |}
+      """.stripMargin
+
    val configurationSource =
       """
         |{
@@ -653,6 +662,23 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Left("monthly-generator")
       )
       generator shouldBe generator.toJson.convertTo[OrGenerator]
+   }
+
+   "A NOT generator" should "be correctly read from a json document" in {
+      val document = notSource.parseJson
+
+      val generator = document.convertTo[NotGenerator]
+
+      generator.name shouldBe Some("not-generator")
+      generator.generator shouldBe Left("binary-generator")
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new NotGenerator(
+         Some("not-generator"),
+         Left("binary-generator")
+      )
+      generator shouldBe generator.toJson.convertTo[NotGenerator]
    }
 
 
