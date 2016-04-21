@@ -205,6 +205,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val xorSource =
+      """
+        |{
+        |   "name": "xor-generator",
+        |   "type": "xor",
+        |   "a": "daily-generator",
+        |   "b": "monthly-generator"
+        |}
+      """.stripMargin
+
    val configurationSource =
       """
         |{
@@ -679,6 +689,25 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Left("binary-generator")
       )
       generator shouldBe generator.toJson.convertTo[NotGenerator]
+   }
+
+   "A XOR generator" should "be correctly read from a json document" in {
+      val document = xorSource.parseJson
+
+      val generator = document.convertTo[XorGenerator]
+
+      generator.name shouldBe Some("xor-generator")
+      generator.a shouldBe Left("daily-generator")
+      generator.b shouldBe Left("monthly-generator")
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new XorGenerator(
+         Some("xor-generator"),
+         Left("daily-generator"),
+         Left("monthly-generator")
+      )
+      generator shouldBe generator.toJson.convertTo[XorGenerator]
    }
 
 

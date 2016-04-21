@@ -470,6 +470,33 @@ class NotGenerator(name: Option[String],
    }
 }
 
+class XorGenerator(name: Option[String],
+                  val a: Either[String, Generator[Any]],
+                  val b: Either[String, Generator[Any]]) extends Generator[Any](name, "xor")
+{
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      val first = Model.generator(generators)(a).timeseries(generators) match {
+         case t: TimeSeries[Boolean] => t
+      }
+
+      val second = Model.generator(generators)(b).timeseries(generators) match {
+         case t: TimeSeries[Boolean] => t
+      }
+
+      XorTimeSeries(first, second)
+   }
+
+   override def toString() = "XorGenerator(" + name + "," + a + "," + b + ")"
+
+   override def equals(o: Any) = o match {
+      case that: XorGenerator => that.name == this.name &&
+         that.a == this.a &&
+         that.b == this.b
+      case _ => false
+   }
+}
+
 class LimitedGenerator(name: Option[String],
                        val generator: Either[String, Generator[Any]],
                        val from: Option[LocalDateTime],
@@ -1341,6 +1368,52 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   implicit object XorFormat extends RootJsonFormat[XorGenerator]
+   {
+      def write(obj: XorGenerator) =
+      {
+         val a = (obj.a match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         })
+
+         val b = (obj.b match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         })
+
+         val name = obj.name
+
+         var t = Map(
+            "a" -> a,
+            "b" -> b
+         )
+
+         if(name.isDefined) t = t.updated("name", name.toJson)
+
+         new JsObject(t)
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name").map(_.convertTo[String])
+
+         val a = fields("a") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         val b = fields("b") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         new XorGenerator(name, a, b)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
 
@@ -1382,6 +1455,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("and") => AndFormat.read(known)
             case JsString("or") => OrFormat.read(known)
             case JsString("not") => OrFormat.read(known)
+            case JsString("xor") => XorFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -1405,6 +1479,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: AndGenerator => AndFormat.write(x)
       case x: OrGenerator => OrFormat.write(x)
       case x: NotGenerator => NotFormat.write(x)
+      case x: XorGenerator => XorFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }
