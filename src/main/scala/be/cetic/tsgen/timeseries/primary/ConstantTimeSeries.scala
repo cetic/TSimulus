@@ -1,5 +1,6 @@
-package be.cetic.tsgen.timeseries
+package be.cetic.tsgen.timeseries.primary
 
+import be.cetic.tsgen.timeseries.IndependantTimeSeries
 import org.joda.time.LocalDateTime
 
 /**

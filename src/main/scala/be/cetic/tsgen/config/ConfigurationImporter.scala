@@ -23,7 +23,7 @@ object ConfigurationImporter
 
    def main(args: Array[String])
    {
-      val file = new File("/Users/mg/Documents/IDEA projects/time-series-generator/examples/demo1.json")
+      val file = new File("XXX")
 
       // val document = Source.fromFile(file).getLines().mkString("").parseJson
 

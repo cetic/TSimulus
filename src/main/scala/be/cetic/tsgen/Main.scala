@@ -7,6 +7,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import be.cetic.tsgen.config.GeneratorLeafFormat._
 import be.cetic.tsgen.timeseries._
+import be.cetic.tsgen.timeseries.primary.{ARMA, MonthlyTimeSeries, WeeklyTimeSeries}
 
 
 object Main
@@ -180,7 +181,7 @@ object Main
       generate(config2TimeSeries(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
    }
 
-   private def config2TimeSeries(config: Configuration): Map[String, Stream[(LocalDateTime, Any)]] =
+   def config2TimeSeries(config: Configuration): Map[String, Stream[(LocalDateTime, Any)]] =
    {
       val ts = config.timeSeries
 
@@ -195,7 +196,7 @@ object Main
       })
    }
 
-   private def generate(series: Map[String, Stream[(LocalDateTime, Any)]]): Stream[(LocalDateTime, String, Any)] =
+   def generate(series: Map[String, Stream[(LocalDateTime, Any)]]): Stream[(LocalDateTime, String, Any)] =
    {
       val cleanedMap = series.filterNot(_._2.isEmpty)
 

@@ -3,6 +3,8 @@ package be.cetic.tsgen.config
 import be.cetic.tsgen._
 import be.cetic.tsgen.timeseries._
 import be.cetic.tsgen.timeseries.binary._
+import be.cetic.tsgen.timeseries.composite._
+import be.cetic.tsgen.timeseries.primary._
 import com.github.nscala_time.time.Imports._
 import org.apache.commons.math3.stat.StatUtils
 import org.joda.time.{DateTimeConstants, LocalDateTime, LocalTime}
@@ -252,7 +254,7 @@ class AggregateGenerator(name: Option[String],
          case _ => None
       }
 
-      new CompositeTimeSeries[Double](agg, series)
+      new AggregationTimeSeries[Double](agg, series)
    }
 
    override def toString() = "AggregateGenerator(" + name + "," + aggregator + "," + generators + ")"

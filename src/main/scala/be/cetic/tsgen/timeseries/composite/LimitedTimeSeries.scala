@@ -1,7 +1,8 @@
-package be.cetic.tsgen.timeseries
+package be.cetic.tsgen.timeseries.composite
 
-import org.joda.time.LocalDateTime
+import be.cetic.tsgen.timeseries.TimeSeries
 import com.github.nscala_time.time.Imports._
+import org.joda.time.LocalDateTime
 
 
 /**

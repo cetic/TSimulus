@@ -1,5 +1,6 @@
-package be.cetic.tsgen.timeseries
+package be.cetic.tsgen.timeseries.primary
 
+import be.cetic.tsgen.timeseries.TimeSeries
 import com.github.nscala_time.time.Imports._
 import org.joda.time.{DateTimeZone, Duration, LocalDateTime}
 

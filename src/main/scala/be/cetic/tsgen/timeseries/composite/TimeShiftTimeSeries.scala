@@ -1,7 +1,8 @@
-package be.cetic.tsgen.timeseries
+package be.cetic.tsgen.timeseries.composite
 
-import org.joda.time.{Duration, LocalDateTime}
+import be.cetic.tsgen.timeseries.TimeSeries
 import com.github.nscala_time.time.Imports._
+import org.joda.time.{Duration, LocalDateTime}
 
 /**
   * A time series based on an other time series, and for which time is shifted.

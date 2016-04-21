@@ -1,5 +1,6 @@
-package be.cetic.tsgen.timeseries
+package be.cetic.tsgen.timeseries.primary
 
+import be.cetic.tsgen.timeseries.IndependantTimeSeries
 import com.github.nscala_time.time.Imports._
 import org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
 import org.joda.time.Seconds
