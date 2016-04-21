@@ -2,6 +2,7 @@ package be.cetic.tsgen.config
 
 import be.cetic.tsgen._
 import be.cetic.tsgen.timeseries._
+import be.cetic.tsgen.timeseries.binary.{AndTimeSeries, ArbitraryBinaryTimeSeries, LogisticTimeSeries, OrTimeSeries}
 import com.github.nscala_time.time.Imports._
 import org.apache.commons.math3.stat.StatUtils
 import org.joda.time.{DateTimeConstants, LocalDateTime, LocalTime}
