@@ -186,6 +186,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val orSource =
+      """
+        |{
+        |   "name": "or-generator",
+        |   "type": "or",
+        |   "a": "daily-generator",
+        |   "b": "monthly-generator"
+        |}
+      """.stripMargin
+
    val configurationSource =
       """
         |{
@@ -625,6 +635,26 @@ class ConfigurationTest extends FlatSpec with Matchers {
       )
       generator shouldBe generator.toJson.convertTo[AndGenerator]
    }
+
+   "A OR generator" should "be correctly read from a json document" in {
+      val document = orSource.parseJson
+
+      val generator = document.convertTo[OrGenerator]
+
+      generator.name shouldBe Some("or-generator")
+      generator.a shouldBe Left("daily-generator")
+      generator.b shouldBe Left("monthly-generator")
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new OrGenerator(
+         Some("or-generator"),
+         Left("daily-generator"),
+         Left("monthly-generator")
+      )
+      generator shouldBe generator.toJson.convertTo[OrGenerator]
+   }
+
 
 
    "A series" should "be correctly read from a json document" in {
