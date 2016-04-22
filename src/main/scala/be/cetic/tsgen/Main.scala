@@ -7,7 +7,8 @@ import spray.json._
 import DefaultJsonProtocol._
 import be.cetic.tsgen.config.GeneratorLeafFormat._
 import be.cetic.tsgen.timeseries._
-import be.cetic.tsgen.timeseries.primary.{ARMA, MonthlyTimeSeries, WeeklyTimeSeries}
+import be.cetic.tsgen.timeseries.composite.SlidingWindowTimeSeries
+import be.cetic.tsgen.timeseries.primary.{ARMA, MonthlyTimeSeries, RandomWalkTimeSeries, WeeklyTimeSeries}
 
 
 object Main
@@ -178,19 +179,34 @@ object Main
 
       println("date;series;value")
 
-      generate(config2TimeSeries(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
+      //generate(config2Results(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
+
+      val origin = RandomWalkTimeSeries(ARMA(), 10.seconds)
+      val ts = SlidingWindowTimeSeries(origin, 2.minutes, (s: Seq[Double]) => s match {
+         case Seq() => None
+         case _ => Some(s.sum / s.size)
+      })
+
+      val m = Map(
+         "origin" -> (origin, new Duration(5000)),
+         "mean" -> (ts, new Duration(5000))
+      )
+      generate(timeSeries2Results(m, new LocalDateTime(), new LocalDateTime() + 1.hour)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
    }
 
-   def config2TimeSeries(config: Configuration): Map[String, Stream[(LocalDateTime, Any)]] =
-   {
-      val ts = config.timeSeries
+   def config2Results(config: Configuration): Map[String, Stream[(LocalDateTime, Any)]] =
+      timeSeries2Results(config.timeSeries, config.from, config.to)
 
+   def timeSeries2Results(ts: Map[String, (TimeSeries[Any], _root_.com.github.nscala_time.time.Imports.Duration)],
+                          from: LocalDateTime,
+                          to: LocalDateTime): Map[String, Stream[(LocalDateTime, Any)]] =
+   {
       ts.map(series =>
       {
          val name = series._1
          val frequency = series._2._2
          val values = series._2._1
-         val times = Main.sampling(config.from, config.to, frequency)
+         val times = Main.sampling(from, to, frequency)
 
          (name -> values.compute(times).filter(e => e._2.isDefined).map(e => (e._1, e._2.get)))
       })
