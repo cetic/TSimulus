@@ -119,7 +119,9 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |   "first" : "first-generator",
         |   "second" : "second-generator",
         |   "type": "transition",
-        |   "time" : "2016-06-07 03:45:00.000"
+        |   "time" : "2016-06-07 03:45:00.000",
+        |   "duration": 300000,
+        |   "transition": "linear"
         |}
       """.stripMargin
 
@@ -536,7 +538,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator.first shouldBe Left("first-generator")
       generator.second shouldBe Left("second-generator")
       generator.time shouldBe new LocalDateTime(2016, 6, 7, 3, 45, 0)
-      generator.interval shouldBe None
+      generator.interval shouldBe Some(new Duration(300000))
    }
 
    it should "be correctly exported to a json document" in {
