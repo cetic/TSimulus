@@ -20,21 +20,24 @@ case class PartialTimeSeries[T](base: TimeSeries[T],
                                 to: Option[LocalDateTime],
                                 missingRate: Option[Double]) extends TimeSeries[T]
 {
-   override def compute(times: Stream[LocalDateTime]) = {
+   override def compute(times: Stream[LocalDateTime]) =
+   {
 
-      base.compute(times).map {case (t,v) => {
-            if(v.isEmpty) (t,v)
+      base.compute(times).map
+      { case (t, v) =>
+      {
+         (t, v.map(x => {
+            if ((from.isDefined && t < from.get) || (to.isDefined && t > to.get)) None
             else
             {
-               if(from.isDefined && t < from.get) (t, None)
-               else if(to.isDefined && t > to.get) (t, None)
-               else missingRate match {
-                  case None => (t,v)
-                  case Some(odds) => if(Random.nextDouble() < odds) (t, None)
-                                     else (t, v)
+               missingRate match {
+                  case None => Some(x)
+                  case Some(odds) => if (Random.nextDouble() < odds) None
+                                     else Some(x)
                }
             }
-         }
+         }).flatten)
+      }
       }
    }
 }
