@@ -19,7 +19,7 @@ class AggregationTimeSeries[T](val aggregator: Seq[T] => T, val generators: Seq[
                                                                      case seq => Some(aggregator(seq))
                                                                   }))
 
-   override def toString = "CompositeTimeSeries(" + aggregator + "," + generators + ")"
+   override def toString = "AggregationTimeSeries(" + aggregator + "," + generators + ")"
 }
 
 
