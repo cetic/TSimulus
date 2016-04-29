@@ -212,7 +212,7 @@ class FunctionGenerator(name: Option[String],
    {
       Model.generator(generators)(generator) match {
          // Could also be expressed as a Sum(Times(generator, Constant(slope), intercept)
-         case g: Generator[Double] => FunctionTimeSeries[Double](g.timeseries(generators), x => Some(slope * x + intercept))
+         case g: Generator[Double] => FunctionTimeSeries[Double](g.timeseries(generators), (t,v) => Some(slope * v + intercept))
          case _ => throw new ClassCastException
       }
    }
