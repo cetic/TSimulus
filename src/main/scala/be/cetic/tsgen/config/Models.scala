@@ -326,15 +326,18 @@ class TransitionGenerator(name: Option[String],
 
       def smooth(x: Double) = 3*x*x - 2*x*x*x // smooth is ~= cossig
       def cossig(x: Double) = (1 - math.cos(math.Pi*x)) / 2
+      def exp(x: Double) = Math.expm1(x) / (Math.E - 1)
 
       def linear = (a: Double, b: Double, ratio: Double) => interpolation(a,b,ratio)
       def sigmoid = (a: Double, b: Double, ratio: Double) => interpolation(a,b,cossig(ratio))
+      def superlin = (a: Double, b: Double, ratio: Double) => interpolation(a,b,exp(ratio))
 
       val transition = f match {
          case Some(s) => {
             s match {
                case "linear" => linear
                case "sigmoid" => sigmoid
+               case "exp" => superlin
                case _ => linear
             }
          }

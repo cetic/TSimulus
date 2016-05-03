@@ -74,104 +74,78 @@ object Main
          DateTimeConstants.SUNDAY -> 0.5
       ))
 
-      val document =
+       val document =
          """
            |{
            |   "generators": [
            |      {
-           |         "name": "daily-generator",
-           |         "type": "daily",
-           |         "points": {"10:00:00.000": 12, "17:00:00.000": 15, "20:00:00.000": 11, "02:00:00.000": 5, "04:00:00.000": 7}
+           |         "name": "normal-cst",
+           |         "type": "constant",
+           |         "value": 0.1
            |      },
            |      {
-           |         "name": "weekly-generator",
-           |         "type": "weekly",
-           |         "points": {"monday": 12, "tuesday": 15, "friday": 12, "saturday": 5}
-           |      },
-           |      {
-           |         "name": "yearly-generator",
-           |         "type": "yearly",
-           |         "points": {"2016": 12, "2017": 15}
-           |      },
-           |      {
-           |         "name": "noisy-daily",
-           |         "type": "aggregate",
-           |         "aggregator": "sum",
-           |         "generators": [
-           |            "daily-generator",
-           |            {
-           |                "type": "arma",
-           |                "model": { "std": 0.5, "c": 0, "seed": 159357},
-           |                "timestep": 3600000
-           |            }
-           |         ]
-           |      },
-           |      {
-           |         "name": "noise-generator",
+           |         "name": "noise",
            |         "type": "arma",
-           |         "model": { "std": 0.75, "c": 0, "seed": 159357},
-           |         "timestep": 3600000
-           |      },
-           |      {
-           |         "name":  "partial-daily",
-           |         "type": "partial",
-           |         "generator": "daily-generator",
-           |         "missing-rate": 0.8
-           |      },
-           |      {
-           |         "name":  "limited-daily",
-           |         "type": "limited",
-           |         "generator": "daily-generator",
-           |         "from": "2016-01-01 10:00:00.000"
-           |      },
-           |      {
-           |         "name":  "transition-daily-noise-daily",
-           |         "type": "transition",
-           |         "first": {
-           |            "type": "transition",
-           |            "first": "daily-generator",
-           |            "second": "noise-generator",
-           |            "time": "2016-01-01 12:00:00.000",
-           |            "duration": 7200000,
-           |            "transition": "sigmoid"
+           |         "model": {
+           |            "std": 0.05,
+           |            "c": 0
            |         },
-           |         "second": "daily-generator",
-           |         "time": "2016-01-02 12:00:00.000",
-           |         "duration": 7200000
+           |         "timestep": 30000
            |      },
            |      {
-           |         "name":  "logistic-daily",
-           |         "type": "logistic",
-           |         "generator": "daily-generator",
-           |         "location": 13,
-           |         "scale": 8
+           |         "name": "normal",
+           |         "type": "aggregate",
+           |         "aggregator": "max",
+           |         "generators": [{
+           |            "type": "constant",
+           |            "value": 0
+           |         },
+           |         {
+           |            "type": "aggregate",
+           |            "aggregator": "sum",
+           |            "generators": ["normal-cst", "noise"]
+           |         }]
            |      },
            |      {
-           |         "name": "transition-0-1-0",
+           |         "name": "rush",
+           |         "type": "aggregate",
+           |         "aggregator": "max",
+           |         "generators": [{
+           |            "type": "constant",
+           |            "value": 0
+           |         },
+           |         {
+           |            "type": "aggregate",
+           |            "aggregator": "sum",
+           |            "generators": ["noise", {"type": "constant", "value": 4} ]
+           |         }]
+           |      },
+           |      {
+           |         "name": "actual",
            |         "type": "transition",
-           |         "first": { "type": "constant", "value":0 },
+           |         "first": "normal",
            |         "second": {
            |            "type": "transition",
-           |            "first": {"type": "constant", "value":1 },
-           |            "second": {"type": "constant", "value":0 },
-           |            "time": "2016-01-01 07:30:00.000",
-           |            "duration": 8000000,
-           |            "transition": "sigmoid"
+           |            "first": "rush",
+           |            "second": "normal",
+           |            "time": "2016-01-01 10:00:00.000",
+           |            "duration": 300000,
+           |            "transition": "exp"
            |         },
-           |         "time": "2016-01-01 03:30:00.000",
-           |         "duration": 8000000,
-           |         "transition": "sigmoid"
+           |         "time": "2016-01-01 02:00:00.000",
+           |         "duration": 28800000,
+           |         "transition": "exp"
            |      }
            |   ],
            |   "series": [
            |      {
-           |         "name": "series-A",
-           |         "generator": "transition-0-1-0",
-           |         "frequency": 60000
+           |         "name": "load",
+           |         "generator": "actual",
+           |         "frequency": 30000
            |      }
            |   ],
            |   "from": "2016-01-01 00:00:00.000",
-           |   "to": "2016-01-01 10:00:00.000"
+           |   "to": "2016-01-02 00:00:00.000"
            |}
          """.stripMargin.parseJson
 
@@ -179,19 +153,9 @@ object Main
 
       println("date;series;value")
 
-      //generate(config2Results(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
+      generate(config2Results(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
 
-      val origin = RandomWalkTimeSeries(ARMA(), 10.seconds)
-      val ts = SlidingWindowTimeSeries(origin, 2.minutes, (s: Seq[Double]) => s match {
-         case Seq() => None
-         case _ => Some(s.sum / s.size)
-      })
 
-      val m = Map(
-         "origin" -> (origin, new Duration(5000)),
-         "mean" -> (ts, new Duration(5000))
-      )
-      generate(timeSeries2Results(m, new LocalDateTime(), new LocalDateTime() + 1.hour)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
    }
 
    def config2Results(config: Configuration): Map[String, Stream[(LocalDateTime, Any)]] =
