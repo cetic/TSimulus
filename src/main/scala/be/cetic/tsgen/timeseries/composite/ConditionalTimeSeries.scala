@@ -10,18 +10,18 @@ import org.joda.time.LocalDateTime
   * If the value of the underlying time series is not defined, then the value of this time series is not defined.
   * If the value of the binary time series is not defined, then the value of this time series is not defined.
   *
-  * @param base the underlying time series on which this time series is based.
+  * @param generator the underlying time series on which this time series is based.
   * @param binary the binary time series used for determining if the values of
   *               the underlying time series must be forwarded.
   */
-case class ConditionalTimeSeries[T](base: TimeSeries[T], binary: TimeSeries[Boolean]) extends TimeSeries[T]
+case class ConditionalTimeSeries[T](generator: TimeSeries[T], binary: TimeSeries[Boolean]) extends TimeSeries[T]
 {
    override def compute(times: Stream[LocalDateTime]) =
    {
-      (base.compute(times) zip binary.compute(times)).map { case ((t1, v),(t2,b)) => {
+      (generator.compute(times) zip binary.compute(times)).map { case ((t1, v),(t2,b)) => {
          assert(t1 == t2)
 
-         if(v.isEmpty || b.isEmpty || !b.get) (t1,None)
+         if(v.isEmpty || !b.getOrElse(false)) (t1,None)
          else (t1, v)
       }}
    }
