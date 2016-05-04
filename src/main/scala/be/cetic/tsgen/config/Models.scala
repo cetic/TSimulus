@@ -313,6 +313,69 @@ class LogisticGenerator(name: Option[String],
    }
 }
 
+
+class TrueGenerator(name: Option[String]) extends Generator[Boolean](name, "true")
+{
+
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      new TrueTimeSeries()
+   }
+
+   override def toString() = "TrueGenerator(" + name + ")"
+
+   override def equals(o: Any) = o match {
+      case that: TrueGenerator => that.name == this.name
+      case _ => false
+   }
+}
+
+class FalseGenerator(name: Option[String]) extends Generator[Boolean](name, "false")
+{
+
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      new FalseTimeSeries()
+   }
+
+   override def toString() = "FalseGenerator(" + name + ")"
+
+   override def equals(o: Any) = o match {
+      case that: FalseGenerator => that.name == this.name
+      case _ => false
+   }
+}
+
+
+
+class ConditionalGenerator(name: Option[String],
+                        val generator: Either[String, Generator[Any]],
+                        val condition: Either[String, Generator[Any]]) extends Generator[Any](name, "conditional")
+{
+
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      val gen = Model.generator(generators)(generator).timeseries(generators) match {
+         case t: TimeSeries[Any] => t
+      }
+
+      val bin = Model.generator(generators)(condition).timeseries(generators) match {
+         case t: TimeSeries[Boolean] => t
+      }
+
+      ConditionalTimeSeries(gen, bin)
+   }
+
+   override def toString() = "ConditionalGenerator(" + name + "," + generator + "," + condition + ")"
+
+   override def equals(o: Any) = o match {
+      case that: ConditionalGenerator =>  that.name == this.name &&
+                                          that.generator == this.generator &&
+                                          that.condition == this.condition
+      case _ => false
+   }
+}
+
 class TransitionGenerator(name: Option[String],
                           val first: Either[String, Generator[Any]],
                           val second: Either[String, Generator[Any]],
@@ -948,6 +1011,103 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   object ConditionalFormat extends RootJsonFormat[ConditionalGenerator]
+   {
+      def write(obj: ConditionalGenerator) =
+      {
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         }).toJson
+
+         val condition = (obj.condition match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         }).toJson
+
+         val t = Map(
+            "type" -> obj.`type`.toJson,
+            "generator" -> generator,
+            "condition" -> condition
+         )
+
+         new JsObject(
+            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+         )
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         val condition = fields("condition") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         new ConditionalGenerator(name, generator, condition)
+      }
+   }
+
+   object TrueFormat extends RootJsonFormat[TrueGenerator]
+   {
+      def write(obj: TrueGenerator) =
+      {
+         val t = Map(
+            "type" -> obj.`type`.toJson
+         )
+
+         new JsObject(
+            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+         )
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         new TrueGenerator(name)
+      }
+   }
+
+   object FalseFormat extends RootJsonFormat[FalseGenerator]
+   {
+      def write(obj: FalseGenerator) =
+      {
+         val t = Map(
+            "type" -> obj.`type`.toJson
+         )
+
+         new JsObject(
+            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+         )
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         new FalseGenerator(name)
+      }
+   }
+
    object TransitionFormat extends RootJsonFormat[TransitionGenerator]
    {
       def write(obj: TransitionGenerator) =
@@ -1451,6 +1611,9 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("aggregate") => aggregateFormat.read(known)
             case JsString("correlated") => correlatedFormat.read(known)
             case JsString("logistic") => logisticFormat.read(known)
+            case JsString("conditional") => ConditionalFormat.read(known)
+            case JsString("true") => TrueFormat.read(known)
+            case JsString("false") => FalseFormat.read(known)
             case JsString("transition") => transitionFormat.read(known)
             case JsString("limited") => limitedFormat.read(known)
             case JsString("partial") => partialFormat.read(known)
@@ -1475,6 +1638,9 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: AggregateGenerator => aggregateFormat.write(x)
       case x: CorrelatedGenerator => correlatedFormat.write(x)
       case x: LogisticGenerator => logisticFormat.write(x)
+      case x: ConditionalGenerator => ConditionalFormat.write(x)
+      case x: TrueGenerator => TrueFormat.write(x)
+      case x: FalseGenerator => FalseFormat.write(x)
       case x: TransitionGenerator => transitionFormat.write(x)
       case x: LimitedGenerator => limitedFormat.write(x)
       case x: PartialGenerator => partialFormat.write(x)

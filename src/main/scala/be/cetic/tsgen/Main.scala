@@ -129,7 +129,7 @@ object Main
            |            "first": "rush",
            |            "second": "normal",
            |            "time": "2016-01-01 10:00:00.000",
-           |            "duration": 300000,
+           |            "duration": 1200000,
            |            "transition": "exp"
            |         },
            |         "time": "2016-01-01 02:00:00.000",
@@ -140,7 +140,7 @@ object Main
            |   "series": [
            |      {
            |         "name": "load",
-           |         "generator": "actual",
+           |         "generator": {"type": "conditional", "generator": "actual", "condition": {"type": "false"}},
            |         "frequency": 30000
            |      }
            |   ],
