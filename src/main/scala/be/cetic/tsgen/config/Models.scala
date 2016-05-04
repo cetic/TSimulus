@@ -333,10 +333,7 @@ class TrueGenerator(name: Option[String]) extends Generator[Boolean](name, "true
 class FalseGenerator(name: Option[String]) extends Generator[Boolean](name, "false")
 {
 
-   override def timeseries(generators: (String) => Generator[Any]) =
-   {
-      new FalseTimeSeries()
-   }
+   override def timeseries(generators: (String) => Generator[Any]) = new FalseTimeSeries()
 
    override def toString() = "FalseGenerator(" + name + ")"
 
@@ -364,10 +361,11 @@ class ConditionalGenerator(name: Option[String],
          case t: TimeSeries[Any] => t
       }
 
+
       val b = failure.map(f => Model.generator(generators)(f).timeseries(generators) match {
          case t: TimeSeries[Any] => t
       }).getOrElse(new UndefinedTimeSeries())
-
+      
       ConditionalTimeSeries(cond, a, b)
    }
 
@@ -1044,7 +1042,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
                case Right(g) => GeneratorFormat.write(g)
             }).toJson
 
-            t.updated("failure", failure)
+            t = t.updated("failure", failure)
          }
 
          new JsObject(

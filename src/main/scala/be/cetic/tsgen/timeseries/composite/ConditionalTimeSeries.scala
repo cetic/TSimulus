@@ -27,9 +27,9 @@ case class ConditionalTimeSeries[T](condition: TimeSeries[Boolean], success: Tim
          val time = c._1
 
          c._2 match {
-            case None => (time, None)
             case Some(true) => (time, s._2)
             case Some(false) => (time, f._2)
+            case _ => (time, None)
          }
       }}
    }
