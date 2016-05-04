@@ -140,7 +140,7 @@ object Main
            |   "series": [
            |      {
            |         "name": "load",
-           |         "generator": {"type": "conditional", "generator": "actual", "condition": {"type": "false"}},
+           |         "generator": {"type": "conditional", "condition": {"type": "false"}, "success": "actual", "fail": "actual"},
            |         "frequency": 30000
            |      }
            |   ],

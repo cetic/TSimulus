@@ -349,29 +349,35 @@ class FalseGenerator(name: Option[String]) extends Generator[Boolean](name, "fal
 
 
 class ConditionalGenerator(name: Option[String],
-                        val generator: Either[String, Generator[Any]],
-                        val condition: Either[String, Generator[Any]]) extends Generator[Any](name, "conditional")
+                           val condition: Either[String, Generator[Any]],
+                           val success: Either[String, Generator[Any]],
+                           val failure: Option[Either[String, Generator[Any]]]) extends Generator[Any](name, "conditional")
 {
 
    override def timeseries(generators: (String) => Generator[Any]) =
    {
-      val gen = Model.generator(generators)(generator).timeseries(generators) match {
-         case t: TimeSeries[Any] => t
-      }
-
-      val bin = Model.generator(generators)(condition).timeseries(generators) match {
+      val cond = Model.generator(generators)(condition).timeseries(generators) match {
          case t: TimeSeries[Boolean] => t
       }
 
-      ConditionalTimeSeries(gen, bin)
+      val a = Model.generator(generators)(success).timeseries(generators) match {
+         case t: TimeSeries[Any] => t
+      }
+
+      val b = failure.map(f => Model.generator(generators)(f).timeseries(generators) match {
+         case t: TimeSeries[Any] => t
+      }).getOrElse(new UndefinedTimeSeries())
+
+      ConditionalTimeSeries(cond, a, b)
    }
 
-   override def toString() = "ConditionalGenerator(" + name + "," + generator + "," + condition + ")"
+   override def toString() = "ConditionalGenerator(" + name + "," + condition + "," + success + "," + failure + ")"
 
    override def equals(o: Any) = o match {
       case that: ConditionalGenerator =>  that.name == this.name &&
-                                          that.generator == this.generator &&
-                                          that.condition == this.condition
+                                          that.condition == this.condition &&
+                                          that.success == this.success &&
+                                          that.failure == this.failure
       case _ => false
    }
 }
@@ -1015,21 +1021,31 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: ConditionalGenerator) =
       {
-         val generator = (obj.generator match {
-            case Left(s) => s.toJson
-            case Right(g) => GeneratorFormat.write(g)
-         }).toJson
-
          val condition = (obj.condition match {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
          }).toJson
 
-         val t = Map(
+         val success = (obj.success match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         }).toJson
+
+         var t = Map(
             "type" -> obj.`type`.toJson,
-            "generator" -> generator,
-            "condition" -> condition
+            "condition" -> condition,
+            "success" -> success
          )
+
+         if(obj.failure.isDefined)
+         {
+            val failure = (obj.failure.get match {
+               case Left(s) => s.toJson
+               case Right(g) => GeneratorFormat.write(g)
+            }).toJson
+
+            t.updated("failure", failure)
+         }
 
          new JsObject(
             obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
@@ -1044,17 +1060,23 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             case JsString(x) => x
          })
 
-         val generator = fields("generator") match {
-            case JsString(s) => Left(s)
-            case g => Right(GeneratorFormat.read(g))
-         }
-
          val condition = fields("condition") match {
             case JsString(s) => Left(s)
             case g => Right(GeneratorFormat.read(g))
          }
 
-         new ConditionalGenerator(name, generator, condition)
+         val success = fields("success") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         val failure = if(fields.contains("failure")) fields("failure") match {
+                           case JsString(s) => Some(Left(s))
+                           case g => Some(Right(GeneratorFormat.read(g)))
+                        }
+                         else None
+
+         new ConditionalGenerator(name, condition, success, failure)
       }
    }
 
