@@ -4,7 +4,7 @@ import be.cetic.tsgen._
 import be.cetic.tsgen.timeseries._
 import be.cetic.tsgen.timeseries.binary._
 import be.cetic.tsgen.timeseries.composite._
-import be.cetic.tsgen.timeseries.missing.{LimitedTimeSeries, PartialTimeSeries, UndefinedTimeSeries}
+import be.cetic.tsgen.timeseries.missing.{DefaultTimeSeries, LimitedTimeSeries, PartialTimeSeries, UndefinedTimeSeries}
 import be.cetic.tsgen.timeseries.primary._
 import com.github.nscala_time.time.Imports._
 import org.apache.commons.math3.stat.StatUtils
@@ -665,6 +665,25 @@ class UndefinedGenerator(name: Option[String]) extends Generator[Any](name, "und
 
    override def equals(o: Any) = o match {
       case that: UndefinedGenerator => that.name == this.name
+      case _ => false
+   }
+}
+
+class DefaultGenerator(name: Option[String], val gens: Seq[Either[String, Generator[Any]]]) extends Generator[Any](name, "first-of")
+{
+   override def timeseries(generators: (String) => Generator[Any]) =
+   {
+      val underlyings = gens.map(g => Model.generator(generators)(g).timeseries(generators) match {
+         case t: TimeSeries[Any] => t
+      })
+
+      DefaultTimeSeries(underlyings)
+   }
+
+   override def toString() = "UndefinedGenerator(" + name + "," + gens + ")"
+
+   override def equals(o: Any) = o match {
+      case that: DefaultGenerator => that.gens == this.gens
       case _ => false
    }
 }
@@ -1701,6 +1720,39 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   object DefaultFormat extends RootJsonFormat[DefaultGenerator]
+   {
+      def write(obj: DefaultGenerator) =
+      {
+         val t = Map(
+            "type" -> obj.`type`.toJson
+         )
+
+         new JsObject(
+            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+         )
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         val generators = fields("generators") match {
+            case JsArray(l) => l.map(g => g match
+            {
+               case JsString(s) => Left(s)
+               case g => Right(GeneratorFormat.read(g))
+            })
+         }
+
+         new DefaultGenerator(name, generators)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
 
@@ -1748,6 +1800,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("not") => OrFormat.read(known)
             case JsString("xor") => XorFormat.read(known)
             case JsString("undefined") => UndefinedFormat.read(known)
+            case JsString("first-of") => DefaultFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -1777,6 +1830,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: NotGenerator => NotFormat.write(x)
       case x: XorGenerator => XorFormat.write(x)
       case x: UndefinedGenerator => UndefinedFormat.write(x)
+      case x: DefaultGenerator => DefaultFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }
