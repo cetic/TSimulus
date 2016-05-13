@@ -1,4 +1,4 @@
-package be.cetic.tsgen.timeseries.composite
+package be.cetic.tsgen.timeseries.missing
 
 import be.cetic.tsgen.timeseries.TimeSeries
 import com.github.nscala_time.time.Imports._

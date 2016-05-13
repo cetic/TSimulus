@@ -1,4 +1,4 @@
-package be.cetic.tsgen.timeseries.composite
+package be.cetic.tsgen.timeseries.missing
 
 import be.cetic.tsgen.timeseries.TimeSeries
 import com.github.nscala_time.time.Imports._
@@ -7,7 +7,7 @@ import org.joda.time.LocalDateTime
 import scala.util.Random
 
 /**
-  * A time series that only product values during a given period.
+  * A time series that only produces values during a given period.
   *
   * @param base The time series on which this time series is based.
   * @param from The date from which values are produced.

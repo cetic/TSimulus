@@ -137,10 +137,10 @@ object Main
            |         "transition": "exp"
            |      }
            |   ],
-           |   "series": [
+           |   "exported": [
            |      {
            |         "name": "load",
-           |         "generator": {"type": "conditional", "condition": {"type": "false"}, "success": "actual", "failure": "actual"},
+           |         "generator": {"type": "undefined"},
            |         "frequency": 30000
            |      }
            |   ],

@@ -4,6 +4,7 @@ import be.cetic.tsgen._
 import be.cetic.tsgen.timeseries._
 import be.cetic.tsgen.timeseries.binary._
 import be.cetic.tsgen.timeseries.composite._
+import be.cetic.tsgen.timeseries.missing.{LimitedTimeSeries, PartialTimeSeries, UndefinedTimeSeries}
 import be.cetic.tsgen.timeseries.primary._
 import com.github.nscala_time.time.Imports._
 import org.apache.commons.math3.stat.StatUtils
@@ -352,7 +353,6 @@ class ConditionalGenerator(name: Option[String],
          case t: TimeSeries[Any] => t
       }
 
-
       val b = failure.map(f => Model.generator(generators)(f).timeseries(generators) match {
          case t: TimeSeries[Any] => t
       }).getOrElse(new UndefinedTimeSeries())
@@ -657,6 +657,17 @@ class TimeShiftGenerator(name: Option[String],
    }
 }
 
+class UndefinedGenerator(name: Option[String]) extends Generator[Any](name, "undefined")
+{
+   override def timeseries(generators: (String) => Generator[Any]) = new UndefinedTimeSeries()
+
+   override def toString() = "UndefinedGenerator(" + name + ")"
+
+   override def equals(o: Any) = o match {
+      case that: UndefinedGenerator => that.name == this.name
+      case _ => false
+   }
+}
 
 /*
  * http://stackoverflow.com/questions/32721636/spray-json-serializing-inheritance-case-class
@@ -1665,6 +1676,31 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   object UndefinedFormat extends RootJsonFormat[UndefinedGenerator]
+   {
+      def write(obj: UndefinedGenerator) =
+      {
+         val t = Map(
+            "type" -> obj.`type`.toJson
+         )
+
+         new JsObject(
+            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+         )
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         new UndefinedGenerator(name)
+      }
+   }
+
    implicit val generatorFormat = GeneratorFormat
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
 
@@ -1711,6 +1747,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("or") => OrFormat.read(known)
             case JsString("not") => OrFormat.read(known)
             case JsString("xor") => XorFormat.read(known)
+            case JsString("undefined") => UndefinedFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: ${unknown}")
          }
       case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
@@ -1739,6 +1776,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: OrGenerator => OrFormat.write(x)
       case x: NotGenerator => NotFormat.write(x)
       case x: XorGenerator => XorFormat.write(x)
+      case x: UndefinedGenerator => UndefinedFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
    }
 }
