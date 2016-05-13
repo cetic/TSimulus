@@ -18,7 +18,7 @@ import com.github.nscala_time.time.Imports._
   *                 Values that relate to times before this will be ignored.
   * @param aggregator the function used to aggregate values.
   */
-case class SlidingWindowTimeSeries[T](base: TimeSeries[T], duration: Duration, aggregator: Seq[T] => Option[T]) extends TimeSeries[T]
+case class SlidingWindowTimeSeries[T](base: TimeSeries[T], duration: Duration, aggregator: Seq[(Duration, T)] => T) extends TimeSeries[T]
 {
 
    override def compute(times: Stream[LocalDateTime]): Stream[(LocalDateTime, Option[T])] =
@@ -42,6 +42,16 @@ case class SlidingWindowTimeSeries[T](base: TimeSeries[T], duration: Duration, a
          val predicate = (x: (LocalDateTime, T)) => x._1 >= limit
 
          (entry._1, addElement(entry, oldBuffer._2, predicate))
-      }).map { case (t: LocalDateTime, v: List[(LocalDateTime, T)]) => (t, aggregator(v.map(_._2)))}
+      }).map
+      {
+         case (t: LocalDateTime, List()) => (t, None)
+         case (t: LocalDateTime, v: List[(LocalDateTime, T)]) =>
+            (
+               t,
+               Some(
+                  aggregator(v.map(element => ((element._1.toDateTime(DateTimeZone.UTC) to t.toDateTime(DateTimeZone.UTC)).toDuration, element._2)))
+               )
+            )
+      }
    }
 }

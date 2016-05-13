@@ -8,7 +8,7 @@ import be.cetic.tsgen.timeseries.primary._
 import com.github.nscala_time.time.Imports._
 import org.apache.commons.math3.stat.StatUtils
 import org.joda.time.{DateTimeConstants, LocalDateTime, LocalTime}
-import spray.json._
+import spray.json.{JsString, _}
 
 import scala.util.Random
 
@@ -234,16 +234,7 @@ class AggregateGenerator(name: Option[String],
 {
    override def timeseries(gen: String => Generator[Any]) =
    {
-      import scala.collection.JavaConversions._
-
-      val agg = aggregator match {
-         case "sum" => s: Seq[Double] => s.sum
-         case "product" => s: Seq[Double] => s.reduce((x,y) => x*y)
-         case "min" => s: Seq[Double] => s.min
-         case "max" => s: Seq[Double] => s.max
-         case "mean" => s: Seq[Double] => s.sum / s.length
-         case "median" => s: Seq[Double] => StatUtils.percentile(s.toArray, 50);
-      }
+      val agg = aggregationFunction(aggregator)
 
       val ts = generators.map(x => x match {
          case Left(s) => gen(s).timeseries(gen)
@@ -432,6 +423,43 @@ class TransitionGenerator(name: Option[String],
          that.second == this.second &&
          that.time == this.time &&
          that.interval == this.interval
+      case _ => false
+   }
+}
+
+class SlidingWindowGenerator(name: Option[String],
+                             val aggregator: String,
+                             val generator: Either[String, Generator[Any]],
+                             val duration: Duration) extends Generator[Double](name, "window")
+{
+   override def timeseries(generators: (String) => Generator[Any]) = {
+
+      val aggregation = { x: Seq[(Duration, Double)] => aggregator match {
+         case "sum" => x.map(_._2).sum
+         case "product" => x.map(_._2).sum
+         case "min" => x.map(_._2).min
+         case "max" => x.map(_._2).max
+         case "mean" => x.map(_._2).sum / x.size
+         case "median" => StatUtils.percentile(x.map(_._2).toArray, 50)
+         case _ => x.map(_._2).sum / x.size
+      }}
+
+      val d = new Duration(duration)
+
+      val base = Model.generator(generators)(generator).timeseries(generators) match {
+         case t: TimeSeries[Double] => t
+      }
+
+      SlidingWindowTimeSeries[Double](base, duration, aggregation)
+   }
+
+   override def toString() = "SlidingWindowGenerator(" + name + "," + aggregator + "," + generator + "," + duration + ")"
+
+   override def equals(o: Any) = o match {
+      case that: SlidingWindowGenerator => that.name == this.name &&
+         that.aggregator == this.aggregator &&
+         that.generator == this.generator &&
+         that.duration == this.duration
       case _ => false
    }
 }
@@ -1186,6 +1214,45 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
    }
 
+   object SlidingWindowFormat extends RootJsonFormat[SlidingWindowGenerator]
+   {
+      def write(obj: SlidingWindowGenerator) =
+      {
+         val generator = (obj.generator match {
+            case Left(s) => s.toJson
+            case Right(g) => GeneratorFormat.write(g)
+         }).toJson
+
+         var t = Map(
+            "window-length" -> obj.duration.toJson
+         )
+
+         if(obj.name.isDefined)
+            t = t.updated("name" , obj.name.get.toJson)
+
+         new JsObject(t)
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         val generator = fields("generator") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         val aggregator = fields("aggregator") match { case JsString(x) => x }
+         val duration = fields("window-length").convertTo[Duration]
+
+         new SlidingWindowGenerator(name, aggregator, generator, duration)
+      }
+   }
+
    object LimitedFormat extends RootJsonFormat[LimitedGenerator]
    {
       def write(obj: LimitedGenerator) =
@@ -1635,6 +1702,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("true") => TrueFormat.read(known)
             case JsString("false") => FalseFormat.read(known)
             case JsString("transition") => transitionFormat.read(known)
+            case JsString("window") => SlidingWindowFormat.read(known)
             case JsString("limited") => limitedFormat.read(known)
             case JsString("partial") => partialFormat.read(known)
             case JsString("time-shift") => TimeShiftFormat.read(known)
@@ -1662,6 +1730,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: TrueGenerator => TrueFormat.write(x)
       case x: FalseGenerator => FalseFormat.write(x)
       case x: TransitionGenerator => transitionFormat.write(x)
+      case x: SlidingWindowGenerator => SlidingWindowFormat.write(x)
       case x: LimitedGenerator => limitedFormat.write(x)
       case x: PartialGenerator => partialFormat.write(x)
       case x: TimeShiftGenerator => TimeShiftFormat.write(x)
