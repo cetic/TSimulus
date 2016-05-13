@@ -57,7 +57,7 @@ object ConfigurationImporter
            |         "to": "2017-01-01 00:00:00.000"
            |      }
            |   ],
-           |   "series": [
+           |   "exported": [
            |      {
            |         "name": "series-A",
            |         "generator": "daily-generator",

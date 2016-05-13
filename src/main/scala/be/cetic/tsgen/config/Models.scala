@@ -365,7 +365,7 @@ class ConditionalGenerator(name: Option[String],
       val b = failure.map(f => Model.generator(generators)(f).timeseries(generators) match {
          case t: TimeSeries[Any] => t
       }).getOrElse(new UndefinedTimeSeries())
-      
+
       ConditionalTimeSeries(cond, a, b)
    }
 
@@ -1317,7 +1317,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          new JsObject(Map(
             "generators" -> obj.generators.map(g => g.map(GeneratorFormat.write(_))).toJson,
-            "series" -> obj.series.toJson,
+            "exported" -> obj.series.toJson,
             "from" -> obj.from.toJson,
             "to" -> obj.to.toJson
          ))
@@ -1332,7 +1332,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             case _ => throw new ClassCastException
          })
 
-         val series = fields("series") match {
+         val series = fields("exported") match {
             case JsArray(x) => x.map(_.convertTo[Series[Any]]).toSeq
             case _ => throw new ClassCastException
          }

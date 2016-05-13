@@ -59,7 +59,7 @@
          "transition": "exp"
       }
    ],
-   "series": [
+   "exported": [
       {
          "name": "load",
          "generator": {"type": "conditional", "condition": {"type": "false"}, "success": "actual", "failure": "actual"},

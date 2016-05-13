@@ -248,7 +248,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |         "missing-rate": 0.01
         |      }
         |   ],
-        |   "series": [
+        |   "exported": [
         |      {
         |         "name": "series-A",
         |         "generator": "daily-generator",
@@ -295,7 +295,7 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |         "to": "2017-01-01 00:00:00.000"
         |      }
         |   ],
-        |   "series" : [
+        |   "exported" : [
         |      {
         |         "name": "series-A",
         |         "generator": "daily-generator",
