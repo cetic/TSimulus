@@ -1,7 +1,10 @@
-/**
-  * Created by mg on 7/07/16.
-  */
+package be.cetic.tsgen.core.tsservice
+
 object Main
 {
+   def main(args: Array[String])
+   {
+      println("coucou")
+   }
 
 }
