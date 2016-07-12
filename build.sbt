@@ -27,7 +27,11 @@ lazy val core = (project in file("ts-core")).
 lazy val service = (project in file("ts-service")).
    settings(commonSettings: _*).
    settings(
-      name := "ts-service"
+      name := "ts-service",
+      libraryDependencies ++= Seq(
+         "com.typesafe.akka" %% "akka-http-core" % "2.4.7",
+         "com.typesafe.akka" %% "akka-http-experimental" % "2.4.7"
+      )
    ).
    dependsOn(core)
 
