@@ -17,6 +17,7 @@ import be.cetic.tsgen.core.config.GeneratorLeafFormat._
 object GeneratorWebServer {
 
    private val PORT = 8080
+   private val HOST = "localhost"
 
    def main(args: Array[String]) {
 
@@ -49,9 +50,9 @@ object GeneratorWebServer {
       val route = path("generator") { innerRoute() }
 
 
-      val bindingFuture = Http().bindAndHandle(route, "localhost", PORT)
+      val bindingFuture = Http().bindAndHandle(route, HOST, PORT)
 
-      println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
+      println(s"Server online at http://$HOST:$PORT/\nPress RETURN to stop...")
       StdIn.readLine() // let it run until user presses return
       bindingFuture
          .flatMap(_.unbind()) // trigger unbinding from the port
