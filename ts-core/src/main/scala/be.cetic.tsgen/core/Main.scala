@@ -7,7 +7,6 @@ import spray.json._
 import DefaultJsonProtocol._
 import be.cetic.tsgen.core.config.GeneratorLeafFormat._
 import be.cetic.tsgen.core.timeseries._
-import be.cetic.tsgen.core.timeseries.composite.SlidingWindowTimeSeries
 import be.cetic.tsgen.core.timeseries.primary.{ARMA, MonthlyTimeSeries, RandomWalkTimeSeries, WeeklyTimeSeries}
 
 
@@ -139,8 +138,8 @@ object Main
            |   ],
            |   "exported": [
            |      {
-           |         "name": "load",
-           |         "generator": {"type": "first-of", "generators": [ {"type": "undefined"}, {"type": "undefined"}, {"type": "true"} ]},
+           |         "name": "actual",
+           |         "generator": "actual",
            |         "frequency": 30000
            |      }
            |   ],

@@ -8,7 +8,7 @@ lazy val commonSettings = Seq(
 
 
 lazy val root = (project in file(".")).
-   aggregate(service, core)
+   aggregate(gen_service, core)
 
 lazy val core = (project in file("ts-core")).
    settings(commonSettings: _*).
@@ -24,16 +24,17 @@ lazy val core = (project in file("ts-core")).
       )
    )
 
-lazy val service = (project in file("ts-service")).
+lazy val gen_service = (project in file("ts-service")).
    settings(commonSettings: _*).
    settings(
-      name := "ts-service",
+      name := "gen-service",
       libraryDependencies ++= Seq(
          "com.typesafe.akka" %% "akka-http-core" % "2.4.7",
          "com.typesafe.akka" %% "akka-http-experimental" % "2.4.7"
       )
    ).
    dependsOn(core)
+
 
 lazy val commonLibDependencies = Seq(
    "org.scala-lang" % "scala-reflect" % "2.11.7",

@@ -14,7 +14,7 @@ import spray.json._
 import be.cetic.tsgen.core.config.GeneratorLeafFormat._
 
 
-object WebServer {
+object GeneratorWebServer {
 
    private val PORT = 8080
 
@@ -22,12 +22,10 @@ object WebServer {
 
       implicit val system = ActorSystem("tsgen-system")
       implicit val materializer = ActorMaterializer()
-      // needed for the future flatMap/onComplete in the end
       implicit val executionContext = system.dispatcher
 
       def innerRoute() =
            post {
-              // decompress gzipped or deflated requests if required
               decodeRequest {
 
                  entity(as[String]) { document =>
