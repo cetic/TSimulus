@@ -1,17 +1,18 @@
 package be.cetic.tsgen.service
 
 import akka.actor.ActorSystem
-import akka.http.javadsl.server.Route
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.Source
 import akka.util.ByteString
 
-import scala.io.{Source, StdIn}
+import scala.io.StdIn
 import be.cetic.tsgen.core.config.Configuration
 import spray.json._
 import be.cetic.tsgen.core.config.GeneratorLeafFormat._
+
 
 object WebServer {
 
@@ -35,16 +36,16 @@ object WebServer {
 
                     val results = be.cetic.tsgen.core.Main.generate(be.cetic.tsgen.core.Main.config2Results(config))
 
+                    val answer = Source.fromIterator(() => results.map(x => x._1 + ";" + x._2 + ";" + x._3).iterator)
+
                     complete(
                        HttpEntity(
-                          ContentTypes.`text/plain(UTF-8)`,
-                          results.map(x => x._1 + ";" + x._2 + ";" + x._3).mkString("\n") // TODO: make it a stream. cf http://doc.akka.io/docs/akka/2.4.7/scala/http/introduction.html#using-akka-http
+                          ContentTypes.`text/csv(UTF-8)`,
+                          answer.map(a => ByteString(s"$a\n"))
                        )
                     )
                  }
               }
-
-
             }
 
       val route = path("generator") { innerRoute() }
