@@ -1,0 +1,97 @@
+{
+  "generators": [
+    {
+      "name": "normal-cst",
+      "type": "constant",
+      "value": 0.1
+    },
+    {
+      "name": "noise",
+      "type": "arma",
+      "model": {
+        "std": 0.05,
+        "c": 0
+      },
+      "timestep": 30000
+    },
+    {
+      "name": "normal",
+      "type": "aggregate",
+      "aggregator": "max",
+      "generators": [
+        {
+          "type": "constant",
+          "value": 0
+        },
+        {
+          "type": "aggregate",
+          "aggregator": "sum",
+          "generators": [
+            "normal-cst",
+            "noise"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rush",
+      "type": "aggregate",
+      "aggregator": "max",
+      "generators": [
+        {
+          "type": "constant",
+          "value": 0
+        },
+        {
+          "type": "aggregate",
+          "aggregator": "sum",
+          "generators": [
+            "noise",
+            {
+              "type": "constant",
+              "value": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "actual",
+      "type": "transition",
+      "first": "normal",
+      "second": {
+        "type": "transition",
+        "first": "rush",
+        "second": "normal",
+        "time": "2016-01-01 10:00:00.000",
+        "duration": 1200000,
+        "transition": "exp"
+      },
+      "time": "2016-01-01 02:00:00.000",
+      "duration": 28800000,
+      "transition": "exp"
+    }
+  ],
+  "exported": [
+    {
+      "name": "actual",
+      "generator": {
+        "type": "first-of",
+        "generators": [
+          {
+            "type": "undefined"
+          },
+          {
+            "type": "undefined"
+          },
+          {
+            "type": "true"
+          }
+        ]
+      },
+      "frequency": 30000
+    }
+  ],
+  "from": "2016-01-01 00:00:00.000",
+  "to": "2016-01-02 00:00:00.000"
+}
