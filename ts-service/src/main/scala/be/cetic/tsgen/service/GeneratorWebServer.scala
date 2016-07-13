@@ -16,6 +16,10 @@ import be.cetic.tsgen.core.config.GeneratorLeafFormat._
 import org.joda.time.format.DateTimeFormat
 import com.github.nscala_time.time.Imports._
 
+
+case class Config(port: Int = 8080, host: String = "localhost")
+
+
 /**
   * /generator => All the values of a call to the generator with a configuration document provided in the POST parameter
   * /generator/date => The values of all data for the greatest date before or equal to the specified one. format: yyyy-MM-dd'T'HH:mm:ss.SSS
@@ -23,11 +27,25 @@ import com.github.nscala_time.time.Imports._
   */
 object GeneratorWebServer {
 
-   private val PORT = 8080
-   private val HOST = "localhost"
-   val dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+   private val dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
 
-   def main(args: Array[String]) {
+   def main(args: Array[String]) : Unit =
+   {
+
+      val parser = new scopt.OptionParser[Config]("ts-gen-service") {
+         head("ts-gen-service", "0.0.1")
+
+         opt[Int]('p', "port").action( (x, c) =>
+            c.copy(port = x) )
+                .text("The port the service must listen to.")
+
+         opt[String]('h', "host")
+            .action( (x, c) => c.copy(host = x) )
+            .text("The host on which the service is running.")
+      }
+
+      if(parser.parse(args, Config()).isEmpty) System.exit(1)
+      val config = parser.parse(args, Config()).get
 
       implicit val system = ActorSystem("tsgen-system")
       implicit val materializer = ActorMaterializer()
@@ -118,14 +136,9 @@ object GeneratorWebServer {
 
       val route =  lastRoute ~ fullRoute
 
+      val bindingFuture = Http().bindAndHandle(route, config.host, config.port)
 
-
-
-
-
-      val bindingFuture = Http().bindAndHandle(route, HOST, PORT)
-
-      println(s"Server online at http://$HOST:$PORT/\nPress RETURN to stop...")
+      println(s"Server online at http://${config.host}:${config.port}/\nPress RETURN to stop...")
       StdIn.readLine() // let it run until user presses return
       bindingFuture
          .flatMap(_.unbind()) // trigger unbinding from the port

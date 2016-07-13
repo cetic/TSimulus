@@ -30,7 +30,8 @@ lazy val gen_service = (project in file("ts-service")).
       name := "gen-service",
       libraryDependencies ++= Seq(
          "com.typesafe.akka" %% "akka-http-core" % "2.4.7",
-         "com.typesafe.akka" %% "akka-http-experimental" % "2.4.7"
+         "com.typesafe.akka" %% "akka-http-experimental" % "2.4.7",
+         "com.github.scopt" %% "scopt" % "3.5.0"
       )
    ).
    dependsOn(core)
