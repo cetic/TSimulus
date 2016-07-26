@@ -1,6 +1,7 @@
 package be.cetic.tsgen.core.config
 
 import be.cetic.tsgen.core._
+import be.cetic.tsgen.core.config.GeneratorLeafFormat.ConstantFormat
 import be.cetic.tsgen.core.timeseries._
 import be.cetic.tsgen.core.timeseries.binary._
 import be.cetic.tsgen.core.timeseries.composite._
@@ -107,6 +108,8 @@ case class ARMAModel(phi: Option[Seq[Double]],
                      std: Double,
                      c: Double,
                      seed: Option[Long])
+
+
 
 class DailyGenerator(name: Option[String],
                      val points: Map[LocalTime, Double]) extends Generator[Double](name, "daily")
@@ -1205,7 +1208,8 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             "type" -> obj.`type`.toJson,
             "first" -> first,
             "second" -> second,
-            "time" -> time
+            "time" -> time,
+            "transition" -> obj.f.getOrElse("linear").toJson
          )
 
          if(obj.interval.isDefined)
@@ -1213,7 +1217,6 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          if(obj.name.isDefined)
             t = t.updated("name" , obj.name.get.toJson)
-
 
          new JsObject(t)
       }
