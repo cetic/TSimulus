@@ -90,6 +90,16 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val divideSource =
+      """
+        |{
+        |   "name": "divide-generator",
+        |   "type": "divide",
+        |   "numerator": "num-generator",
+        |   "denominator": "den-generator"
+        |}
+      """.stripMargin
+
    val correlatedSource =
       """
         |{
@@ -485,6 +495,25 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Seq(Left("daily-generator"), Left("monthly-generator"))
       )
       generator shouldBe generator.toJson.convertTo[AggregateGenerator]
+   }
+
+   "A divide generator" should "be correctly read from a json document" in {
+      val document = divideSource.parseJson
+
+      val generator = document.convertTo[DivideGenerator]
+
+      generator.name shouldBe Some("divide-generator")
+      generator.numerator shouldBe Left("num-generator")
+      generator.denominator shouldBe Left("den-generator")
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new DivideGenerator(
+         Some("divide-generator"),
+         Left("daily-generator"),
+         Left("daily-generator")
+      )
+      generator shouldBe generator.toJson.convertTo[DivideGenerator]
    }
 
    "A correlated generator" should "be correctly read from a json document" in {

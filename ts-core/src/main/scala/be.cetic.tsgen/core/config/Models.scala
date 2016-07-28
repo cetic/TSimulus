@@ -14,7 +14,6 @@ import spray.json.{JsString, _}
 
 import scala.util.Random
 
-
 abstract class Generator[+T](val name: Option[String], val `type`: String)
 {
    /**
@@ -257,6 +256,32 @@ class AggregateGenerator(name: Option[String],
 
    override def equals(o: Any) = o match {
       case that: AggregateGenerator => that.name == this.name && that.aggregator == this.aggregator && that.generators == this.generators
+      case _ => false
+   }
+}
+
+class DivideGenerator(name: Option[String],
+                      val numerator: Either[String, Generator[Any]],
+                      val denominator: Either[String, Generator[Any]]) extends Generator[Double](name, "divide")
+{
+   override def timeseries(gen: String => Generator[Any]) =
+   {
+      val num = Model.generator(gen)(numerator).timeseries(gen) match {
+         case t: TimeSeries[Double] => t
+      }
+
+      val den = Model.generator(gen)(denominator).timeseries(gen) match {
+         case t: TimeSeries[Double] => t
+      }
+
+
+      new DivideTimeSeries(num, den)
+   }
+
+   override def toString() = "DivideGenerator(" + name + "," + numerator + "," + denominator + ")"
+
+   override def equals(o: Any) = o match {
+      case that: DivideGenerator => that.name == this.name && that.numerator == this.numerator && that.denominator == this.denominator
       case _ => false
    }
 }
@@ -987,6 +1012,53 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          }
 
          new AggregateGenerator(name, aggregator, generators)
+      }
+   }
+
+   object DivideFormat extends RootJsonFormat[DivideGenerator] {
+      def write(obj: DivideGenerator) =
+      {
+         val name = obj.name.toJson
+         val numerator = (obj.numerator match {
+            case Left(s) => s.toJson
+            case Right(x) => GeneratorFormat.write(x)
+         }).toJson
+
+         val denominator = (obj.denominator match {
+            case Left(s) => s.toJson
+            case Right(x) => GeneratorFormat.write(x)
+         }).toJson
+
+         val t = Map(
+            "type" -> obj.`type`.toJson,
+            "numerator" -> numerator,
+            "denominator" -> denominator
+         )
+
+         new JsObject(
+            obj.name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+         )
+      }
+
+      def read(value: JsValue) =
+      {
+         val fields = value.asJsObject.fields
+
+         val name = fields.get("name") .map(f => f match {
+            case JsString(x) => x
+         })
+
+         val numerator = fields("numerator") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         val denominator = fields("denominator") match {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+
+         new DivideGenerator(name, numerator, denominator)
       }
    }
 
@@ -1761,6 +1833,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
    implicit val functionFormat = lazyFormat(FunctionFormat)
    implicit val aggregateFormat = lazyFormat(AggregateFormat)
+   implicit val divideFormat = lazyFormat(DivideFormat)
    implicit val correlatedFormat = lazyFormat(CorrelatedFormat)
    implicit val logisticFormat = lazyFormat(LogisticFormat)
    implicit val transitionFormat = lazyFormat(TransitionFormat)
@@ -1787,6 +1860,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("yearly") => YearlyFormat.read(known)
             case JsString("constant") => ConstantFormat.read(known)
             case JsString("aggregate") => aggregateFormat.read(known)
+            case JsString("divide") => divideFormat.read(known)
             case JsString("correlated") => correlatedFormat.read(known)
             case JsString("logistic") => logisticFormat.read(known)
             case JsString("conditional") => ConditionalFormat.read(known)
@@ -1817,6 +1891,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: YearlyGenerator => YearlyFormat.write(x)
       case x: ConstantGenerator => ConstantFormat.write(x)
       case x: AggregateGenerator => aggregateFormat.write(x)
+      case x: DivideGenerator => divideFormat.write(x)
       case x: CorrelatedGenerator => correlatedFormat.write(x)
       case x: LogisticGenerator => logisticFormat.write(x)
       case x: ConditionalGenerator => ConditionalFormat.write(x)
