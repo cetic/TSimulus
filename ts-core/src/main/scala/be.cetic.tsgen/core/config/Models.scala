@@ -1285,7 +1285,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
          )
 
          if(obj.interval.isDefined)
-            t = t.updated("interval" , obj.interval.get.toJson)
+            t = t.updated("duration" , obj.interval.get.toJson)
 
          if(obj.name.isDefined)
             t = t.updated("name" , obj.name.get.toJson)
