@@ -59,9 +59,9 @@
 
   }, {
     "type": "aggregate",
+    "name": "CPU_total",
     "aggregator": "sum",
     "generators": [{
-      "name": "CPU_total",
       "type": "aggregate",
       "aggregator": "product",
       "generators": ["nodes", {"type": "constant", "value": 0.05}]
