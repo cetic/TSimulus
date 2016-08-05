@@ -1,0 +1,18 @@
+{
+  "generators" : [
+    {
+      "name": "daily-generator",
+      "type": "daily",
+      "points": {"10:00:00.000": 4, "11:00:00.000": 16, "15:00:00.000": 12, "17:00:00.000": 32}
+    }
+  ],
+  "exported" : [
+    {
+      "name": "series-A",
+      "generator": "daily-generator",
+      "frequency": 60000
+    }
+  ],
+  "from" : "2016-01-01 07:00:00.000",
+  "to" : "2016-01-02 00:00:00.000"
+}
