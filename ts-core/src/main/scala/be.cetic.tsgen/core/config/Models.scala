@@ -443,7 +443,7 @@ class TransitionGenerator(name: Option[String],
       TransitionTimeSeries[Double](firstBase, secondBase, time, t)
    }
 
-   override def toString() = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + interval + ")"
+   override def toString() = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + interval + "," + f + ")"
 
    override def equals(o: Any) = o match {
       case that: TransitionGenerator => that.name == this.name &&
@@ -1276,6 +1276,8 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val time = obj.time.toJson
 
+         println(obj.f)
+
          var t = Map(
             "type" -> obj.`type`.toJson,
             "first" -> first,
@@ -1284,11 +1286,13 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
             "transition" -> obj.f.getOrElse("linear").toJson
          )
 
+
+
          if(obj.interval.isDefined)
-            t = t.updated("duration" , obj.interval.get.toJson)
+            t = t.updated("duration", obj.interval.get.toJson)
 
          if(obj.name.isDefined)
-            t = t.updated("name" , obj.name.get.toJson)
+            t = t.updated("name", obj.name.get.toJson)
 
          new JsObject(t)
       }

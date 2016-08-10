@@ -135,6 +135,19 @@ class ConfigurationTest extends FlatSpec with Matchers {
         |}
       """.stripMargin
 
+   val otherTransitionSource =
+      """
+        |{
+        |   "name" : "transition-generator",
+        |   "first" : "first-generator",
+        |   "second" : "second-generator",
+        |   "type": "transition",
+        |   "time" : "2016-06-07 03:45:00.000",
+        |   "duration": 300000,
+        |   "transition": "sigmoid"
+        |}
+      """.stripMargin
+
    val limitedSource =
       """
         |{
@@ -580,6 +593,31 @@ class ConfigurationTest extends FlatSpec with Matchers {
          None
       )
       generator shouldBe generator.toJson.convertTo[TransitionGenerator]
+   }
+
+   it should "correctly import its transition related parameters" in {
+      val document = otherTransitionSource.parseJson
+
+      val generator = document.convertTo[TransitionGenerator]
+
+      generator.f shouldBe Some("sigmoid")
+      generator.interval shouldBe Some(new Duration(300000))
+   }
+
+   it should "correctly export its transition related parameters" in {
+      val generator = new TransitionGenerator(
+         Some("transition-generator"),
+         Left("first-generator"),
+         Left("second-generator"),
+         new LocalDateTime(2016, 6, 7, 3, 45, 0),
+         Some(new Duration(42)),
+         Some("sigmoid")
+      )
+
+      val fields = generator.toJson.asJsObject.fields
+
+      fields.get("transition") shouldBe 'defined
+      fields("transition") match { case JsString(x) => x shouldBe "sigmoid" }
    }
 
 
