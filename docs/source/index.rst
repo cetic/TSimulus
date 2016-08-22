@@ -9,7 +9,12 @@ Welcome to ts-generator's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :caption: Overview
+    :maxdepth: 1
+
+    introduction
+    get_started
+    principles
 
 
 
@@ -19,4 +24,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

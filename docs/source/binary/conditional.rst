@@ -1,0 +1,45 @@
+Conditional time series
+-----------------------
+
+The values produced by a time series can be influenced by the values of a binary time series.
+The conditional time series takes a binary time series, called the condition, as a parameter, as well as
+one or two arbitrary times series.
+
+The value produced by the conditional time series is determined by the following rules:
+
+* If the condition value is not defined, the value of the conditional time series is also not defined.
+
+* If the condition value is true, the value of the conditional time series is the value of the first arbitrary time series.
+
+* If the condition value is false, the value of the conditional time series is the value of the second arbitrary time series.
+
+**Representation in the configuration document:**
+
+name
+    The name given to the generator describing a time series.
+    This name must be unique among all generators in the configuration document.
+
+type
+    Mandatory. Must be "conditional".
+
+condition
+    Mandatory. The generator describing the condition time series.
+
+success
+    Mandatory. The generator describing a time series, the values of which are used if the condition is verified.
+
+failure
+    Optional. The generator describing a time series, the values of which values are used if the condition
+    is not verified. If not specified, a :ref:`undefined` generator is used instead.
+
+
+**Example**::
+
+    {
+      "name": "conditional-generator",
+      "type": "conditional",
+      "condition": "binary-generator",
+      "success": "generator-A",
+      "failure": "generator-B"
+    }
+
