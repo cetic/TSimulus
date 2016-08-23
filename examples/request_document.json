@@ -1,0 +1,40 @@
+{
+  "requests": {
+    "type": "aggregate",
+    "aggregator": "max",
+    "generators": [
+      {
+        "type": "aggregate",
+        "aggregator": "sum",
+        "generators": [{
+          "duration": 3600000,
+          "first": {"type": "constant", "value": 0.0},
+          "second": {
+            "type": "transition",
+            "transition": "sigmoid",
+            "time": "2016-01-01 13:00:00.000",
+            "duration": 3600000,
+            "first": { "type": "constant", "value": 50.0},
+            "second": {"type": "constant", "value": 0.0}
+          },
+          "transition": "sigmoid",
+          "time": "2016-01-01 10:00:00.000",
+          "type": "transition"
+        }, {
+          "type": "arma",
+          "model": {"std": 0.1, "c": 0.0},
+          "timestep": 1000
+        }]
+    },
+    {"type": "constant", "value": 0.0}]
+  },
+  "observation_start": "2016-01-01 09:30:00.000",
+  "observation_end": "2016-01-01 14:30:00.000",
+  "additions": [],
+  "removals": [],
+  "time_to_up": 60000,
+  "time_to_down": 0,
+  "cluster_size": 1,
+  "resources": [{"name": "CPU", "cost": 0.1, "overhead": 0.05}, {"name": "RAM", "cost": 0.05, "overhead": 0.03}],
+  "frequency": 1000
+}

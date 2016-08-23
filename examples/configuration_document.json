@@ -1,99 +1,104 @@
-{
-  "generators": [{
-    "name": "requests",
-    "type": "aggregate",
-    "aggregator": "max",
+
+  {
     "generators": [{
+      "name": "requests",
       "type": "aggregate",
-      "aggregator": "sum",
+      "aggregator": "max",
+      "generators": [{
+        "type": "aggregate",
+        "aggregator": "sum",
+        "generators": [{
+          "type": "transition",
+          "transition": "sigmoid",
+          "time": "2016-01-01 10:00:00.000",
+          "duration": 3600000,
+          "first": {"type": "constant", "value": 0.0},
+          "second": {
+            "duration": 3600000,
+            "second": {"type": "constant", "value": 0.0},
+            "first": {"type": "constant", "value": 50.0},
+            "transition": "sigmoid",
+            "time": "2016-01-01 13:00:00.000",
+            "type": "transition"
+          }
+        }, {
+          "type": "arma",
+          "model": {"std": 0.1, "c": 0.0},
+          "timestep": 1000
+        }]
+      }, {"type": "constant", "value": 0.0}]
+    },
+      {
+      "name": "nodes",
+      "type": "aggregate",
+      "aggregator": "max",
       "generators": [{
         "type": "transition",
-        "transition": "sigmoid",
-        "time": "2016-01-01 10:00:00.000",
-        "duration": 3600000,
-        "first": {"type": "constant", "value": 0.0},
-        "second": {
-          "duration": 3600000,
-          "second": {"type": "constant", "value": 0.0},
-          "first": {"type": "constant", "value": 50.0},
-          "transition": "sigmoid",
-          "time": "2016-01-01 13:00:00.000",
-          "type": "transition"
-        }
-      }, {
-        "type": "arma",
-        "model": {"std": 0.1, "c": 0.0},
-        "timestep": 1000
-      }]
-    }, {"type": "constant", "value": 0.0}]
-  }, {
-    "name": "nodes",
-    "type": "aggregate",
-    "aggregator": "max",
-    "generators": [{
-      "type": "transition",
-      "transition": "linear",
-      "time": "2016-01-01 13:30:00.000",
-      "first": {
-        "type": "transition",
         "transition": "linear",
-        "time": "2016-01-01 13:20:00.000",
+        "time": "2016-01-01 13:30:00.000",
         "first": {
           "type": "transition",
           "transition": "linear",
-          "time": "2016-01-01 10:41:00.000",
-          "second": {"type": "constant", "value": 3.0},
+          "time": "2016-01-01 13:20:00.000",
           "first": {
             "type": "transition",
             "transition": "linear",
-            "time": "2016-01-01 10:31:00.000",
-            "second": {"type": "constant", "value": 2.0},
-            "first": { "type": "constant", "value": 1.0}
-          }
+            "time": "2016-01-01 10:41:00.000",
+            "second": {"type": "constant", "value": 3.0},
+            "first": {
+              "type": "transition",
+              "transition": "linear",
+              "time": "2016-01-01 10:31:00.000",
+              "second": {"type": "constant", "value": 2.0},
+              "first": { "type": "constant", "value": 1.0}
+            }
+          },
+          "second": {"type": "constant", "value": 2.0}
         },
-        "second": {"type": "constant", "value": 2.0}
+        "second": { "type": "constant", "value": 1.0}
       },
-      "second": { "type": "constant", "value": 1.0}
-    },
-    {"type": "constant", "value": 1.0}]
+      {"type": "constant", "value": 1.0}]
 
-  }, {
-    "type": "aggregate",
-    "name": "CPU_total",
-    "aggregator": "sum",
-    "generators": [{
+    },
+      {
       "type": "aggregate",
-      "aggregator": "product",
-      "generators": ["nodes", {"type": "constant", "value": 0.05}]
-    }, {
+      "name": "CPU_total",
+      "aggregator": "sum",
+      "generators": [{
+        "type": "aggregate",
+        "aggregator": "product",
+        "generators": ["nodes", {"type": "constant", "value": 0.05}]
+      }, {
+        "type": "aggregate",
+        "aggregator": "product",
+        "generators": ["requests", {"type": "constant", "value": 0.1}]
+      }]
+    },
+      {
+      "name": "RAM_total",
       "type": "aggregate",
-      "aggregator": "product",
-      "generators": ["requests", {"type": "constant", "value": 0.1}]
-    }]
-  }, {
-    "name": "RAM_total",
-    "type": "aggregate",
-    "aggregator": "sum",
-    "generators": [{
-      "type": "aggregate",
-      "aggregator": "product",
-      "generators": ["nodes", {"type": "constant", "value": 0.03}]
-    }, {
-      "type": "aggregate",
-      "aggregator": "product",
-      "generators": ["requests", {"type": "constant", "value": 0.05}]
-    }]
-  },
-  {"name": "CPU_relative", "type": "divide", "numerator": "CPU_total", "denominator": "nodes"},
-  {"name": "RAM_relative", "type": "divide", "numerator": "RAM_total", "denominator": "nodes"}],
-  "exported": [
-    {"name": "requests", "generator": "requests", "frequency": 1000},
-    {"name": "nodes", "generator": "nodes", "frequency": 1000},
-    {"name": "CPU_total", "generator": "CPU_total", "frequency": 1000},
-    {"name": "RAM_total", "generator": "RAM_total", "frequency": 1000},
-    {"name": "CPU_relative", "generator": "CPU_relative", "frequency": 1000},
-    {"name": "RAM_relative", "generator": "RAM_relative", "frequency": 1000}
-  ],
-  "from": "2016-01-01 09:30:00.000",
-  "to": "2016-01-01 14:30:00.000"
-}
+      "aggregator": "sum",
+      "generators": [{
+        "type": "aggregate",
+        "aggregator": "product",
+        "generators": ["nodes", {"type": "constant", "value": 0.03}]
+      }, {
+        "type": "aggregate",
+        "aggregator": "product",
+        "generators": ["requests", {"type": "constant", "value": 0.05}]
+      }]
+    },
+    {"name": "CPU_relative", "type": "divide", "numerator": "CPU_total", "denominator": "nodes"},
+    {"name": "RAM_relative", "type": "divide", "numerator": "RAM_total", "denominator": "nodes"}],
+    "exported": [
+      {"name": "requests", "generator": "requests", "frequency": 1000},
+      {"name": "nodes", "generator": "nodes", "frequency": 1000},
+      {"name": "CPU_total", "generator": "CPU_total", "frequency": 1000},
+      {"name": "RAM_total", "generator": "RAM_total", "frequency": 1000},
+      {"name": "CPU_relative", "generator": "CPU_relative", "frequency": 1000},
+      {"name": "RAM_relative", "generator": "RAM_relative", "frequency": 1000}
+    ],
+    "from": "2016-01-01 09:30:00.000",
+    "to": "2016-01-01 14:30:00.000"
+  }
+
