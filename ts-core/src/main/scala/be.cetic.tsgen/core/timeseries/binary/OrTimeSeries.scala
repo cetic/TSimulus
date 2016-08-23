@@ -18,7 +18,7 @@ case class OrTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends 
 
       (aSeries zip bSeries).map { case (x,y) => {
          val time = x._1
-         assert(time equals y._2)
+         assert(time equals y._1)
 
          val value = if(x._2.isEmpty || y._2.isEmpty) None
                      else Some(x._2.get || y._2.get)

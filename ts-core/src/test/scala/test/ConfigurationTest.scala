@@ -2,12 +2,23 @@ package be.cetic.tsgen.core.test
 
 import be.cetic.tsgen.core.config._
 import org.joda.time.{Duration, LocalDateTime, LocalTime}
+import com.github.nscala_time.time.Imports._
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.tsgen.core.config.GeneratorLeafFormat._
+import be.cetic.tsgen.core.timeseries.binary._
+import be.cetic.tsgen.core.timeseries.missing.UndefinedTimeSeries
+import org.scalatest.Inspectors._
 
 
 class ConfigurationTest extends FlatSpec with Matchers {
+
+   val dates = Seq(
+      LocalDateTime.now(),
+      LocalDateTime.now() + 5.seconds,
+      LocalDateTime.now() + 10.seconds
+   ).toStream
+
    val armaSource = """
                       |{
                       |  "name": "g3",
@@ -724,6 +735,28 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator shouldBe generator.toJson.convertTo[AndGenerator]
    }
 
+   "AND combinator" should "work" in {
+      val t = new TrueTimeSeries()
+      val f = new FalseTimeSeries()
+      val u = new UndefinedTimeSeries()
+
+      val expected = Seq(
+         (t, t, Some(true)),
+         (t, f, Some(false)),
+         (f, t, Some(false)),
+         (f, f, Some(false)),
+         (t, u, None),
+         (f, u, None),
+         (u, t, None),
+         (u, f, None),
+         (u, u, None)
+      )
+
+      forAll (expected) { e =>
+         forAll (new AndTimeSeries(e._1, e._2).compute(dates)) { result => result._2 shouldBe e._3}
+      }
+   }
+
    "A OR generator" should "be correctly read from a json document" in {
       val document = orSource.parseJson
 
@@ -743,6 +776,28 @@ class ConfigurationTest extends FlatSpec with Matchers {
       generator shouldBe generator.toJson.convertTo[OrGenerator]
    }
 
+   "OR combinator" should "work" in {
+      val t = new TrueTimeSeries()
+      val f = new FalseTimeSeries()
+      val u = new UndefinedTimeSeries()
+
+      val expected = Seq(
+         (t, t, Some(true)),
+         (t, f, Some(true)),
+         (f, t, Some(true)),
+         (f, f, Some(false)),
+         (t, u, None),
+         (f, u, None),
+         (u, t, None),
+         (u, f, None),
+         (u, u, None)
+      )
+
+      forAll (expected) { e =>
+         forAll (new OrTimeSeries(e._1, e._2).compute(dates)) { result => result._2 shouldBe e._3}
+      }
+   }
+
    "A NOT generator" should "be correctly read from a json document" in {
       val document = notSource.parseJson
 
@@ -758,6 +813,30 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Left("binary-generator")
       )
       generator shouldBe generator.toJson.convertTo[NotGenerator]
+   }
+
+   "Not True" should "be False" in {
+      val t = new TrueTimeSeries()
+      val f = new FalseTimeSeries()
+      val u = new UndefinedTimeSeries()
+
+      forAll (new NotTimeSeries(t).compute(dates)) { result => result._2 shouldBe Some(false)}
+   }
+
+   "Not False" should "be True" in {
+      val t = new TrueTimeSeries()
+      val f = new FalseTimeSeries()
+      val u = new UndefinedTimeSeries()
+
+      forAll (new NotTimeSeries(f).compute(dates)) { result => result._2 shouldBe Some(true)}
+   }
+
+   "Not Undefined" should "be Undefined" in {
+      val t = new TrueTimeSeries()
+      val f = new FalseTimeSeries()
+      val u = new UndefinedTimeSeries()
+
+      forAll (new NotTimeSeries(u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "A XOR generator" should "be correctly read from a json document" in {
@@ -777,6 +856,28 @@ class ConfigurationTest extends FlatSpec with Matchers {
          Left("monthly-generator")
       )
       generator shouldBe generator.toJson.convertTo[XorGenerator]
+   }
+
+   "XOR combinator" should "work" in {
+      val t = new TrueTimeSeries()
+      val f = new FalseTimeSeries()
+      val u = new UndefinedTimeSeries()
+
+      val expected = Seq(
+         (t, t, Some(false)),
+         (t, f, Some(true)),
+         (f, t, Some(true)),
+         (f, f, Some(false)),
+         (t, u, None),
+         (f, u, None),
+         (u, t, None),
+         (u, f, None),
+         (u, u, None)
+      )
+
+      forAll (expected) { e =>
+         forAll (new XorTimeSeries(e._1, e._2).compute(dates)) { result => result._2 shouldBe e._3}
+      }
    }
 
 
