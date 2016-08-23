@@ -31,7 +31,7 @@ import os
 # ones.
 extensions = [
     'sphinx.ext.mathjax',
-    'sphinx.ext.githubpages',
+	'rst2pdf.pdfbuilder'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -358,3 +358,5 @@ epub_exclude_files = ['search.html']
 
 # If false, no index is generated.
 #epub_use_index = True
+
+pdf_documents = [('index', u'rst2pdf', u'Documentation for the Time Series Generator', u'Mathieu Goeminne'),]
