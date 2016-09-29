@@ -1,3 +1,19 @@
+/*
+ * Copyright 2106 Cetic ASBL
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package be.cetic.tsgen.core.timeseries.primary
 
 import be.cetic.tsgen.core.timeseries.IndependantTimeSeries
@@ -38,7 +54,6 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val entries = controlPoints.map { case (key, value) => ((key-1).toDouble, value)}.toSeq.sortBy(entry => entry._1)
                                  .sortBy(_._1)
 
-      println(entries)
       val tempo_date = entries.map(_._1)
       val before_date = tempo_date.head - 1
       val penultimate_date = tempo_date.head - 2
@@ -49,9 +64,6 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
 
       val tempo_values = entries.map(_._2)
       val values = (tempo_values.takeRight(2).head +: tempo_values.last +: tempo_values :+ tempo_values.head :+ tempo_values(1)).toArray
-
-      println(dates.mkString(", "))
-      println(values.mkString(", "))
 
       new AkimaSplineInterpolator().interpolate(dates, values)
    }
@@ -78,9 +90,6 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val current_duration = Seconds.secondsBetween(year_threshold(active_year), current_time)
 
       val ratio = current_duration.getSeconds.toDouble / max_duration.getSeconds
-
-      //println("" + time + " \t" + current_time + " \t" + active_year + " \t" + ratio)
-
 
       return Some(interpolator.value(active_year + ratio))
    }

@@ -17,7 +17,7 @@ import org.joda.time.format.DateTimeFormat
 import com.github.nscala_time.time.Imports._
 
 
-case class Config(port: Int = 8080, host: String = "localhost")
+case class Config(port: Int = 8001, host: String = "0.0.0.0")
 
 
 /**
