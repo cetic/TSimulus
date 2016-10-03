@@ -32,10 +32,10 @@ package be.cetic.rtsgen.test
  * limitations under the License.
  */
 
-import be.cetic.tsgen.core.config._
-import be.cetic.tsgen.core.config.GeneratorLeafFormat._
-import be.cetic.tsgen.core.timeseries.binary._
-import be.cetic.tsgen.core.timeseries.missing.UndefinedTimeSeries
+import be.cetic.rtsgen.config._
+import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.timeseries.binary._
+import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 import com.github.nscala_time.time.Imports._
 import org.joda.time.{Duration, LocalDateTime, LocalTime}
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
