@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.primary
 
 import be.cetic.rtsgen.config.YearlyGenerator
 import org.scalatest.{FlatSpec, Matchers}
-
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
 

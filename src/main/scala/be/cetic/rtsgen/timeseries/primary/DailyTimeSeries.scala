@@ -25,7 +25,7 @@ import org.joda.time.{LocalDateTime, LocalTime}
  *
   * @param controlPoints The value a time series must pass by at a given time.
   */
-case class DailyTimeSeries(val controlPoints : Map[LocalTime, Double]) extends IndependantTimeSeries[Double]
+case class DailyTimeSeries(controlPoints : Map[LocalTime, Double]) extends IndependantTimeSeries[Double]
 {
    val interpolator = {
       val millisInADay = 24*60*60*1000

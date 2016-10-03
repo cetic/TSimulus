@@ -64,14 +64,14 @@ class NotGeneratorTest extends FlatSpec with Matchers with Inspectors
    }
 
    "Not True" should "be False" in {
-      forAll (new NotTimeSeries(t).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (NotTimeSeries(t).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "Not False" should "be True" in {
-       forAll (new NotTimeSeries(f).compute(dates)) { result => result._2 shouldBe Some(true)}
+       forAll (NotTimeSeries(f).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "Not Undefined" should "be Undefined" in {
-      forAll (new NotTimeSeries(u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (NotTimeSeries(u).compute(dates)) { result => result._2 shouldBe None}
    }
 }

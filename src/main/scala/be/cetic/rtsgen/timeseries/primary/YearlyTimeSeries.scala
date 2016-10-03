@@ -21,6 +21,8 @@ import com.github.nscala_time.time.Imports._
 import org.apache.commons.math3.analysis.interpolation.AkimaSplineInterpolator
 import org.joda.time.Seconds
 
+import scala.annotation.tailrec
+
 /**
   * Represents cyclic variation of a time series on a yearly basis.
   * Since years are on an open scale, a smooth interpolation of values is not waranted.
@@ -45,7 +47,7 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val duration = new Duration(begining.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
       val half_duration = duration / 2
 
-      return begining + half_duration
+      begining + half_duration
    }
 
    val interpolator =
@@ -72,7 +74,7 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
    {
       if (time < year_threshold(beginning-1)) return correctedTime(time + length)
       if (time > year_threshold(end+1)) return correctedTime(time - length)
-      return time
+      time
    }
 
    def compute(time: LocalDateTime): Option[Double] =
@@ -91,6 +93,6 @@ case class YearlyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
 
       val ratio = current_duration.getSeconds.toDouble / max_duration.getSeconds
 
-      return Some(interpolator.value(active_year + ratio))
+      Some(interpolator.value(active_year + ratio))
    }
 }

@@ -53,11 +53,11 @@ object Main
                 nbTimes: Int): Stream[LocalDateTime] =
    {
       val duration = new Duration(start.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
-      return sampling(start, end, new Duration(duration.getMillis / (nbTimes-1)))
+      sampling(start, end, new Duration(duration.getMillis / (nbTimes-1)))
    }
 
 
-   def main(args: Array[String])
+   def main(args: Array[String]): Unit =
    {
       val model = ARMA(std = 0.1, c = 0)
       val dtf = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss")
@@ -186,7 +186,7 @@ object Main
          val values = series._2._1
          val times = Main.sampling(from, to, frequency)
 
-         (name -> values.compute(times).filter(e => e._2.isDefined).map(e => (e._1, e._2.get)))
+         name -> values.compute(times).filter(e => e._2.isDefined).map(e => (e._1, e._2.get))
       })
    }
 

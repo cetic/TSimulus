@@ -35,7 +35,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(d: LocalDateTime) = JsString(dtf.print(d))
       def read(value: JsValue) = value match {
          case JsString(s) => dtf.parseLocalDateTime(s)
-         case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
+         case unrecognized => serializationError(s"Serialization problem $unrecognized")
       }
    }
 
@@ -43,7 +43,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(t: LocalTime) = JsString(ttf.print(t))
       def read(value: JsValue) = value match {
          case JsString(s) => ttf.parseLocalTime(s)
-         case unknown => deserializationError(s"unknown LocalTime object: ${unknown}")
+         case unknown => deserializationError(s"unknown LocalTime object: $unknown")
       }
    }
 
@@ -91,9 +91,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
 
       override def read(json: JsValue): MonthlyGenerator = {
-         val name = json.asJsObject.fields.get("name") .map(f => f match {
+         val name = json.asJsObject.fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val points = json.asJsObject.fields("points") match {
             case JsObject(x) => x
@@ -123,9 +124,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       }
 
       override def read(json: JsValue): YearlyGenerator = {
-         val name = json.asJsObject.fields.get("name") .map(f => f match {
+         val name = json.asJsObject.fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val points = json.asJsObject.fields("points") match {
             case JsObject(x) => x
@@ -154,9 +156,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       override def read(json: JsValue): ConstantGenerator = {
 
          val fields = json.asJsObject.fields
-         val name = fields.get("name").map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val value = fields("value") match {
             case JsNumber(n) => n.toDouble
@@ -191,9 +194,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
 
          val fields = json.asJsObject.fields
 
-         val name = json.asJsObject.fields.get("name") .map(f => f match {
+         val name = json.asJsObject.fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
@@ -234,9 +238,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val points = fields("points") match {
             case JsObject(x) => x
@@ -266,9 +271,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val points = value.asJsObject.fields("points") match {
             case JsObject(x) => x
@@ -286,10 +292,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val name = obj.name.toJson
          val aggregator = obj.aggregator.toJson
-         val generators = obj.generators.map(g => g match {
+         val generators = obj.generators.map
+         {
             case Left(s) => s.toJson
             case Right(x) => GeneratorFormat.write(x)
-         }).toJson
+         }.toJson
 
          val t = Map(
             "type" -> obj.`type`.toJson,
@@ -306,16 +313,18 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val aggregator = fields("aggregator").convertTo[String]
          val generators = fields("generators") match {
-            case JsArray(x) => x.map(v => v match {
+            case JsArray(x) => x.map
+            {
                case JsString(s) => Left(s)
                case g => Right(GeneratorFormat.read(g))
-            }).toList
+            }.toList
          }
 
          new AggregateGenerator(name, aggregator, generators)
@@ -351,9 +360,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val numerator = fields("numerator") match {
             case JsString(s) => Left(s)
@@ -395,9 +405,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val `type` = fields("type").convertTo[String]
          val generator = fields("generator") match {
@@ -439,9 +450,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
@@ -494,9 +506,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val condition = fields("condition") match {
             case JsString(s) => Left(s)
@@ -535,9 +548,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          new TrueGenerator(name)
       }
@@ -560,9 +574,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          new FalseGenerator(name)
       }
@@ -604,9 +619,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val first = fields("first") match {
             case JsString(s) => Left(s)
@@ -649,9 +665,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
@@ -670,10 +687,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: LimitedGenerator) =
       {
          val name = obj.name.toJson
-         val generator = (obj.generator match {
+         val generator = obj.generator match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
          val from = obj.from.toJson
          val to = obj.to.toJson
@@ -694,9 +712,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
@@ -741,9 +760,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val generator = fields("generator") match {
             case JsString(s) => Left(s)
@@ -761,10 +781,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: Series[Any]) =
       {
-         val generator = (obj.generator match {
+         val generator = obj.generator match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
          val frequency = obj.frequency.toJson
 
          new JsObject(Map(
@@ -795,7 +816,7 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       def write(obj: Configuration) =
       {
          new JsObject(Map(
-            "generators" -> obj.generators.map(g => g.map(GeneratorFormat.write(_))).toJson,
+            "generators" -> obj.generators.map(g => g.map(GeneratorFormat.write)).toJson,
             "exported" -> obj.series.toJson,
             "from" -> obj.from.toJson,
             "to" -> obj.to.toJson
@@ -806,10 +827,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val generators = fields.get("generators").map(gens => gens match {
-            case JsArray(l) => l.map(GeneratorFormat.read(_))
+         val generators = fields.get("generators").map
+         {
+            case JsArray(l) => l.map(GeneratorFormat.read)
             case _ => throw new ClassCastException
-         })
+         }
 
          val series = fields("exported") match {
             case JsArray(x) => x.map(_.convertTo[Series[Any]]).toSeq
@@ -827,10 +849,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: TimeShiftGenerator) =
       {
-         val generator = (obj.generator match {
+         val generator = obj.generator match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
          val name = obj.name
 
@@ -865,10 +888,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: ThresholdGenerator) =
       {
-         val generator = (obj.generator match {
+         val generator = obj.generator match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
          val threshold = obj.threshold.toJson
          val included = obj.included.toJson
@@ -908,15 +932,17 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: AndGenerator) =
       {
-         val a = (obj.a match {
+         val a = obj.a match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
-         val b = (obj.b match {
+         val b = obj.b match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
          val name = obj.name
 
@@ -954,15 +980,17 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: OrGenerator) =
       {
-         val a = (obj.a match {
+         val a = obj.a match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
-         val b = (obj.b match {
+         val b = obj.b match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
          val name = obj.name
 
@@ -1000,10 +1028,11 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: NotGenerator) =
       {
-         val generator = (obj.generator match {
+         val generator = obj.generator match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
          val name = obj.name
 
@@ -1035,15 +1064,17 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    {
       def write(obj: XorGenerator) =
       {
-         val a = (obj.a match {
+         val a = obj.a match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
-         val b = (obj.b match {
+         val b = obj.b match
+         {
             case Left(s) => s.toJson
             case Right(g) => GeneratorFormat.write(g)
-         })
+         }
 
          val name = obj.name
 
@@ -1094,9 +1125,10 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          new UndefinedGenerator(name)
       }
@@ -1119,16 +1151,17 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
       {
          val fields = value.asJsObject.fields
 
-         val name = fields.get("name") .map(f => f match {
+         val name = fields.get("name").map
+         {
             case JsString(x) => x
-         })
+         }
 
          val generators = fields("generators") match {
-            case JsArray(l) => l.map(g => g match
+            case JsArray(l) => l.map
             {
                case JsString(s) => Left(s)
                case g => Right(GeneratorFormat.read(g))
-            })
+            }
          }
 
          new DefaultGenerator(name, generators)

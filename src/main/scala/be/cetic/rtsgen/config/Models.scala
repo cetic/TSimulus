@@ -100,7 +100,7 @@ class ARMAGenerator(name: Option[String],
 {
    override def timeseries(generators: String => Generator[Any]) =
       RandomWalkTimeSeries(
-         new ARMA(
+         ARMA(
             model.phi.getOrElse(Seq()).toArray,
             model.theta.getOrElse(Seq()).toArray,
             model.std,
@@ -110,7 +110,7 @@ class ARMAGenerator(name: Option[String],
          timestep
       )
 
-   override def toString() = "ARMAGenerator(" + model + "," + timestep + ")"
+   override def toString = "ARMAGenerator(" + model + "," + timestep + ")"
 
    override def equals(o: Any) = o match {
       case that: ARMAGenerator => that.name == this.name && that.model == this.model && that.timestep == this.timestep
@@ -131,7 +131,7 @@ class DailyGenerator(name: Option[String],
 {
    override def timeseries(generators: String => Generator[Any]) = DailyTimeSeries(points)
 
-   override def toString() = "DailyGenerator(" + name + "," + points + ")"
+   override def toString = "DailyGenerator(" + name + "," + points + ")"
 
    override def equals(o: Any) = o match {
       case that: DailyGenerator => that.name == this.name && that.points == this.points
@@ -157,7 +157,7 @@ class WeeklyGenerator(name: Option[String],
       WeeklyTimeSeries(points map {case (k,v) => (day(k), v)})
    }
 
-   override def toString() = "WeeklyGenerator(" + name + "," + points + ")"
+   override def toString = "WeeklyGenerator(" + name + "," + points + ")"
 
    override def equals(o: Any) = o match {
       case that: WeeklyGenerator => that.name == this.name && that.points == this.points
@@ -187,7 +187,7 @@ class MonthlyGenerator(name: Option[String],
       MonthlyTimeSeries(points map {case (k,v) => (month(k), v)})
    }
 
-   override def toString() = "MonthlyGenerator(" + name + "," + points + ")"
+   override def toString = "MonthlyGenerator(" + name + "," + points + ")"
 
    override def equals(o: Any) = o match {
       case that: MonthlyGenerator => that.name == this.name && that.points == this.points
@@ -200,7 +200,7 @@ class YearlyGenerator(name: Option[String],
 {
    override def timeseries(generators: String => Generator[Any]) = YearlyTimeSeries(points)
 
-   override def toString() = "YearlyGenerator(" + name + "," + points + ")"
+   override def toString = "YearlyGenerator(" + name + "," + points + ")"
 
    override def equals(o: Any) = o match {
       case that: YearlyGenerator => that.name == this.name && that.points == this.points
@@ -213,7 +213,7 @@ class ConstantGenerator(name: Option[String],
 {
    override def timeseries(generators: String => Generator[Any]) = ConstantTimeSeries(value)
 
-   override def toString() = "ConstantGenerator(" + name + "," + value + ")"
+   override def toString = "ConstantGenerator(" + name + "," + value + ")"
 
    override def equals(o: Any) = o match {
       case that: ConstantGenerator => that.name == this.name && that.value == this.value
@@ -236,7 +236,7 @@ class FunctionGenerator(name: Option[String],
       }
    }
 
-   override def toString() = "FunctionGenerator(" + name + "," + generator + "," + slope + "," + intercept + ")"
+   override def toString = "FunctionGenerator(" + name + "," + generator + "," + slope + "," + intercept + ")"
 
    override def equals(o: Any) = o match {
       case that: FunctionGenerator => (that.name == this.name &&
@@ -255,10 +255,11 @@ class AggregateGenerator(name: Option[String],
    {
       val agg = aggregationFunction(aggregator)
 
-      val ts = generators.map(x => x match {
+      val ts = generators.map
+      {
          case Left(s) => gen(s).timeseries(gen)
          case Right(g) => g.timeseries(gen)
-      })
+      }
 
       val series = ts flatMap {
          case d : TimeSeries[Double] => Some(d)
@@ -268,7 +269,7 @@ class AggregateGenerator(name: Option[String],
       new AggregationTimeSeries[Double](agg, series)
    }
 
-   override def toString() = "AggregateGenerator(" + name + "," + aggregator + "," + generators + ")"
+   override def toString = "AggregateGenerator(" + name + "," + aggregator + "," + generators + ")"
 
    override def equals(o: Any) = o match {
       case that: AggregateGenerator => that.name == this.name && that.aggregator == this.aggregator && that.generators == this.generators
@@ -294,7 +295,7 @@ class DivideGenerator(name: Option[String],
       new DivideTimeSeries(num, den)
    }
 
-   override def toString() = "DivideGenerator(" + name + "," + numerator + "," + denominator + ")"
+   override def toString = "DivideGenerator(" + name + "," + numerator + "," + denominator + ")"
 
    override def equals(o: Any) = o match {
       case that: DivideGenerator => that.name == this.name && that.numerator == this.numerator && that.denominator == this.denominator
@@ -314,7 +315,7 @@ class CorrelatedGenerator(name: Option[String],
       }
    }
 
-   override def toString() = "CorrelatedGenerator(" + name + "," + generator + "," + "coef" + ")"
+   override def toString = "CorrelatedGenerator(" + name + "," + generator + "," + "coef" + ")"
 
    override def equals(o: Any) = o match {
       case that: CorrelatedGenerator => that.name == this.name && that.generator == this.generator && that.coef == this.coef
@@ -337,7 +338,7 @@ class LogisticGenerator(name: Option[String],
       }
    }
 
-   override def toString() = "LogisticGenerator(" + name + "," + generator + "," + location + "," + scale + "," + seed + ")"
+   override def toString = "LogisticGenerator(" + name + "," + generator + "," + location + "," + scale + "," + seed + ")"
 
    override def equals(o: Any) = o match {
       case that: LogisticGenerator => that.name == this.name &&
@@ -358,7 +359,7 @@ class TrueGenerator(name: Option[String]) extends Generator[Boolean](name, "true
       new TrueTimeSeries()
    }
 
-   override def toString() = "TrueGenerator(" + name + ")"
+   override def toString = "TrueGenerator(" + name + ")"
 
    override def equals(o: Any) = o match {
       case that: TrueGenerator => that.name == this.name
@@ -371,7 +372,7 @@ class FalseGenerator(name: Option[String]) extends Generator[Boolean](name, "fal
 
    override def timeseries(generators: (String) => Generator[Any]) = new FalseTimeSeries()
 
-   override def toString() = "FalseGenerator(" + name + ")"
+   override def toString = "FalseGenerator(" + name + ")"
 
    override def equals(o: Any) = o match {
       case that: FalseGenerator => that.name == this.name
@@ -404,7 +405,7 @@ class ConditionalGenerator(name: Option[String],
       ConditionalTimeSeries(cond, a, b)
    }
 
-   override def toString() = "ConditionalGenerator(" + name + "," + condition + "," + success + "," + failure + ")"
+   override def toString = "ConditionalGenerator(" + name + "," + condition + "," + success + "," + failure + ")"
 
    override def equals(o: Any) = o match {
       case that: ConditionalGenerator =>  that.name == this.name &&
@@ -435,14 +436,13 @@ class TransitionGenerator(name: Option[String],
       def superlin = (a: Double, b: Double, ratio: Double) => interpolation(a,b,exp(ratio))
 
       val transition = f match {
-         case Some(s) => {
+         case Some(s) =>
             s match {
                case "linear" => linear
                case "sigmoid" => sigmoid
                case "exp" => superlin
                case _ => linear
             }
-         }
          case None => linear
       }
 
@@ -459,7 +459,7 @@ class TransitionGenerator(name: Option[String],
       TransitionTimeSeries[Double](firstBase, secondBase, time, t)
    }
 
-   override def toString() = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + interval + "," + f + ")"
+   override def toString = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + interval + "," + f + ")"
 
    override def equals(o: Any) = o match {
       case that: TransitionGenerator => that.name == this.name &&
@@ -497,7 +497,7 @@ class SlidingWindowGenerator(name: Option[String],
       SlidingWindowTimeSeries[Double](base, duration, aggregation)
    }
 
-   override def toString() = "SlidingWindowGenerator(" + name + "," + aggregator + "," + generator + "," + duration + ")"
+   override def toString = "SlidingWindowGenerator(" + name + "," + aggregator + "," + generator + "," + duration + ")"
 
    override def equals(o: Any) = o match {
       case that: SlidingWindowGenerator => that.name == this.name &&
@@ -527,7 +527,7 @@ class ThresholdGenerator(name: Option[String],
       ArbitraryBinaryTimeSeries(base, predicate)
    }
 
-   override def toString() = "ThresholdGenerator(" + name + "," + generator + "," + threshold + "," + included + ")"
+   override def toString = "ThresholdGenerator(" + name + "," + generator + "," + threshold + "," + included + ")"
 
    override def equals(o: Any) = o match {
       case that: ThresholdGenerator => that.name == this.name &&
@@ -555,7 +555,7 @@ class AndGenerator(name: Option[String],
       AndTimeSeries(first, second)
    }
 
-   override def toString() = "AndGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "AndGenerator(" + name + "," + a + "," + b + ")"
 
    override def equals(o: Any) = o match {
       case that: AndGenerator => that.name == this.name &&
@@ -582,7 +582,7 @@ class OrGenerator(name: Option[String],
       OrTimeSeries(first, second)
    }
 
-   override def toString() = "OrGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "OrGenerator(" + name + "," + a + "," + b + ")"
 
    override def equals(o: Any) = o match {
       case that: OrGenerator => that.name == this.name &&
@@ -604,7 +604,7 @@ class NotGenerator(name: Option[String],
       NotTimeSeries(base)
    }
 
-   override def toString() = "Notenerator(" + name + "," + generator + ")"
+   override def toString = "Notenerator(" + name + "," + generator + ")"
 
    override def equals(o: Any) = o match {
       case that: NotGenerator => that.name == this.name &&
@@ -630,7 +630,7 @@ class XorGenerator(name: Option[String],
       XorTimeSeries(first, second)
    }
 
-   override def toString() = "XorGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "XorGenerator(" + name + "," + a + "," + b + ")"
 
    override def equals(o: Any) = o match {
       case that: XorGenerator => that.name == this.name &&
@@ -648,7 +648,7 @@ class LimitedGenerator(name: Option[String],
    override def timeseries(generators: (String) => Generator[Any]) =
       LimitedTimeSeries(Model.generator(generators)(generator).timeseries(generators), from, to)
 
-   override def toString() = "LimitedGenerator(" + name + "," + generator + "," + from + "," + to + ")"
+   override def toString = "LimitedGenerator(" + name + "," + generator + "," + from + "," + to + ")"
 
    override def equals(o: Any) = o match {
       case that: LimitedGenerator => that.name == this.name &&
@@ -671,7 +671,7 @@ class PartialGenerator(name: Option[String],
       PartialTimeSeries(ts, from, to, missingRate)
    }
 
-   override def toString() = "PartialGenerator(" + name + "," + generator + "," + from + "," + to + "," + missingRate + ")"
+   override def toString = "PartialGenerator(" + name + "," + generator + "," + from + "," + to + "," + missingRate + ")"
 
    override def equals(o: Any) = o match {
       case that: PartialGenerator => that.name == this.name &&
@@ -693,7 +693,7 @@ class TimeShiftGenerator(name: Option[String],
       TimeShiftTimeSeries(ts, shift)
    }
 
-   override def toString() = "TimeShiftGenerator(" + name + "," + shift.getMillis + ")"
+   override def toString = "TimeShiftGenerator(" + name + "," + shift.getMillis + ")"
 
    override def equals(o: Any) = o match {
       case that: TimeShiftGenerator => that.name == this.name && that.shift == this.shift
@@ -705,7 +705,7 @@ class UndefinedGenerator(name: Option[String]) extends Generator[Any](name, "und
 {
    override def timeseries(generators: (String) => Generator[Any]) = new UndefinedTimeSeries()
 
-   override def toString() = "UndefinedGenerator(" + name + ")"
+   override def toString = "UndefinedGenerator(" + name + ")"
 
    override def equals(o: Any) = o match {
       case that: UndefinedGenerator => that.name == this.name
@@ -724,7 +724,7 @@ class DefaultGenerator(name: Option[String], val gens: Seq[Either[String, Genera
       DefaultTimeSeries(underlyings)
    }
 
-   override def toString() = "UndefinedGenerator(" + name + "," + gens + ")"
+   override def toString = "UndefinedGenerator(" + name + "," + gens + ")"
 
    override def equals(o: Any) = o match {
       case that: DefaultGenerator => that.gens == this.gens
@@ -738,14 +738,14 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
 {
    import GeneratorLeafFormat._
 
-   def deserializationError(s: String): Generator[Any] = throw new DeserializationException(s)
+   def deserializationError(s: String): Generator[Any] = throw DeserializationException(s)
 
 
    def serializationError(s: String): JsValue = throw new SerializationException(s)
 
    override def read(json: JsValue): Generator[Any] = json match {
       case known:JsObject if known.fields.contains("type") =>
-         known.fields.get("type").get match{
+         known.fields("type") match{
             case JsString("arma") => ARMAFormat.read(known)
             case JsString("daily") => DailyFormat.read(known)
             case JsString("weekly") => WeeklyFormat.read(known)
@@ -771,9 +771,9 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("xor") => XorFormat.read(known)
             case JsString("undefined") => UndefinedFormat.read(known)
             case JsString("first-of") => DefaultFormat.read(known)
-            case unknown => deserializationError(s"unknown Generator object: ${unknown}")
+            case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
-      case unknown => deserializationError(s"unknown  Generator object: ${unknown}")
+      case unknown => deserializationError(s"unknown  Generator object: $unknown")
    }
 
    override def write(obj: Generator[Any]): JsValue = obj match {
@@ -802,6 +802,6 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: XorGenerator => XorFormat.write(x)
       case x: UndefinedGenerator => UndefinedFormat.write(x)
       case x: DefaultGenerator => DefaultFormat.write(x)
-      case unrecognized => serializationError(s"Serialization problem ${unrecognized}")
+      case unrecognized => serializationError(s"Serialization problem $unrecognized")
    }
 }

@@ -54,9 +54,9 @@ class ARMAGeneratorTest extends FlatSpec with Matchers
    it should "be correctly exported to a json document" in {
       val generator = new ARMAGenerator(
          Some("g3"),
-         new ARMAModel(
-            Some(Seq(1,2,3)),
-            Some(Seq(4,3,2,1)),
+         ARMAModel(
+            Some(Seq(1, 2, 3)),
+            Some(Seq(4, 3, 2, 1)),
             0.5,
             4.2,
             Some(1809)

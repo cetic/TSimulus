@@ -34,13 +34,13 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
      */
    private def month_threshold(month : YearMonth): LocalDateTime =
    {
-      val begining = (month.toLocalDate(1).toLocalDateTime(new LocalTime(0,0,0)))
-      val end = (begining + 1.month - 1.day) withTime(23,59,49,999)
+      val beginning = month.toLocalDate(1).toLocalDateTime(new LocalTime(0, 0, 0))
+      val end = (beginning + 1.month - 1.day) withTime(23,59,49,999)
 
-      val duration = new Duration(begining.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
+      val duration = new Duration(beginning.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
       val half_duration = duration / 2
 
-      return begining + half_duration
+      beginning + half_duration
    }
 
    val interpolator = {
@@ -73,6 +73,6 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
 
       val ratio = current_duration.getSeconds.toDouble / max_duration.getSeconds
 
-      return Some(interpolator.value((active_year_month.getMonthOfYear - 1) + ratio))
+      Some(interpolator.value((active_year_month.getMonthOfYear - 1) + ratio))
    }
 }

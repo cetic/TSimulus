@@ -39,21 +39,21 @@ case class SlidingWindowTimeSeries[T](base: TimeSeries[T], duration: Duration, a
 
    override def compute(times: Stream[LocalDateTime]): Stream[(LocalDateTime, Option[T])] =
    {
-      def addElement[T](elem: (LocalDateTime, Option[T]),
-                        buffer: List[(LocalDateTime, T)],
-                        predicate: ((LocalDateTime, T)) => Boolean): List[(LocalDateTime, T)] =
+      def addElement(elem: (LocalDateTime, Option[T]),
+                     buffer: List[(LocalDateTime, T)],
+                     predicate: ((LocalDateTime, T)) => Boolean): List[(LocalDateTime, T)] =
       {
          val completed = elem match {
             case (t: LocalDateTime, Some(v)) => (t, v) :: buffer
             case _ => buffer
          }
 
-         completed takeWhile (predicate)
+         completed takeWhile predicate
       }
 
       val data = base.compute(times)
 
-      data.scanLeft(new LocalDateTime(), (List[(LocalDateTime, T)]()))((oldBuffer, entry) => {
+      data.scanLeft(new LocalDateTime(), List[(LocalDateTime, T)]())((oldBuffer, entry) => {
          val limit = entry._1 - duration
          val predicate = (x: (LocalDateTime, T)) => x._1 >= limit
 

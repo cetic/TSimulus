@@ -37,11 +37,11 @@ import scala.util.Random
   * @param c     a constant
   * @param seed  the seed used to generate the white noise. For a given seed, the process is deterministic
   */
-case class ARMA(val phi: Array[Double] = Array(),
-                val theta: Array[Double] = Array(),
-                val std: Double = 1,
-                val c: Double = 0,
-                val seed: Long = Random.nextLong)
+case class ARMA(phi: Array[Double] = Array(),
+                theta: Array[Double] = Array(),
+                std: Double = 1,
+                c: Double = 0,
+                seed: Long = Random.nextLong)
 {
    /**
      * Generates a sequence of values using a Random path progress, and based on the specified ARMA parameters.
@@ -58,10 +58,10 @@ case class ARMA(val phi: Array[Double] = Array(),
 
          val ret = c + new_epsilon + sum_phi + sum_theta
 
-         return ret #:: rec_generate(ret, new_epsilon, r)
+         ret #:: rec_generate(ret, new_epsilon, r)
       }
 
-      return rec_generate(0D, 0D, new Random(seed))
+      rec_generate(0D, 0D, new Random(seed))
    }
 }
 
@@ -74,7 +74,7 @@ object AR
    def apply(phi: Array[Double],
              std: Double,
              c: Double,
-             seed: Long = Random.nextLong) = new ARMA(phi = phi, std = std, c = c, seed = seed)
+             seed: Long = Random.nextLong) = ARMA(phi = phi, std = std, c = c, seed = seed)
 }
 
 /**
@@ -86,5 +86,5 @@ object MA
    def apply(theta: Array[Double],
              std: Double,
              c: Double,
-             seed: Long = Random.nextLong) = new ARMA(theta = theta, std = std, c = c, seed = seed)
+             seed: Long = Random.nextLong) = ARMA(theta = theta, std = std, c = c, seed = seed)
 }

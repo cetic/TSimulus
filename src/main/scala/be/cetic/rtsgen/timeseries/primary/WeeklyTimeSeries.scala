@@ -40,7 +40,7 @@ case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
       val duration = new Duration(begining.toDateTime(DateTimeZone.UTC), end.toDateTime(DateTimeZone.UTC))
       val half_duration = duration / 2
 
-      return begining + half_duration
+      begining + half_duration
    }
 
    val interpolator =
@@ -78,6 +78,6 @@ case class WeeklyTimeSeries(controlPoints: Map[Int, Double]) extends Independant
 
       val ratio = current_duration.getSeconds.toDouble / max_duration.getSeconds
 
-      return Some(interpolator.value((active_day.getDayOfWeek - 1) + ratio))
+      Some(interpolator.value((active_day.getDayOfWeek - 1) + ratio))
    }
 }

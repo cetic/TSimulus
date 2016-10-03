@@ -68,38 +68,38 @@ class OrGeneratorTest extends FlatSpec with Matchers with Inspectors
    }
 
    "True OR True" should "be True" in {
-      forAll (new OrTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (OrTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "True OR False" should "be True" in {
-      forAll (new OrTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (OrTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "False OR True" should "be True" in {
-      forAll (new OrTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (OrTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "False OR False" should "be False" in {
-      forAll (new OrTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (OrTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "True OR Undetermined" should "be Undetermined" in {
-      forAll (new OrTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (OrTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "False OR Undetermined" should "be Undetermined" in {
-      forAll (new OrTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (OrTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undetermined OR True" should "be Undetermined" in {
-      forAll (new OrTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
+      forAll (OrTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undetermined OR False" should "be Undetermined" in {
-      forAll (new OrTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
+      forAll (OrTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undetermined OR Undetermined" should "be Undetermined" in {
-      forAll (new OrTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (OrTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
    }
 }

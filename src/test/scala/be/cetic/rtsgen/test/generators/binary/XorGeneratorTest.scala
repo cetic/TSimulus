@@ -17,7 +17,7 @@
 package be.cetic.rtsgen.test.generators.binary
 
 import be.cetic.rtsgen.config.XorGenerator
-import be.cetic.rtsgen.timeseries.binary.{FalseTimeSeries, OrTimeSeries, TrueTimeSeries, XorTimeSeries}
+import be.cetic.rtsgen.timeseries.binary.{FalseTimeSeries, TrueTimeSeries, XorTimeSeries}
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 import org.joda.time.LocalDateTime
 import com.github.nscala_time.time.Imports._
@@ -67,38 +67,38 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors
    }
 
    "True XOR True" should "be False" in {
-      forAll (new XorTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (XorTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "True XOR False" should "be True" in {
-      forAll (new XorTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (XorTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "False XOR True" should "be True" in {
-      forAll (new XorTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (XorTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "False XOR False" should "be False" in {
-      forAll (new XorTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (XorTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "True XOR Undetermined" should "be Undetermined" in {
-      forAll (new XorTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (XorTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "False XOR Undetermined" should "be Undetermined" in {
-      forAll (new XorTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (XorTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undetermined XOR True" should "be Undetermined" in {
-      forAll (new XorTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
+      forAll (XorTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undetermined XOR False" should "be Undetermined" in {
-      forAll (new XorTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
+      forAll (XorTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undetermined XOR Undetermined" should "be Undetermined" in {
-      forAll (new XorTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (XorTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
    }
 }

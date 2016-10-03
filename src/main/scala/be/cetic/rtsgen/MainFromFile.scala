@@ -27,7 +27,7 @@ import scala.io.Source
 
 object MainFromFile
 {
-   def main(args: Array[String])
+   def main(args: Array[String]): Unit =
    {
       val content = Source .fromFile(new File(args(0)))
                            .getLines()

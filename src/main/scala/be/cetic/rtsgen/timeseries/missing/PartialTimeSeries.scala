@@ -42,17 +42,19 @@ case class PartialTimeSeries[T](base: TimeSeries[T],
       base.compute(times).map
       { case (t, v) =>
       {
-         (t, v.map(x => {
+         (t, v.flatMap(x =>
+         {
             if ((from.isDefined && t < from.get) || (to.isDefined && t > to.get)) None
             else
             {
-               missingRate match {
+               missingRate match
+               {
                   case None => Some(x)
                   case Some(odds) => if (Random.nextDouble() < odds) None
                                      else Some(x)
                }
             }
-         }).flatten)
+         }))
       }
       }
    }
