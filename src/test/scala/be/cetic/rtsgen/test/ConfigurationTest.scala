@@ -64,15 +64,6 @@ class ConfigurationTest extends FlatSpec with Matchers with Inspectors {
                       |}
                     """.stripMargin
 
-   val dailySource =
-      """
-        |{
-        |    "name": "daily-generator",
-        |    "type": "daily",
-        |    "points": {"11:00:00.000" : 6, "17:00:00.000" : 8, "07:00:00.000" : 2}
-        |}
-      """.stripMargin
-
    val monthlySource =
       """
         |{
@@ -402,28 +393,6 @@ class ConfigurationTest extends FlatSpec with Matchers with Inspectors {
          new Duration(180000)
       )
       generator shouldBe generator.toJson.convertTo[ARMAGenerator]
-   }
-
-   "A daily generator" should "be correctly read from a json document" in {
-      val document = dailySource.parseJson
-
-      val generator = document.convertTo[DailyGenerator]
-
-      generator.name shouldBe Some("daily-generator")
-      generator.`type` shouldBe "daily"
-      generator.points shouldBe Map(
-         new LocalTime(11,0,0) -> 6,
-         new LocalTime(17,0,0) -> 8,
-         new LocalTime(7,0,0) -> 2)
-   }
-
-   it should "be correctly exported to a json document" in {
-      val generator = new DailyGenerator(Some("daily-generator"), Map(
-         new LocalTime(11,0,0) -> 6,
-         new LocalTime(17,0,0) -> 8,
-         new LocalTime(7,0,0) -> 2))
-
-      generator shouldBe generator.toJson.convertTo[DailyGenerator]
    }
 
    "A weekly generator" should "be correctly read from a json document" in {
