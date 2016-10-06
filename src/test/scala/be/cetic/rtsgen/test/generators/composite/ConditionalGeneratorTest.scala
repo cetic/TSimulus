@@ -22,7 +22,6 @@ import be.cetic.rtsgen.generators.primary.ConstantGenerator
 import org.scalatest.{FlatSpec, Matchers}
 
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 
 class ConditionalGeneratorTest extends FlatSpec with Matchers
 {
@@ -38,9 +37,7 @@ class ConditionalGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A conditional generator" should "be correctly read from a json document" in {
-      val document = source.parseJson
-
-      val generator = document.convertTo[ConditionalGenerator]
+      val generator = ConditionalGenerator(source.parseJson)
 
       generator.name shouldBe Some("conditional-generator")
       generator.condition shouldBe 'right
@@ -55,6 +52,6 @@ class ConditionalGeneratorTest extends FlatSpec with Matchers
          Right(new ConstantGenerator(None, 17)),
          Some(Right(new ConstantGenerator(None, 42)))
       )
-      generator shouldBe generator.toJson.convertTo[ConditionalGenerator]
+      generator shouldBe ConditionalGenerator(generator.toJson)
    }
 }

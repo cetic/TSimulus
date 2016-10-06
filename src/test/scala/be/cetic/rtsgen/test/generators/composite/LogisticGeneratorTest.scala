@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.LogisticGenerator
 
 class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
@@ -36,9 +35,7 @@ class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
       """.stripMargin
 
    "A logistic generator" should "be correctly read from a json document" in {
-      val document = logisticSource.parseJson
-
-      val generator = document.convertTo[LogisticGenerator]
+      val generator = LogisticGenerator(logisticSource.parseJson)
 
       generator.name shouldBe Some("logistic-generator")
       generator.generator shouldBe Left("daily-generator")
@@ -55,6 +52,6 @@ class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
          2.4,
          Some(1809)
       )
-      generator shouldBe generator.toJson.convertTo[LogisticGenerator]
+      generator shouldBe LogisticGenerator(generator.toJson)
    }
 }

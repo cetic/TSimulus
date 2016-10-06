@@ -16,12 +16,13 @@
 
 package be.cetic.rtsgen.generators.composite
 
-import be.cetic.rtsgen.config.Model
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.SlidingWindowTimeSeries
 import org.apache.commons.math3.stat.StatUtils
 import org.joda.time.Duration
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.composite.SlidingWindowTimeSeries]].
@@ -60,5 +61,43 @@ class SlidingWindowGenerator(name: Option[String],
          that.generator == this.generator &&
          that.duration == this.duration
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _generator = (generator match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+
+      var t = Map(
+         "window-length" -> duration.toJson
+      )
+
+      if(name.isDefined)
+         t = t.updated("name" , name.get.toJson)
+
+      new JsObject(t)
+   }
+}
+
+object SlidingWindowGenerator extends DefaultJsonProtocol with TimeToJson
+{
+   def apply(value: JsValue): SlidingWindowGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val generator = fields("generator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      val aggregator = fields("aggregator") match { case JsString(x) => x }
+      val duration = fields("window-length").convertTo[Duration]
+
+      new SlidingWindowGenerator(name, aggregator, generator, duration)
    }
 }

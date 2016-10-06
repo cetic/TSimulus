@@ -16,9 +16,10 @@
 
 package be.cetic.rtsgen.generators.composite
 
-import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.composite.FunctionTimeSeries
+import spray.json.{DefaultJsonProtocol, JsNumber, JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.composite.FunctionTimeSeries]].
@@ -45,5 +46,52 @@ class FunctionGenerator(name: Option[String],
          that.slope == this.slope &&
          that.intercept == this.intercept)
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+
+      val _generator = (generator match {
+         case Left(s) => s.toJson
+         case Right(g) => GeneratorFormat.write(g)
+      }).toJson
+
+      val t = Map(
+         "type" -> `type`.toJson,
+         "generator" -> _generator,
+         "slope" -> slope.toJson,
+         "intercept" -> intercept.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object FunctionGenerator
+{
+   def apply(json: JsValue): FunctionGenerator = {
+
+      val fields = json.asJsObject.fields
+
+      val name = json.asJsObject.fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val generator = fields("generator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      val slope = fields("slope") match {
+         case JsNumber(n) => n.toDouble
+      }
+
+      val intercept = fields("intercept") match {
+         case JsNumber(n) => n.toDouble
+      }
+
+      new FunctionGenerator(name, generator, slope, intercept)
    }
 }

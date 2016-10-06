@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.missing.PartialGenerator
 import org.joda.time.LocalDateTime
 
@@ -37,9 +36,7 @@ class PartialGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A partial generator" should "be correctly read from a json document" in {
-      val document = partialSource.parseJson
-
-      val generator = document.convertTo[PartialGenerator]
+      val generator = PartialGenerator(partialSource.parseJson)
 
       generator.name shouldBe Some("partial-generator")
       generator.generator shouldBe Left("daily-generator")
@@ -56,6 +53,6 @@ class PartialGeneratorTest extends FlatSpec with Matchers
          Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
          Some(0.2)
       )
-      generator shouldBe generator.toJson.convertTo[PartialGenerator]
+      generator shouldBe PartialGenerator(generator.toJson)
    }
 }

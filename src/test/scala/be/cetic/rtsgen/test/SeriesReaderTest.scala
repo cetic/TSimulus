@@ -16,7 +16,6 @@
 
 package be.cetic.rtsgen.test
 
-import be.cetic.rtsgen.config.GeneratorLeafFormat.SeriesFormat
 import be.cetic.rtsgen.config.Series
 import org.joda.time.Duration
 import org.scalatest.{FlatSpec, Matchers}
@@ -36,7 +35,7 @@ class SeriesReaderTest extends FlatSpec with Matchers
    "A series" should "be correctly read from a json document" in {
       val document = seriesSource.parseJson
 
-      val series = document.convertTo[Series[Any]]
+      val series = Series(document)
 
       series.name shouldBe "myName"
       series.generator shouldBe Left("daily-generator")
@@ -49,6 +48,6 @@ class SeriesReaderTest extends FlatSpec with Matchers
          Left("daily-generator"),
          new Duration(60000)
       )
-      series shouldBe SeriesFormat.read(SeriesFormat.write(series))
+      series shouldBe Series(series.toJson)
    }
 }

@@ -33,7 +33,6 @@ package be.cetic.rtsgen.test
  */
 
 import be.cetic.rtsgen.config._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.primary.{ARMAGenerator, DailyGenerator}
 import be.cetic.rtsgen.generators.composite.AggregateGenerator
 import be.cetic.rtsgen.generators.missing.PartialGenerator
@@ -141,7 +140,7 @@ class ConfigurationTest extends FlatSpec with Matchers with Inspectors
    "A configuration" should "be correctly read from a json document" in {
       val document = configurationSource.parseJson
 
-      val configuration = document.convertTo[Configuration]
+      val configuration = Configuration(document)
 
       configuration.generators shouldBe Some(Seq(
          new DailyGenerator(
@@ -189,12 +188,12 @@ class ConfigurationTest extends FlatSpec with Matchers with Inspectors
          Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
          Some(0.001)
       )
-      generator shouldBe generator.toJson.convertTo[PartialGenerator]
+      generator shouldBe PartialGenerator(generator.toJson)
    }
 
    "A complete configuration" should "be correctly read from a json document" in {
       val document = completeSource.parseJson
 
-      document shouldBe document.convertTo[Configuration].toJson
+      document shouldBe Configuration(document).toJson
    }
 }

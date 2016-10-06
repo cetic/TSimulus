@@ -18,6 +18,7 @@ package be.cetic.rtsgen.generators.missing
 
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries]].
@@ -31,5 +32,29 @@ class UndefinedGenerator(name: Option[String]) extends Generator[Any](name, "und
    override def equals(o: Any) = o match {
       case that: UndefinedGenerator => that.name == this.name
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val t = Map(
+         "type" -> `type`.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object UndefinedGenerator
+{
+   def apply(value: JsValue): UndefinedGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      new UndefinedGenerator(name)
    }
 }

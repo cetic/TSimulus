@@ -16,10 +16,11 @@
 
 package be.cetic.rtsgen.generators.binary
 
-import be.cetic.rtsgen.config.Model
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.binary.LogisticTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 import scala.util.Random
 
@@ -50,5 +51,46 @@ class LogisticGenerator(name: Option[String],
          that.scale == this.scale &&
          that.seed == this.seed
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _generator = (generator match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+
+      val t = Map(
+         "type" -> `type`.toJson,
+         "generator" -> _generator,
+         "location" -> location.toJson,
+         "scale" -> scale.toJson,
+         "seed" -> seed.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object LogisticGenerator extends TimeToJson
+{
+   def apply(value: JsValue): LogisticGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val generator = fields("generator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+      val location = fields("location").convertTo[Double]
+      val scale = fields("scale").convertTo[Double]
+      val seed = fields.get("seed").map(_.convertTo[Int])
+
+      new LogisticGenerator(name, generator, location, scale, seed)
    }
 }

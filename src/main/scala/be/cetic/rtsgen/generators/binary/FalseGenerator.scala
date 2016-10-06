@@ -18,6 +18,7 @@ package be.cetic.rtsgen.generators.binary
 
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.binary.FalseTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.binary.FalseTimeSeries]].
@@ -32,5 +33,29 @@ class FalseGenerator(name: Option[String]) extends Generator[Boolean](name, "fal
    override def equals(o: Any) = o match {
       case that: FalseGenerator => that.name == this.name
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val t = Map(
+         "type" -> `type`.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object FalseGenerator
+{
+   def apply(value: JsValue): FalseGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      new FalseGenerator(name)
    }
 }

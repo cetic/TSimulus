@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.composite.AggregateGenerator
 
 class AggregateGeneratorTest extends FlatSpec with Matchers
@@ -34,9 +33,7 @@ class AggregateGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "An aggregate generator" should "be correctly read from a json document" in {
-      val document = aggregateSource.parseJson
-
-      val generator = document.convertTo[AggregateGenerator]
+      val generator = AggregateGenerator(aggregateSource.parseJson)
 
       generator.name shouldBe Some("aggregate-generator")
       generator.aggregator shouldBe "sum"
@@ -49,6 +46,6 @@ class AggregateGeneratorTest extends FlatSpec with Matchers
          "sum",
          Seq(Left("daily-generator"), Left("monthly-generator"))
       )
-      generator shouldBe generator.toJson.convertTo[AggregateGenerator]
+      generator shouldBe AggregateGenerator(generator.toJson)
    }
 }

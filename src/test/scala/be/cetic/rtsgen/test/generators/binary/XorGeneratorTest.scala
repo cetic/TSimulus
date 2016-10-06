@@ -22,7 +22,6 @@ import org.joda.time.LocalDateTime
 import com.github.nscala_time.time.Imports._
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.XorGenerator
 import be.cetic.rtsgen.test.RTSTest
 
@@ -40,9 +39,7 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       """.stripMargin
 
    "A XOR generator" should "be correctly read from a json document" in {
-      val document = xorSource.parseJson
-
-      val generator = document.convertTo[XorGenerator]
+      val generator = XorGenerator(xorSource.parseJson)
 
       generator.name shouldBe Some("xor-generator")
       generator.a shouldBe Left("daily-generator")
@@ -55,6 +52,6 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
          Left("daily-generator"),
          Left("monthly-generator")
       )
-      generator shouldBe generator.toJson.convertTo[XorGenerator]
+      generator shouldBe XorGenerator(generator.toJson)
    }
 }

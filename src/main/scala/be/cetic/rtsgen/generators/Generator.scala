@@ -17,8 +17,10 @@
 package be.cetic.rtsgen.generators
 
 import be.cetic.rtsgen.timeseries.TimeSeries
+import spray.json.{DefaultJsonProtocol, JsValue}
 
-abstract class Generator[+T](val name: Option[String], val `type`: String)
+abstract class Generator[+T](val name: Option[String], val `type`: String) extends DefaultJsonProtocol
+                                                                           with TimeToJson
 {
    /**
      * @param generators an entity able to discover all the first-level generators on the
@@ -26,4 +28,6 @@ abstract class Generator[+T](val name: Option[String], val `type`: String)
      * @return the time series associated to this generator
      */
    def timeseries(generators: String => Generator[Any]): TimeSeries[T]
+
+   def toJson: JsValue
 }

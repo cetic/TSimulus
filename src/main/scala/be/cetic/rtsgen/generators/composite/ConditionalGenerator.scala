@@ -16,11 +16,12 @@
 
 package be.cetic.rtsgen.generators.composite
 
-import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.ConditionalTimeSeries
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 
 /**
@@ -60,5 +61,67 @@ class ConditionalGenerator(name: Option[String],
                                           that.success == this.success &&
                                           that.failure == this.failure
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _condition = (condition match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+
+      val _success = (success match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+
+      var t = Map(
+         "type" -> `type`.toJson,
+         "condition" -> _condition,
+         "success" -> _success
+      )
+
+      if(failure.isDefined)
+      {
+         val _failure = (failure.get match {
+            case Left(s) => s.toJson
+            case Right(g) => g.toJson
+         }).toJson
+
+         t = t.updated("failure", _failure)
+      }
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object ConditionalGenerator
+{
+   def apply(value: JsValue): ConditionalGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val condition = fields("condition") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      val success = fields("success") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      val failure = if(fields.contains("failure")) fields("failure") match {
+         case JsString(s) => Some(Left(s))
+         case g => Some(Right(GeneratorFormat.read(g)))
+      }
+                    else None
+
+      new ConditionalGenerator(name, condition, success, failure)
    }
 }

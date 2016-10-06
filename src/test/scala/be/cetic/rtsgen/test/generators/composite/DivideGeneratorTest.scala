@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.composite.DivideGenerator
 
 class DivideGeneratorTest extends FlatSpec with Matchers
@@ -34,9 +33,7 @@ class DivideGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A divide generator" should "be correctly read from a json document" in {
-      val document = divideSource.parseJson
-
-      val generator = document.convertTo[DivideGenerator]
+      val generator = DivideGenerator(divideSource.parseJson)
 
       generator.name shouldBe Some("divide-generator")
       generator.numerator shouldBe Left("num-generator")
@@ -49,6 +46,6 @@ class DivideGeneratorTest extends FlatSpec with Matchers
          Left("daily-generator"),
          Left("daily-generator")
       )
-      generator shouldBe generator.toJson.convertTo[DivideGenerator]
+      generator shouldBe DivideGenerator(generator.toJson)
    }
 }

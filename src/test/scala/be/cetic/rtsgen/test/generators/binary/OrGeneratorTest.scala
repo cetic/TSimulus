@@ -23,7 +23,6 @@ import com.github.nscala_time.time.Imports._
 import be.cetic.rtsgen.generators.binary.OrGenerator
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.test.RTSTest
 
 
@@ -40,9 +39,7 @@ class OrGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTes
       """.stripMargin
 
    "A OR generator" should "be correctly read from a json document" in {
-      val document = orSource.parseJson
-
-      val generator = document.convertTo[OrGenerator]
+      val generator = OrGenerator(orSource.parseJson)
 
       generator.name shouldBe Some("or-generator")
       generator.a shouldBe Left("daily-generator")
@@ -55,6 +52,6 @@ class OrGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTes
          Left("daily-generator"),
          Left("monthly-generator")
       )
-      generator shouldBe generator.toJson.convertTo[OrGenerator]
+      generator shouldBe OrGenerator(generator.toJson)
    }
 }

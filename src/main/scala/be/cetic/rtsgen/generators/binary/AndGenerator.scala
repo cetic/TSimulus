@@ -16,10 +16,11 @@
 
 package be.cetic.rtsgen.generators.binary
 
-import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.binary.AndTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.binary.AndTimeSeries]].
@@ -48,5 +49,50 @@ class AndGenerator(name: Option[String],
          that.a == this.a &&
          that.b == this.b
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _a = a match
+      {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }
+
+      val _b = b match
+      {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }
+
+      var t = Map(
+         "a" -> _a,
+         "b" -> _b,
+         "type" -> `type`.toJson
+      )
+
+      if(name.isDefined) t = t.updated("name", name.toJson)
+
+      new JsObject(t)
+   }
+}
+
+object AndGenerator extends DefaultJsonProtocol
+{
+   def apply(value: JsValue): AndGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map(_.convertTo[String])
+
+      val a = fields("a") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      val b = fields("b") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      new AndGenerator(name, a, b)
    }
 }

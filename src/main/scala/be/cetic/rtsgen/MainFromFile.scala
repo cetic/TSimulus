@@ -19,7 +19,6 @@ package be.cetic.rtsgen
 import java.io.File
 
 import be.cetic.rtsgen.config.Configuration
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import com.github.nscala_time.time.Imports._
 import spray.json._
 
@@ -35,9 +34,7 @@ object MainFromFile
 
       val dtf = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss.SSS")
 
-      val document = content.parseJson
-
-      val config = document.convertTo[Configuration]
+      val config = Configuration(content.parseJson)
 
       println("date;series;value")
 

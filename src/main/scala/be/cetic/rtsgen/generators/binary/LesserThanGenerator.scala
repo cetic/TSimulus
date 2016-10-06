@@ -29,7 +29,7 @@ import spray.json.{DefaultJsonProtocol, JsObject, JsString, JsValue, RootJsonFor
 class LesserThanGenerator( name: Option[String],
                             val a: Either[String, Generator[Any]],
                             val b: Either[String, Generator[Any]],
-                            val strict: Option[Boolean]) extends Generator[Any](name, "GT")
+                            val strict: Option[Boolean]) extends Generator[Any](name, "lesser-than")
 {
    override def timeseries(generators: (String) => Generator[Any]) =
    {
@@ -56,30 +56,24 @@ class LesserThanGenerator( name: Option[String],
          that.strict == this.strict
       case _ => false
    }
-}
 
-object LesserThanFormat extends RootJsonFormat[LesserThanGenerator] with DefaultJsonProtocol
-{
-   def write(obj: LesserThanGenerator) =
-   {
-      val a = obj.a match
+   override def toJson: JsValue = {
+      val _a = a match
       {
          case Left(s) => s.toJson
-         case Right(g) => GeneratorFormat.write(g)
+         case Right(g) => g.toJson
       }
 
-      val b = obj.b match
+      val _b = b match
       {
          case Left(s) => s.toJson
-         case Right(g) => GeneratorFormat.write(g)
+         case Right(g) => g.toJson
       }
-
-      val name = obj.name
-      val strict = obj.strict
 
       var t = Map(
-         "a" -> a,
-         "b" -> b
+         "a" -> _a,
+         "b" -> _b,
+         "type" -> `type`.toJson
       )
 
       if(name.isDefined) t = t.updated("name", name.toJson)
@@ -87,8 +81,11 @@ object LesserThanFormat extends RootJsonFormat[LesserThanGenerator] with Default
 
       new JsObject(t)
    }
+}
 
-   def read(value: JsValue) =
+object LesserThanGenerator extends DefaultJsonProtocol
+{
+   def apply(value: JsValue): LesserThanGenerator =
    {
       val fields = value.asJsObject.fields
 

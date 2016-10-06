@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.primary
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.primary.WeeklyGenerator
 
 class WeeklyGeneratorTest extends FlatSpec with Matchers
@@ -33,9 +32,7 @@ class WeeklyGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A weekly generator" should "be correctly read from a json document" in {
-      val document = weeklySource.parseJson
-
-      val generator = document.convertTo[WeeklyGenerator]
+      val generator = WeeklyGenerator(weeklySource.parseJson)
 
       generator.name shouldBe Some("weekly-generator")
       generator.`type` shouldBe "weekly"
@@ -51,7 +48,7 @@ class WeeklyGeneratorTest extends FlatSpec with Matchers
          "friday" -> -3.6,
          "sunday" -> 10.9))
 
-      generator shouldBe generator.toJson.convertTo[WeeklyGenerator]
+      generator shouldBe WeeklyGenerator(generator.toJson)
    }
 
 }

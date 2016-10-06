@@ -17,7 +17,6 @@
 package be.cetic.rtsgen
 
 import be.cetic.rtsgen.config.Configuration
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.timeseries._
 import be.cetic.rtsgen.timeseries.primary.{ARMA, MonthlyTimeSeries, WeeklyTimeSeries}
 import com.github.nscala_time.time.Imports._
@@ -163,7 +162,7 @@ object Main
            |}
          """.stripMargin.parseJson
 
-      val config = document.convertTo[Configuration]
+      val config = Configuration(document)
 
       println("date;series;value")
 

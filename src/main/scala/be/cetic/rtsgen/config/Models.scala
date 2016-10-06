@@ -21,9 +21,6 @@ import be.cetic.rtsgen.generators.binary._
 import be.cetic.rtsgen.generators.composite._
 import be.cetic.rtsgen.generators.missing.{DefaultGenerator, LimitedGenerator, PartialGenerator, UndefinedGenerator}
 import be.cetic.rtsgen.generators.primary._
-import be.cetic.rtsgen.timeseries._
-import com.github.nscala_time.time.Imports._
-import org.joda.time.LocalDateTime
 import spray.json.{JsString, _}
 
 object Model
@@ -35,47 +32,6 @@ object Model
       }
 }
 
-case class Configuration(generators: Option[Seq[Generator[Any]]],
-                         series: Seq[Series[Any]],
-                         from: LocalDateTime,
-                         to: LocalDateTime)
-{
-   /**
-     * @return the final time series associated to the configuration files.
-     *         A name is associated to each time series.
-     */
-   def timeSeries: Map[String, (TimeSeries[Any], Duration)] =
-   {
-      val memory = firstOrderGenerators
-
-      series.map(s => {
-         val duration = s.frequency
-         val generator = Model.generator(memory)(s.generator)
-
-         s.name -> (generator.timeseries(memory), duration)
-      }).toMap
-   }
-
-   private def firstOrderGenerators: Map[String, Generator[Any]] =
-   {
-       generators match {
-          case None => Map()
-          case Some(gens) => {
-             val memory = scala.collection.mutable.Map[String, Generator[Any]]()
-
-             gens.foreach(g => {
-                memory.put(g.name.get, g)
-             })
-
-             memory.toMap
-          }
-       }
-   }
-}
-
-case class Series[T](name: String, generator: Either[String, Generator[Any]], frequency: Duration)
-
-
 
 case class ARMAModel(phi: Option[Seq[Double]],
                      theta: Option[Seq[Double]],
@@ -86,7 +42,6 @@ case class ARMAModel(phi: Option[Seq[Double]],
 
 object GeneratorFormat extends JsonFormat[Generator[Any]]
 {
-   import GeneratorLeafFormat._
 
    def deserializationError(s: String): Generator[Any] = throw DeserializationException(s)
 
@@ -95,64 +50,35 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
    override def read(json: JsValue): Generator[Any] = json match {
       case known:JsObject if known.fields.contains("type") =>
          known.fields("type") match{
-            case JsString("arma") => ARMAFormat.read(known)
-            case JsString("daily") => DailyFormat.read(known)
-            case JsString("weekly") => WeeklyFormat.read(known)
-            case JsString("monthly") => MonthlyFormat.read(known)
-            case JsString("yearly") => YearlyFormat.read(known)
-            case JsString("constant") => ConstantFormat.read(known)
-            case JsString("aggregate") => aggregateFormat.read(known)
-            case JsString("divide") => divideFormat.read(known)
-            case JsString("correlated") => correlatedFormat.read(known)
-            case JsString("logistic") => logisticFormat.read(known)
-            case JsString("conditional") => ConditionalFormat.read(known)
-            case JsString("true") => TrueFormat.read(known)
-            case JsString("false") => FalseFormat.read(known)
-            case JsString("transition") => transitionFormat.read(known)
-            case JsString("window") => SlidingWindowFormat.read(known)
-            case JsString("limited") => limitedFormat.read(known)
-            case JsString("partial") => partialFormat.read(known)
-            case JsString("time-shift") => TimeShiftFormat.read(known)
-            case JsString("threshold") => ThresholdFormat.read(known)
-            case JsString("and") => AndFormat.read(known)
-            case JsString("or") => OrFormat.read(known)
-            case JsString("not") => OrFormat.read(known)
-            case JsString("xor") => XorFormat.read(known)
-            case JsString("undefined") => UndefinedFormat.read(known)
-            case JsString("first-of") => DefaultFormat.read(known)
-            case JsString("greater-than") => GreaterThanFormat.read(known)
+            case JsString("arma") => ARMAGenerator(known)
+            case JsString("daily") => DailyGenerator(known)
+            case JsString("weekly") => WeeklyGenerator(known)
+            case JsString("monthly") => MonthlyGenerator(known)
+            case JsString("yearly") => YearlyGenerator(known)
+            case JsString("constant") => ConstantGenerator(known)
+            case JsString("aggregate") => AggregateGenerator(known)
+            case JsString("divide") => DivideGenerator(known)
+            case JsString("correlated") => CorrelatedGenerator(known)
+            case JsString("logistic") => LogisticGenerator(known)
+            case JsString("conditional") => ConditionalGenerator(known)
+            case JsString("true") => TrueGenerator(known)
+            case JsString("false") => FalseGenerator(known)
+            case JsString("transition") => TransitionGenerator(known)
+            case JsString("window") => SlidingWindowGenerator(known)
+            case JsString("limited") => LimitedGenerator(known)
+            case JsString("partial") => PartialGenerator(known)
+            case JsString("time-shift") => TimeShiftGenerator(known)
+            case JsString("and") => AndGenerator(known)
+            case JsString("or") => OrGenerator(known)
+            case JsString("not") => OrGenerator(known)
+            case JsString("xor") => XorGenerator(known)
+            case JsString("undefined") => UndefinedGenerator(known)
+            case JsString("first-of") => DefaultGenerator(known)
+            case JsString("greater-than") => GreaterThanGenerator(known)
             case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
       case unknown => deserializationError(s"unknown  Generator object: $unknown")
    }
 
-   override def write(obj: Generator[Any]): JsValue = obj match {
-      case x: ARMAGenerator => ARMAFormat.write(x)
-      case x: DailyGenerator => DailyFormat.write(x)
-      case x: WeeklyGenerator => WeeklyFormat.write(x)
-      case x: MonthlyGenerator => MonthlyFormat.write(x)
-      case x: YearlyGenerator => YearlyFormat.write(x)
-      case x: ConstantGenerator => ConstantFormat.write(x)
-      case x: AggregateGenerator => aggregateFormat.write(x)
-      case x: DivideGenerator => divideFormat.write(x)
-      case x: CorrelatedGenerator => correlatedFormat.write(x)
-      case x: LogisticGenerator => logisticFormat.write(x)
-      case x: ConditionalGenerator => ConditionalFormat.write(x)
-      case x: TrueGenerator => TrueFormat.write(x)
-      case x: FalseGenerator => FalseFormat.write(x)
-      case x: TransitionGenerator => transitionFormat.write(x)
-      case x: SlidingWindowGenerator => SlidingWindowFormat.write(x)
-      case x: LimitedGenerator => limitedFormat.write(x)
-      case x: PartialGenerator => partialFormat.write(x)
-      case x: TimeShiftGenerator => TimeShiftFormat.write(x)
-      case x: ThresholdGenerator => ThresholdFormat.write(x)
-      case x: AndGenerator => AndFormat.write(x)
-      case x: OrGenerator => OrFormat.write(x)
-      case x: NotGenerator => NotFormat.write(x)
-      case x: XorGenerator => XorFormat.write(x)
-      case x: UndefinedGenerator => UndefinedFormat.write(x)
-      case x: DefaultGenerator => DefaultFormat.write(x)
-      case x: GreaterThanGenerator => GreaterThanFormat.write(x)
-      case unrecognized => serializationError(s"Serialization problem $unrecognized")
-   }
+   override def write(obj: Generator[Any]): JsValue = obj.toJson
 }

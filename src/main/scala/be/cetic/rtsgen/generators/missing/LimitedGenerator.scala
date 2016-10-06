@@ -16,10 +16,11 @@
 
 package be.cetic.rtsgen.generators.missing
 
-import be.cetic.rtsgen.config.Model
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.missing.LimitedTimeSeries
 import org.joda.time.LocalDateTime
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.missing.LimitedTimeSeries]].
@@ -40,5 +41,45 @@ class LimitedGenerator(name: Option[String],
          that.from == this.from &&
          that.to == this.to
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _generator = generator match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }
+
+      val t = Map(
+         "type" -> `type`.toJson,
+         "generator" -> _generator,
+         "from" -> from.get.toJson,
+         "to" -> to.get.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object LimitedGenerator extends DefaultJsonProtocol with TimeToJson
+{
+   def apply(value: JsValue): LimitedGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val generator = fields("generator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+      val from = fields.get("from").map(_.convertTo[LocalDateTime])
+      val to = fields.get("to").map(_.convertTo[LocalDateTime])
+      val missingRate = fields.get("missing-rate").map(_.convertTo[Double])
+
+      new LimitedGenerator(name, generator, from, to)
    }
 }

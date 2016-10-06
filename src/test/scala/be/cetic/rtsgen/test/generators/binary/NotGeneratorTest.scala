@@ -22,7 +22,6 @@ import org.joda.time.LocalDateTime
 import com.github.nscala_time.time.Imports._
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.NotGenerator
 import be.cetic.rtsgen.test.RTSTest
 
@@ -38,9 +37,7 @@ class NotGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       """.stripMargin
 
    "A NOT generator" should "be correctly read from a json document" in {
-      val document = notSource.parseJson
-
-      val generator = document.convertTo[NotGenerator]
+      val generator = NotGenerator(notSource.parseJson)
 
       generator.name shouldBe Some("not-generator")
       generator.generator shouldBe Left("binary-generator")
@@ -51,6 +48,6 @@ class NotGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
          Some("not-generator"),
          Left("binary-generator")
       )
-      generator shouldBe generator.toJson.convertTo[NotGenerator]
+      generator shouldBe NotGenerator(generator.toJson)
    }
 }

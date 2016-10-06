@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.composite.FunctionGenerator
 import be.cetic.rtsgen.generators.primary.ConstantGenerator
 
@@ -36,9 +35,7 @@ class FunctionGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A function generator" should "be correctly read from a json document" in {
-      val document = functionSource.parseJson
-
-      val generator = document.convertTo[FunctionGenerator]
+      val generator = FunctionGenerator(functionSource.parseJson)
 
       generator.name shouldBe Some("function-generator")
       generator.`type` shouldBe "function"
@@ -54,8 +51,7 @@ class FunctionGeneratorTest extends FlatSpec with Matchers
          1.4,
          9.2
       )
-      val a = generator.toJson
 
-      generator shouldBe a.convertTo[FunctionGenerator]
+      generator shouldBe FunctionGenerator(generator.toJson)
    }
 }

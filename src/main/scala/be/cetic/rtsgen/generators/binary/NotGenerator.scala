@@ -16,10 +16,11 @@
 
 package be.cetic.rtsgen.generators.binary
 
-import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.binary.NotTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.binary.NotTimeSeries]].
@@ -42,5 +43,38 @@ class NotGenerator(name: Option[String],
       case that: NotGenerator => that.name == this.name &&
          that.generator == this.generator
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _generator = generator match
+      {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }
+
+      var t = Map(
+         "generator" -> _generator,
+         "type" -> `type`.toJson
+      )
+
+      if(name.isDefined) t = t.updated("name", name.toJson)
+
+      new JsObject(t)
+   }
+}
+
+object NotGenerator extends DefaultJsonProtocol
+{
+   def apply(value: JsValue): NotGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map(_.convertTo[String])
+
+      val generator = fields("generator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      new NotGenerator(name, generator)
    }
 }

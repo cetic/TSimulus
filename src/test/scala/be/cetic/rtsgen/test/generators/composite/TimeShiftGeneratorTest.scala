@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.composite
 
 import org.joda.time.Duration
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.composite.TimeShiftGenerator
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -35,9 +34,7 @@ class TimeShiftGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A time shifted generator" should "be correctly read from a json document" in {
-      val document = timeShiftedSource.parseJson
-
-      val generator = document.convertTo[TimeShiftGenerator]
+      val generator = TimeShiftGenerator(timeShiftedSource.parseJson)
 
       generator.name shouldBe Some("time-shifted-generator")
       generator.generator shouldBe Left("daily-generator")
@@ -50,6 +47,6 @@ class TimeShiftGeneratorTest extends FlatSpec with Matchers
          Left("daily-generator"),
          new Duration(-8000)
       )
-      generator shouldBe generator.toJson.convertTo[TimeShiftGenerator]
+      generator shouldBe TimeShiftGenerator(generator.toJson)
    }
 }

@@ -16,10 +16,11 @@
 
 package be.cetic.rtsgen.generators.missing
 
-import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.missing.DefaultTimeSeries
+import spray.json.{JsArray, JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.missing.DefaultTimeSeries]].
@@ -40,5 +41,37 @@ class DefaultGenerator(name: Option[String], val gens: Seq[Either[String, Genera
    override def equals(o: Any) = o match {
       case that: DefaultGenerator => that.gens == this.gens
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val t = Map(
+         "type" -> `type`.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object DefaultGenerator
+{
+   def apply(value: JsValue): DefaultGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val generators = fields("generators") match {
+         case JsArray(l) => l.map
+         {
+            case JsString(s) => Left(s)
+            case g => Right(GeneratorFormat.read(g))
+         }
+      }
+
+      new DefaultGenerator(name, generators)
    }
 }

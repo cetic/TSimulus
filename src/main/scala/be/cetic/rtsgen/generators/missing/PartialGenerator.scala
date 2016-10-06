@@ -16,10 +16,11 @@
 
 package be.cetic.rtsgen.generators.missing
 
-import be.cetic.rtsgen.config.Model
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.missing.PartialTimeSeries
 import org.joda.time.LocalDateTime
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.missing.PartialTimeSeries]].
@@ -45,5 +46,46 @@ class PartialGenerator(name: Option[String],
          that.to == this.to &&
          that.missingRate == this.missingRate
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _generator = (generator match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+
+      var t = Map(
+         "type" -> `type`.toJson,
+         "generator" -> _generator,
+         "from" -> from.toJson,
+         "to" -> to.toJson
+      )
+
+      if(missingRate.isDefined) t = t.updated("missing-rate" , missingRate.toJson)
+      if(name.isDefined) t = t.updated("name", name.toJson)
+
+      new JsObject(t)
+   }
+}
+
+object PartialGenerator extends DefaultJsonProtocol with TimeToJson
+{
+   def apply(value: JsValue): PartialGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val generator = fields("generator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+      val from = fields.get("from").map(_.convertTo[LocalDateTime])
+      val to = fields.get("to").map(_.convertTo[LocalDateTime])
+      val missingRate = fields.get("missing-rate").map(_.convertTo[Double])
+
+      new PartialGenerator(name, generator, from, to, missingRate)
    }
 }

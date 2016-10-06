@@ -18,6 +18,7 @@ package be.cetic.rtsgen.generators.primary
 
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.primary.ConstantTimeSeries
+import spray.json.{JsNumber, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.primary.ConstantTimeSeries]].
@@ -34,5 +35,34 @@ class ConstantGenerator(name: Option[String],
    override def equals(o: Any) = o match {
       case that: ConstantGenerator => that.name == this.name && that.value == this.value
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val t = Map(
+         "type" -> `type`.toJson,
+         "value" -> value.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object ConstantGenerator
+{
+   def apply(json: JsValue): ConstantGenerator = {
+
+      val fields = json.asJsObject.fields
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val value = fields("value") match {
+         case JsNumber(n) => n.toDouble
+      }
+
+      new ConstantGenerator(name, value)
    }
 }

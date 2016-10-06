@@ -16,12 +16,13 @@
 
 package be.cetic.rtsgen.generators.composite
 
-import be.cetic.rtsgen.config.Model
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.TransitionTimeSeries
 import com.github.nscala_time.time.Imports._
-import org.joda.time.LocalDateTime
+import org.joda.time.{Duration, LocalDateTime}
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.composite.TransitionTimeSeries]].
@@ -78,5 +79,60 @@ class TransitionGenerator(name: Option[String],
          that.time == this.time &&
          that.interval == this.interval
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _first = (first match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+      val _second = (second match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+
+      var t = Map(
+         "type" -> `type`.toJson,
+         "first" -> _first,
+         "second" -> _second,
+         "time" -> time.toJson,
+         "transition" -> f.getOrElse("linear").toJson
+      )
+
+      if(interval.isDefined)
+         t = t.updated("duration", interval.get.toJson)
+
+      if(name.isDefined)
+         t = t.updated("name", name.get.toJson)
+
+      new JsObject(t)
+   }
+}
+
+object TransitionGenerator extends TimeToJson
+{
+   def apply(value: JsValue): TransitionGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val first = fields("first") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+      val second = fields("second") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      val time = fields("time").convertTo[LocalDateTime]
+
+      val duration = fields.get("duration").map(_.convertTo[Duration])
+      val transition = fields.get("transition").map(_.convertTo[String])
+
+      new TransitionGenerator(name, first, second, time, duration, transition)
    }
 }

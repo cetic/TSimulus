@@ -16,9 +16,10 @@
 
 package be.cetic.rtsgen.generators.composite
 
-import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.composite.CorrelatedTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 import scala.util.Random
 
@@ -44,5 +45,43 @@ class CorrelatedGenerator(name: Option[String],
    override def equals(o: Any) = o match {
       case that: CorrelatedGenerator => that.name == this.name && that.generator == this.generator && that.coef == this.coef
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _generator = (generator match {
+         case Left(s) => s.toJson
+         case Right(g) => g.toJson
+      }).toJson
+
+      val t = Map(
+         "type" -> `type`.toJson,
+         "generator" -> _generator,
+         "coef" -> coef.toJson
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object CorrelatedGenerator extends DefaultJsonProtocol
+{
+   def apply(value: JsValue): CorrelatedGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val `type` = fields("type").convertTo[String]
+      val generator = fields("generator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+      val coef = fields("coef").convertTo[Double]
+
+      new CorrelatedGenerator(name, generator, coef)
    }
 }

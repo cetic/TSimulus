@@ -19,7 +19,7 @@ package be.cetic.rtsgen.test.generators.binary
 import be.cetic.rtsgen.test.RTSTest
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.generators.binary.{GreaterThanFormat, GreaterThanGenerator}
+import be.cetic.rtsgen.generators.binary.{GreaterThanGenerator}
 
 
 class GreaterThanGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
@@ -46,9 +46,7 @@ class GreaterThanGeneratorTest extends FlatSpec with Matchers with Inspectors wi
       """.stripMargin
 
    "A GT generator" should "be correctly read from a json document" in {
-      val document = source.parseJson
-
-      val generator = GreaterThanFormat.read(document)
+      val generator = GreaterThanGenerator(source.parseJson)
 
       generator.name shouldBe Some("gt-generator")
       generator.a shouldBe Left("daily-generator")
@@ -64,13 +62,11 @@ class GreaterThanGeneratorTest extends FlatSpec with Matchers with Inspectors wi
          Some(false)
       )
 
-      generator shouldBe GreaterThanFormat.read(GreaterThanFormat.write(generator))
+      generator shouldBe GreaterThanGenerator(generator.toJson)
    }
 
    "A GT generator with implicit strictness" should "be correctly read from a json document" in {
-      val document = source_implicit.parseJson
-
-      val generator = GreaterThanFormat.read(document)
+      val generator = GreaterThanGenerator(source_implicit.parseJson)
 
       generator.name shouldBe Some("gt-generator")
       generator.a shouldBe Left("daily-generator")
@@ -86,6 +82,6 @@ class GreaterThanGeneratorTest extends FlatSpec with Matchers with Inspectors wi
          None
       )
 
-      generator shouldBe GreaterThanFormat.read(GreaterThanFormat.write(generator))
+      generator shouldBe GreaterThanGenerator(generator.toJson)
    }
 }

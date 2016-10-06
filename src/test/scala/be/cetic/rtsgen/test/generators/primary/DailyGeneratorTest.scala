@@ -19,7 +19,6 @@ package be.cetic.rtsgen.test.generators.primary
 import org.joda.time.LocalTime
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.primary.DailyGenerator
 
 class DailyGeneratorTest extends FlatSpec with Matchers
@@ -34,9 +33,7 @@ class DailyGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A daily generator" should "be correctly read from a json document" in {
-      val document = dailySource.parseJson
-
-      val generator = document.convertTo[DailyGenerator]
+      val generator = DailyGenerator(dailySource.parseJson)
 
       generator.name shouldBe Some("daily-generator")
       generator.`type` shouldBe "daily"
@@ -52,7 +49,6 @@ class DailyGeneratorTest extends FlatSpec with Matchers
          new LocalTime(17,0,0) -> 8,
          new LocalTime(7,0,0) -> 2))
 
-      generator shouldBe generator.toJson.convertTo[DailyGenerator]
+      generator shouldBe DailyGenerator(generator.toJson)
    }
-
 }

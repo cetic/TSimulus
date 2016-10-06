@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.composite.CorrelatedGenerator
 
 class CorrelatedGeneratorTest extends FlatSpec with Matchers
@@ -34,9 +33,7 @@ class CorrelatedGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A correlated generator" should "be correctly read from a json document" in {
-      val document = correlatedSource.parseJson
-
-      val generator = document.convertTo[CorrelatedGenerator]
+      val generator = CorrelatedGenerator(correlatedSource.parseJson)
 
       generator.name shouldBe Some("corr-generator")
       generator.generator shouldBe Left("daily-generator")
@@ -49,6 +46,6 @@ class CorrelatedGeneratorTest extends FlatSpec with Matchers
          Left("daily-generator"),
          0.8
       )
-      generator shouldBe generator.toJson.convertTo[CorrelatedGenerator]
+      generator shouldBe CorrelatedGenerator(generator.toJson)
    }
 }

@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.primary
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.primary.ConstantGenerator
 
 class ConstantGeneratorTest extends FlatSpec with Matchers
@@ -33,9 +32,7 @@ class ConstantGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A constant generator" should "be correctly read from a json document" in {
-      val document = constantSource.parseJson
-
-      val generator = document.convertTo[ConstantGenerator]
+      val generator = ConstantGenerator(constantSource.parseJson)
 
       generator.name shouldBe Some("constant-generator")
       generator.`type` shouldBe "constant"
@@ -44,6 +41,6 @@ class ConstantGeneratorTest extends FlatSpec with Matchers
 
    it should "be correctly exported to a json document" in {
       val generator = new ConstantGenerator(Some("constant-generator"), 17.5)
-      generator shouldBe generator.toJson.convertTo[ConstantGenerator]
+      generator shouldBe ConstantGenerator(generator.toJson)
    }
 }

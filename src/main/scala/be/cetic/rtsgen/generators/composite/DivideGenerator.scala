@@ -16,10 +16,11 @@
 
 package be.cetic.rtsgen.generators.composite
 
-import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.DivideTimeSeries
+import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.composite.DivideTimeSeries]].
@@ -47,5 +48,51 @@ class DivideGenerator(name: Option[String],
    override def equals(o: Any) = o match {
       case that: DivideGenerator => that.name == this.name && that.numerator == this.numerator && that.denominator == this.denominator
       case _ => false
+   }
+
+   override def toJson: JsValue = {
+      val _numerator = (numerator match {
+         case Left(s) => s.toJson
+         case Right(x) => x.toJson
+      }).toJson
+
+      val _denominator = (denominator match {
+         case Left(s) => s.toJson
+         case Right(x) => x.toJson
+      }).toJson
+
+      val t = Map(
+         "type" -> `type`.toJson,
+         "numerator" -> _numerator,
+         "denominator" -> _denominator
+      )
+
+      new JsObject(
+         name.map(n => t + ("name" -> n.toJson)).getOrElse(t)
+      )
+   }
+}
+
+object DivideGenerator
+{
+   def apply(value: JsValue): DivideGenerator = {
+      val fields = value.asJsObject.fields
+
+      val name = fields.get("name").map
+      {
+         case JsString(x) => x
+      }
+
+      val numerator = fields("numerator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      val denominator = fields("denominator") match {
+         case JsString(s) => Left(s)
+         case g => Right(GeneratorFormat.read(g))
+      }
+
+      new DivideGenerator(name, numerator, denominator)
    }
 }

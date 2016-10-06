@@ -19,7 +19,6 @@ package be.cetic.rtsgen.test.generators.composite
 import org.joda.time.{Duration, LocalDateTime}
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.composite.TransitionGenerator
 
 class TransitionGeneratorTest extends FlatSpec with Matchers with Inspectors
@@ -51,9 +50,7 @@ class TransitionGeneratorTest extends FlatSpec with Matchers with Inspectors
       """.stripMargin
 
    "A transition generator" should "be correctly read from a json document" in {
-      val document = transitionSource.parseJson
-
-      val generator = document.convertTo[TransitionGenerator]
+      val generator = TransitionGenerator(transitionSource.parseJson)
 
       generator.name shouldBe Some("transition-generator")
       generator.first shouldBe Left("first-generator")
@@ -71,13 +68,11 @@ class TransitionGeneratorTest extends FlatSpec with Matchers with Inspectors
          None,
          None
       )
-      generator shouldBe generator.toJson.convertTo[TransitionGenerator]
+      generator shouldBe TransitionGenerator(generator.toJson)
    }
 
    it should "correctly import its transition related parameters" in {
-      val document = otherTransitionSource.parseJson
-
-      val generator = document.convertTo[TransitionGenerator]
+      val generator = TransitionGenerator(otherTransitionSource.parseJson)
 
       generator.f shouldBe Some("sigmoid")
       generator.interval shouldBe Some(new Duration(300000))

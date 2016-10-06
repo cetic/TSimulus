@@ -18,7 +18,6 @@ package be.cetic.rtsgen.test.generators.binary
 
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.AndGenerator
 import be.cetic.rtsgen.test.RTSTest
 
@@ -35,9 +34,7 @@ class AndGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       """.stripMargin
 
    "A AND generator" should "be correctly read from a json document" in {
-      val document = andSource.parseJson
-
-      val generator = document.convertTo[AndGenerator]
+      val generator = AndGenerator(andSource.parseJson)
 
       generator.name shouldBe Some("and-generator")
       generator.a shouldBe Left("daily-generator")
@@ -50,6 +47,6 @@ class AndGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
          Left("daily-generator"),
          Left("monthly-generator")
       )
-      generator shouldBe generator.toJson.convertTo[AndGenerator]
+      generator shouldBe AndGenerator(generator.toJson)
    }
 }

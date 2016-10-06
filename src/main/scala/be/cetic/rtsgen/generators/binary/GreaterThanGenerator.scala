@@ -20,7 +20,7 @@ import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.binary.GreaterThanTimeSeries
-import spray.json.{DefaultJsonProtocol, JsObject, JsString, JsValue, RootJsonFormat, _}
+import spray.json.{DefaultJsonProtocol, JsObject, JsString, JsValue, _}
 
 
 /**
@@ -29,7 +29,7 @@ import spray.json.{DefaultJsonProtocol, JsObject, JsString, JsValue, RootJsonFor
 class GreaterThanGenerator( name: Option[String],
                             val a: Either[String, Generator[Any]],
                             val b: Either[String, Generator[Any]],
-                            val strict: Option[Boolean]) extends Generator[Any](name, "GT")
+                            val strict: Option[Boolean]) extends Generator[Any](name, "greater-than")
 {
    override def timeseries(generators: (String) => Generator[Any]) =
    {
@@ -56,30 +56,24 @@ class GreaterThanGenerator( name: Option[String],
          that.strict == this.strict
       case _ => false
    }
-}
 
-object GreaterThanFormat extends RootJsonFormat[GreaterThanGenerator] with DefaultJsonProtocol
-{
-   def write(obj: GreaterThanGenerator) =
-   {
-      val a = obj.a match
+   override def toJson: JsValue = {
+      val _a = a match
       {
          case Left(s) => s.toJson
-         case Right(g) => GeneratorFormat.write(g)
+         case Right(g) => g.toJson
       }
 
-      val b = obj.b match
+      val _b = b match
       {
          case Left(s) => s.toJson
-         case Right(g) => GeneratorFormat.write(g)
+         case Right(g) => g.toJson
       }
-
-      val name = obj.name
-      val strict = obj.strict
 
       var t = Map(
-         "a" -> a,
-         "b" -> b
+         "a" -> _a,
+         "b" -> _b,
+         "type" -> `type`.toJson
       )
 
       if(name.isDefined) t = t.updated("name", name.toJson)
@@ -87,8 +81,11 @@ object GreaterThanFormat extends RootJsonFormat[GreaterThanGenerator] with Defau
 
       new JsObject(t)
    }
+}
 
-   def read(value: JsValue) =
+object GreaterThanGenerator extends DefaultJsonProtocol
+{
+   def apply(value: JsValue): GreaterThanGenerator =
    {
       val fields = value.asJsObject.fields
 
