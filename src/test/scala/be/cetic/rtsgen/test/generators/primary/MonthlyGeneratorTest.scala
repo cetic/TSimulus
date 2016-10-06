@@ -16,13 +16,14 @@
 
 package be.cetic.rtsgen.test.generators.primary
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.generators.primary.MonthlyGenerator
 
 class MonthlyGeneratorTest extends FlatSpec with Matchers
 {
-   val monthlySource =
+   val source =
       """
         |{
         |   "name": "monthly-generator",
@@ -32,7 +33,7 @@ class MonthlyGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A monthly generator" should "be correctly read from a json document" in {
-      val generator = MonthlyGenerator(monthlySource.parseJson)
+      val generator = MonthlyGenerator(source.parseJson)
 
       generator.name shouldBe Some("monthly-generator")
       generator.`type` shouldBe "monthly"
@@ -41,6 +42,10 @@ class MonthlyGeneratorTest extends FlatSpec with Matchers
          "february" -> -6.9,
          "june" -> -2.7
       )
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

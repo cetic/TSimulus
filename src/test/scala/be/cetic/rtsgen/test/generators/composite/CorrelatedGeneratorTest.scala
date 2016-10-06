@@ -16,13 +16,14 @@
 
 package be.cetic.rtsgen.test.generators.composite
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.generators.composite.CorrelatedGenerator
 
 class CorrelatedGeneratorTest extends FlatSpec with Matchers
 {
-   val correlatedSource =
+   val source =
       """
         |{
         |   "name": "corr-generator",
@@ -33,11 +34,15 @@ class CorrelatedGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A correlated generator" should "be correctly read from a json document" in {
-      val generator = CorrelatedGenerator(correlatedSource.parseJson)
+      val generator = CorrelatedGenerator(source.parseJson)
 
       generator.name shouldBe Some("corr-generator")
       generator.generator shouldBe Left("daily-generator")
       generator.coef shouldBe 0.8
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

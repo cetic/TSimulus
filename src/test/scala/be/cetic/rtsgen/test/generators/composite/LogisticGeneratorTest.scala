@@ -16,13 +16,14 @@
 
 package be.cetic.rtsgen.test.generators.composite
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.generators.binary.LogisticGenerator
 
 class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
 {
-   val logisticSource =
+   val source =
       """
         |{
         |   "name": "logistic-generator",
@@ -35,13 +36,17 @@ class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
       """.stripMargin
 
    "A logistic generator" should "be correctly read from a json document" in {
-      val generator = LogisticGenerator(logisticSource.parseJson)
+      val generator = LogisticGenerator(source.parseJson)
 
       generator.name shouldBe Some("logistic-generator")
       generator.generator shouldBe Left("daily-generator")
       generator.location shouldBe 6
       generator.scale shouldBe 2.4
       generator.seed shouldBe Some(1809)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

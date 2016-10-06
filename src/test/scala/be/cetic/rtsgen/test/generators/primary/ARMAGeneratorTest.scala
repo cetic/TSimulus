@@ -16,7 +16,7 @@
 
 package be.cetic.rtsgen.test.generators.primary
 
-import be.cetic.rtsgen.config.ARMAModel
+import be.cetic.rtsgen.config.{ARMAModel, GeneratorFormat}
 import org.joda.time.Duration
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
@@ -24,7 +24,7 @@ import be.cetic.rtsgen.generators.primary.ARMAGenerator
 
 class ARMAGeneratorTest extends FlatSpec with Matchers
 {
-   val armaSource = """
+   val source = """
                       |{
                       |  "name": "g3",
                       |  "type": "arma",
@@ -40,11 +40,15 @@ class ARMAGeneratorTest extends FlatSpec with Matchers
                     """.stripMargin
 
    "An ARMA generator" should "be correctly read from a json document" in {
-      val generator = ARMAGenerator(armaSource.parseJson)
+      val generator = ARMAGenerator(source.parseJson)
 
       generator.name shouldBe Some("g3")
       generator.`type` shouldBe "arma"
       generator.timestep shouldBe new Duration(180000)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

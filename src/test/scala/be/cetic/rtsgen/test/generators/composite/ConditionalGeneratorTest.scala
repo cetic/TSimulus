@@ -16,11 +16,11 @@
 
 package be.cetic.rtsgen.test.generators.composite
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import be.cetic.rtsgen.generators.binary.TrueGenerator
 import be.cetic.rtsgen.generators.composite.ConditionalGenerator
 import be.cetic.rtsgen.generators.primary.ConstantGenerator
 import org.scalatest.{FlatSpec, Matchers}
-
 import spray.json._
 
 class ConditionalGeneratorTest extends FlatSpec with Matchers
@@ -43,6 +43,10 @@ class ConditionalGeneratorTest extends FlatSpec with Matchers
       generator.condition shouldBe 'right
       generator.success shouldBe Right(new ConstantGenerator(None, 17))
       generator.failure shouldBe Some(Right(new ConstantGenerator(None, 42)))
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

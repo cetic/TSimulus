@@ -16,6 +16,7 @@
 
 package be.cetic.rtsgen.test.generators.composite
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import org.joda.time.{Duration, LocalDateTime}
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
@@ -57,6 +58,10 @@ class TransitionGeneratorTest extends FlatSpec with Matchers with Inspectors
       generator.second shouldBe Left("second-generator")
       generator.time shouldBe new LocalDateTime(2016, 6, 7, 3, 45, 0)
       generator.interval shouldBe Some(new Duration(300000))
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(transitionSource.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

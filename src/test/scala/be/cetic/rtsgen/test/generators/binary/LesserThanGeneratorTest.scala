@@ -16,6 +16,7 @@
 
 package be.cetic.rtsgen.test.generators.binary
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import be.cetic.rtsgen.test.RTSTest
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
@@ -53,6 +54,10 @@ class LesserThanGeneratorTest extends FlatSpec with Matchers with Inspectors wit
       generator.a shouldBe Left("daily-generator")
       generator.b shouldBe Left("monthly-generator")
       generator.strict shouldBe Some(false)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

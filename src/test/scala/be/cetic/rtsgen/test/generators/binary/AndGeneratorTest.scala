@@ -16,6 +16,7 @@
 
 package be.cetic.rtsgen.test.generators.binary
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.generators.binary.AndGenerator
@@ -41,6 +42,10 @@ class AndGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       generator.b shouldBe Left("monthly-generator")
    }
 
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(andSource.parseJson)
+   }
+
    it should "be correctly exported to a json document" in {
       val generator = new AndGenerator(
          Some("and-generator"),
@@ -49,4 +54,6 @@ class AndGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       )
       generator shouldBe AndGenerator(generator.toJson)
    }
+
+
 }

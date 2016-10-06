@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.missing
+package be.cetic.rtsgen.test.timeseries.missing
 
 import be.cetic.rtsgen.test.RTSTest
 import be.cetic.rtsgen.timeseries.missing.DefaultTimeSeries

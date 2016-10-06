@@ -16,6 +16,7 @@
 
 package be.cetic.rtsgen.test.generators.binary
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import be.cetic.rtsgen.timeseries.binary.{FalseTimeSeries, TrueTimeSeries, XorTimeSeries}
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 import org.joda.time.LocalDateTime
@@ -44,6 +45,10 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       generator.name shouldBe Some("xor-generator")
       generator.a shouldBe Left("daily-generator")
       generator.b shouldBe Left("monthly-generator")
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(xorSource.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

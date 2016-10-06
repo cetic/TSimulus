@@ -16,6 +16,7 @@
 
 package be.cetic.rtsgen.test.generators.composite
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import org.joda.time.LocalDateTime
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
@@ -23,7 +24,7 @@ import be.cetic.rtsgen.generators.missing.LimitedGenerator
 
 class LimitedGeneratorTest extends FlatSpec with Matchers
 {
-   val limitedSource =
+   val source =
       """
         |{
         |   "name" : "limited-generator",
@@ -35,12 +36,16 @@ class LimitedGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A limited generator" should "be correctly read from a json document" in {
-      val generator = LimitedGenerator(limitedSource.parseJson)
+      val generator = LimitedGenerator(source.parseJson)
 
       generator.name shouldBe Some("limited-generator")
       generator.generator shouldBe Left("daily-generator")
       generator.from shouldBe Some(new LocalDateTime(2016, 4, 6, 0, 0, 0))
       generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

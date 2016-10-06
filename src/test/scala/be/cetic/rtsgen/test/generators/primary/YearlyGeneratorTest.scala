@@ -16,13 +16,14 @@
 
 package be.cetic.rtsgen.test.generators.primary
 
+import be.cetic.rtsgen.config.GeneratorFormat
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.generators.primary.YearlyGenerator
 
 class YearlyGeneratorTest extends FlatSpec with Matchers
 {
-   val yearlySource =
+   val source =
       """
         |{
         |   "name": "yearly-generator",
@@ -33,11 +34,15 @@ class YearlyGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "A yearly generator" should "be correctly read from a json document" in {
-      val generator = YearlyGenerator(yearlySource.parseJson)
+      val generator = YearlyGenerator(source.parseJson)
 
       generator.name shouldBe Some("yearly-generator")
       generator.`type` shouldBe "yearly"
       generator.points shouldBe Map(2015 -> 42.12, 2016 -> 13.37, 2017 -> 6.022)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {
