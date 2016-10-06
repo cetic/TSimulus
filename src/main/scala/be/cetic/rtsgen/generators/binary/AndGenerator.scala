@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.generators.composite
+package be.cetic.rtsgen.generators.binary
 
 import be.cetic.rtsgen.config.Model
 import be.cetic.rtsgen.generators.Generator

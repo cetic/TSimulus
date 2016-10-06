@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.generators
+package be.cetic.rtsgen.generators.composite
 
+import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.composite.TimeShiftTimeSeries
 import com.github.nscala_time.time.Imports._
 
 /**
-  * Created by Mathieu Goeminne.
+  * A generator for [[be.cetic.rtsgen.timeseries.composite.TimeShiftTimeSeries]].
   */
 class TimeShiftGenerator(name: Option[String],
                          val generator: Either[String, Generator[Any]],

@@ -19,7 +19,7 @@ package be.cetic.rtsgen.test.generators.composites
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.PartialGenerator
+import be.cetic.rtsgen.generators.missing.PartialGenerator
 import org.joda.time.LocalDateTime
 
 class PartialGeneratorTest extends FlatSpec with Matchers

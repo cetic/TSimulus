@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.generators
+package be.cetic.rtsgen.generators.primary
 
+import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.primary.MonthlyTimeSeries
 import org.joda.time.DateTimeConstants
 
+/**
+  * A generator for [[be.cetic.rtsgen.timeseries.primary.MonthlyTimeSeries]].
+  */
 class MonthlyGenerator(name: Option[String],
                        val points: Map[String, Double]) extends Generator[Double](name, "monthly")
 {

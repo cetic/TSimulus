@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.generators
+package be.cetic.rtsgen.generators.composite
 
 import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.ConditionalTimeSeries
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries

@@ -21,7 +21,7 @@ import org.joda.time.Duration
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.ARMAGenerator
+import be.cetic.rtsgen.generators.primary.ARMAGenerator
 
 class ARMAGeneratorTest extends FlatSpec with Matchers
 {

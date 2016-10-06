@@ -19,7 +19,7 @@ package be.cetic.rtsgen.test.generators.primary
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.ConstantGenerator
+import be.cetic.rtsgen.generators.primary.ConstantGenerator
 
 class ConstantGeneratorTest extends FlatSpec with Matchers
 {

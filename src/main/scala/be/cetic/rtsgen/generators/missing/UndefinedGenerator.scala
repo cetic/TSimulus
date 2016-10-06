@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.generators
+package be.cetic.rtsgen.generators.missing
 
+import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 
 /**
-  * Created by Mathieu Goeminne.
+  * A generator for [[be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries]].
   */
 class UndefinedGenerator(name: Option[String]) extends Generator[Any](name, "undefined")
 {

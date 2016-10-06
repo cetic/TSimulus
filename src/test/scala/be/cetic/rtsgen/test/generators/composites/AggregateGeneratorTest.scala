@@ -19,7 +19,7 @@ package be.cetic.rtsgen.test.generators.composites
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.AggregateGenerator
+import be.cetic.rtsgen.generators.composite.AggregateGenerator
 
 class AggregateGeneratorTest extends FlatSpec with Matchers
 {

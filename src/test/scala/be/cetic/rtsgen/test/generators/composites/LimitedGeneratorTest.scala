@@ -20,7 +20,7 @@ import org.joda.time.LocalDateTime
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.LimitedGenerator
+import be.cetic.rtsgen.generators.missing.LimitedGenerator
 
 class LimitedGeneratorTest extends FlatSpec with Matchers
 {

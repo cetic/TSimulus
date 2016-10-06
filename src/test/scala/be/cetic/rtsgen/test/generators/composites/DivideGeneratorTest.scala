@@ -19,7 +19,7 @@ package be.cetic.rtsgen.test.generators.composites
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.DivideGenerator
+import be.cetic.rtsgen.generators.composite.DivideGenerator
 
 class DivideGeneratorTest extends FlatSpec with Matchers
 {

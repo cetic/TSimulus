@@ -22,7 +22,7 @@ import org.joda.time.LocalDateTime
 import com.github.nscala_time.time.Imports._
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.OrGenerator
+import be.cetic.rtsgen.generators.binary.OrGenerator
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 
 

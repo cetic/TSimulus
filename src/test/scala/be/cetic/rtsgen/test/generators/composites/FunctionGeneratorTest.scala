@@ -19,7 +19,8 @@ package be.cetic.rtsgen.test.generators.composites
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.{ConstantGenerator, FunctionGenerator}
+import be.cetic.rtsgen.generators.composite.FunctionGenerator
+import be.cetic.rtsgen.generators.primary.ConstantGenerator
 
 class FunctionGeneratorTest extends FlatSpec with Matchers
 {

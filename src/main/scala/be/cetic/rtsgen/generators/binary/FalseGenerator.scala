@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.generators
+package be.cetic.rtsgen.generators.binary
 
+import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.binary.FalseTimeSeries
 
 /**
-  * Created by Mathieu Goeminne.
+  * A generator for [[be.cetic.rtsgen.timeseries.binary.FalseTimeSeries]].
   */
 class FalseGenerator(name: Option[String]) extends Generator[Boolean](name, "false")
 {

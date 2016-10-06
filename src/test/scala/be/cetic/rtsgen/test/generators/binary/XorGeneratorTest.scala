@@ -23,7 +23,7 @@ import com.github.nscala_time.time.Imports._
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.XorGenerator
+import be.cetic.rtsgen.generators.binary.XorGenerator
 
 class XorGeneratorTest extends FlatSpec with Matchers with Inspectors
 {

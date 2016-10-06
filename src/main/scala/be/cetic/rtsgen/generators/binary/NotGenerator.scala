@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.generators
+package be.cetic.rtsgen.generators.binary
 
 import be.cetic.rtsgen.config.Model
+import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.binary.NotTimeSeries
 
 /**
-  * Created by Mathieu Goeminne.
+  * A generator for [[be.cetic.rtsgen.timeseries.binary.NotTimeSeries]].
   */
 class NotGenerator(name: Option[String],
                    val generator: Either[String, Generator[Any]]) extends Generator[Any](name, "or")

@@ -19,7 +19,7 @@ package be.cetic.rtsgen.test.generators.composites
 import org.joda.time.Duration
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.TimeShiftGenerator
+import be.cetic.rtsgen.generators.composite.TimeShiftGenerator
 import org.scalatest.{FlatSpec, Matchers}
 
 class TimeShiftGeneratorTest extends FlatSpec with Matchers
