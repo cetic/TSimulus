@@ -24,12 +24,10 @@ import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.XorGenerator
+import be.cetic.rtsgen.test.RTSTest
 
-class XorGeneratorTest extends FlatSpec with Matchers with Inspectors
+class XorGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
-   val t = new TrueTimeSeries()
-   val f = new FalseTimeSeries()
-   val u = new UndefinedTimeSeries()
 
    val xorSource =
       """
@@ -40,12 +38,6 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors
         |   "b": "monthly-generator"
         |}
       """.stripMargin
-
-   val dates = Seq(
-      LocalDateTime.now(),
-      LocalDateTime.now() + 5.seconds,
-      LocalDateTime.now() + 10.seconds
-   ).toStream
 
    "A XOR generator" should "be correctly read from a json document" in {
       val document = xorSource.parseJson
@@ -64,41 +56,5 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors
          Left("monthly-generator")
       )
       generator shouldBe generator.toJson.convertTo[XorGenerator]
-   }
-
-   "True XOR True" should "be False" in {
-      forAll (XorTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(false)}
-   }
-
-   "True XOR False" should "be True" in {
-      forAll (XorTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(true)}
-   }
-
-   "False XOR True" should "be True" in {
-      forAll (XorTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
-   }
-
-   "False XOR False" should "be False" in {
-      forAll (XorTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
-   }
-
-   "True XOR Undetermined" should "be Undetermined" in {
-      forAll (XorTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "False XOR Undetermined" should "be Undetermined" in {
-      forAll (XorTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "Undetermined XOR True" should "be Undetermined" in {
-      forAll (XorTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "Undetermined XOR False" should "be Undetermined" in {
-      forAll (XorTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "Undetermined XOR Undetermined" should "be Undetermined" in {
-      forAll (XorTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
    }
 }

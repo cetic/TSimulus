@@ -1184,4 +1184,5 @@ object GeneratorLeafFormat extends DefaultJsonProtocol
    implicit val transitionFormat = lazyFormat(TransitionFormat)
    implicit val limitedFormat = lazyFormat(LimitedFormat)
    implicit val partialFormat = lazyFormat(PartialFormat)
+   implicit val conditionalFormat = lazyFormat(ConditionalFormat)
 }

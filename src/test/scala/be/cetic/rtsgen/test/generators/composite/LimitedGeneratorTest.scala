@@ -14,48 +14,45 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.composites
+package be.cetic.rtsgen.test.generators.composite
 
+import org.joda.time.LocalDateTime
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.missing.PartialGenerator
-import org.joda.time.LocalDateTime
+import be.cetic.rtsgen.generators.missing.LimitedGenerator
 
-class PartialGeneratorTest extends FlatSpec with Matchers
+class LimitedGeneratorTest extends FlatSpec with Matchers
 {
-   val partialSource =
+   val limitedSource =
       """
         |{
-        |   "name" : "partial-generator",
-        |   "type" : "partial",
+        |   "name" : "limited-generator",
+        |   "type": "limited",
         |   "generator": "daily-generator",
         |   "from": "2016-04-06 00:00:00.000",
-        |   "to": "2016-04-23 00:00:00.000",
-        |   "missing-rate" : 0.001
+        |   "to": "2016-04-23 00:00:00.000"
         |}
       """.stripMargin
 
-   "A partial generator" should "be correctly read from a json document" in {
-      val document = partialSource.parseJson
+   "A limited generator" should "be correctly read from a json document" in {
+      val document = limitedSource.parseJson
 
-      val generator = document.convertTo[PartialGenerator]
+      val generator = document.convertTo[LimitedGenerator]
 
-      generator.name shouldBe Some("partial-generator")
+      generator.name shouldBe Some("limited-generator")
       generator.generator shouldBe Left("daily-generator")
       generator.from shouldBe Some(new LocalDateTime(2016, 4, 6, 0, 0, 0))
       generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
-      generator.missingRate shouldBe Some(0.001)
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = new PartialGenerator(
-         Some("partial-generator"),
+      val generator = new LimitedGenerator(
+         Some("limited-generator"),
          Left("daily-generator"),
          Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
-         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
-         Some(0.2)
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
       )
-      generator shouldBe generator.toJson.convertTo[PartialGenerator]
+      generator shouldBe generator.toJson.convertTo[LimitedGenerator]
    }
 }

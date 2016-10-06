@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.composites
+package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
@@ -41,7 +41,6 @@ class AggregateGeneratorTest extends FlatSpec with Matchers
       generator.name shouldBe Some("aggregate-generator")
       generator.aggregator shouldBe "sum"
       generator.generators shouldBe Seq(Left("daily-generator"), Left("monthly-generator"))
-
    }
 
    it should "be correctly exported to a json document" in {

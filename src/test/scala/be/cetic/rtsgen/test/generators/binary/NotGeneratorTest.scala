@@ -24,19 +24,10 @@ import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.NotGenerator
+import be.cetic.rtsgen.test.RTSTest
 
-class NotGeneratorTest extends FlatSpec with Matchers with Inspectors
+class NotGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
-   val t = new TrueTimeSeries()
-   val f = new FalseTimeSeries()
-   val u = new UndefinedTimeSeries()
-
-   val dates = Seq(
-      LocalDateTime.now(),
-      LocalDateTime.now() + 5.seconds,
-      LocalDateTime.now() + 10.seconds
-   ).toStream
-
    val notSource =
       """
         |{
@@ -61,17 +52,5 @@ class NotGeneratorTest extends FlatSpec with Matchers with Inspectors
          Left("binary-generator")
       )
       generator shouldBe generator.toJson.convertTo[NotGenerator]
-   }
-
-   "Not True" should "be False" in {
-      forAll (NotTimeSeries(t).compute(dates)) { result => result._2 shouldBe Some(false)}
-   }
-
-   "Not False" should "be True" in {
-       forAll (NotTimeSeries(f).compute(dates)) { result => result._2 shouldBe Some(true)}
-   }
-
-   "Not Undefined" should "be Undefined" in {
-      forAll (NotTimeSeries(u).compute(dates)) { result => result._2 shouldBe None}
    }
 }

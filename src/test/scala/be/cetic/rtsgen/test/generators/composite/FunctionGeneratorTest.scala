@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.composites
+package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._

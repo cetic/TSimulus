@@ -14,42 +14,44 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.composites
+package be.cetic.rtsgen.test.generators.composite
 
-import org.joda.time.Duration
+import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.composite.TimeShiftGenerator
-import org.scalatest.{FlatSpec, Matchers}
+import be.cetic.rtsgen.generators.binary.ThresholdGenerator
 
-class TimeShiftGeneratorTest extends FlatSpec with Matchers
+class ThresholdGeneratorTest extends FlatSpec with Matchers
 {
-   val timeShiftedSource =
+   val thresholdSource =
       """
         |{
-        |   "name": "time-shifted-generator",
-        |   "type": "time-shift",
+        |   "name": "threshold-generator",
+        |   "type": "threshold",
         |   "generator": "daily-generator",
-        |   "shift": -8000
+        |   "threshold": 42,
+        |   "included": true
         |}
       """.stripMargin
 
-   "A time shifted generator" should "be correctly read from a json document" in {
-      val document = timeShiftedSource.parseJson
+   "A threshold generator" should "be correctly read from a json document" in {
+      val document = thresholdSource.parseJson
 
-      val generator = document.convertTo[TimeShiftGenerator]
+      val generator = document.convertTo[ThresholdGenerator]
 
-      generator.name shouldBe Some("time-shifted-generator")
+      generator.name shouldBe Some("threshold-generator")
       generator.generator shouldBe Left("daily-generator")
-      generator.shift shouldBe new Duration(-8000)
+      generator.threshold shouldBe 42
+      generator.included shouldBe Some(true)
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = new TimeShiftGenerator(
-         Some("time-shifted-generator"),
+      val generator = new ThresholdGenerator(
+         Some("threshold-generator"),
          Left("daily-generator"),
-         new Duration(-8000)
+         42,
+         Some(false)
       )
-      generator shouldBe generator.toJson.convertTo[TimeShiftGenerator]
+      generator shouldBe generator.toJson.convertTo[ThresholdGenerator]
    }
 }

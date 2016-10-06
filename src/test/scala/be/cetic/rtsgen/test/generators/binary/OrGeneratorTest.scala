@@ -20,25 +20,16 @@ import be.cetic.rtsgen.timeseries.binary.{FalseTimeSeries, OrTimeSeries, TrueTim
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 import org.joda.time.LocalDateTime
 import com.github.nscala_time.time.Imports._
-import spray.json._
-import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.OrGenerator
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
+import spray.json._
+import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.test.RTSTest
 
 
-class OrGeneratorTest extends FlatSpec with Matchers with Inspectors
+class OrGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
-   val t = new TrueTimeSeries()
-   val f = new FalseTimeSeries()
-   val u = new UndefinedTimeSeries()
-
-   val dates = Seq(
-      LocalDateTime.now(),
-      LocalDateTime.now() + 5.seconds,
-      LocalDateTime.now() + 10.seconds
-   ).toStream
-
-   val orSource =
+  val orSource =
       """
         |{
         |   "name": "or-generator",
@@ -65,41 +56,5 @@ class OrGeneratorTest extends FlatSpec with Matchers with Inspectors
          Left("monthly-generator")
       )
       generator shouldBe generator.toJson.convertTo[OrGenerator]
-   }
-
-   "True OR True" should "be True" in {
-      forAll (OrTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
-   }
-
-   "True OR False" should "be True" in {
-      forAll (OrTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(true)}
-   }
-
-   "False OR True" should "be True" in {
-      forAll (OrTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
-   }
-
-   "False OR False" should "be False" in {
-      forAll (OrTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
-   }
-
-   "True OR Undetermined" should "be Undetermined" in {
-      forAll (OrTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "False OR Undetermined" should "be Undetermined" in {
-      forAll (OrTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "Undetermined OR True" should "be Undetermined" in {
-      forAll (OrTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "Undetermined OR False" should "be Undetermined" in {
-      forAll (OrTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
-   }
-
-   "Undetermined OR Undetermined" should "be Undetermined" in {
-      forAll (OrTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
    }
 }

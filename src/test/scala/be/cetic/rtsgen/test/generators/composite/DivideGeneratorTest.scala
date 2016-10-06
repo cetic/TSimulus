@@ -14,41 +14,41 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.composites
+package be.cetic.rtsgen.test.generators.composite
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.generators.composite.CorrelatedGenerator
+import be.cetic.rtsgen.generators.composite.DivideGenerator
 
-class CorrelatedGeneratorTest extends FlatSpec with Matchers
+class DivideGeneratorTest extends FlatSpec with Matchers
 {
-   val correlatedSource =
+   val divideSource =
       """
         |{
-        |   "name": "corr-generator",
-        |   "type": "correlated",
-        |   "generator": "daily-generator",
-        |   "coef": 0.8
+        |   "name": "divide-generator",
+        |   "type": "divide",
+        |   "numerator": "num-generator",
+        |   "denominator": "den-generator"
         |}
       """.stripMargin
 
-   "A correlated generator" should "be correctly read from a json document" in {
-      val document = correlatedSource.parseJson
+   "A divide generator" should "be correctly read from a json document" in {
+      val document = divideSource.parseJson
 
-      val generator = document.convertTo[CorrelatedGenerator]
+      val generator = document.convertTo[DivideGenerator]
 
-      generator.name shouldBe Some("corr-generator")
-      generator.generator shouldBe Left("daily-generator")
-      generator.coef shouldBe 0.8
+      generator.name shouldBe Some("divide-generator")
+      generator.numerator shouldBe Left("num-generator")
+      generator.denominator shouldBe Left("den-generator")
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = new CorrelatedGenerator(
-         Some("corr-generator"),
+      val generator = new DivideGenerator(
+         Some("divide-generator"),
          Left("daily-generator"),
-         0.8
+         Left("daily-generator")
       )
-      generator shouldBe generator.toJson.convertTo[CorrelatedGenerator]
+      generator shouldBe generator.toJson.convertTo[DivideGenerator]
    }
 }

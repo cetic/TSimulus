@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.composites
+package be.cetic.rtsgen.test.generators.composite
 
 import org.joda.time.{Duration, LocalDateTime}
 import org.scalatest.{FlatSpec, Inspectors, Matchers}

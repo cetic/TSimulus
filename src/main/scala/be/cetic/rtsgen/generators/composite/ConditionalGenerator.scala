@@ -22,6 +22,7 @@ import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.ConditionalTimeSeries
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 
+
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.composite.ConditionalTimeSeries]].
   *
