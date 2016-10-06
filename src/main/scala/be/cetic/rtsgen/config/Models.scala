@@ -90,7 +90,6 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
 
    def deserializationError(s: String): Generator[Any] = throw DeserializationException(s)
 
-
    def serializationError(s: String): JsValue = throw new SerializationException(s)
 
    override def read(json: JsValue): Generator[Any] = json match {
@@ -121,6 +120,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("xor") => XorFormat.read(known)
             case JsString("undefined") => UndefinedFormat.read(known)
             case JsString("first-of") => DefaultFormat.read(known)
+            case JsString("greater-than") => GreaterThanFormat.read(known)
             case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
       case unknown => deserializationError(s"unknown  Generator object: $unknown")
@@ -152,6 +152,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
       case x: XorGenerator => XorFormat.write(x)
       case x: UndefinedGenerator => UndefinedFormat.write(x)
       case x: DefaultGenerator => DefaultFormat.write(x)
+      case x: GreaterThanGenerator => GreaterThanFormat.write(x)
       case unrecognized => serializationError(s"Serialization problem $unrecognized")
    }
 }

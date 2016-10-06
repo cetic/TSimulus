@@ -21,11 +21,6 @@ import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
 import be.cetic.rtsgen.generators.binary.AndGenerator
 import be.cetic.rtsgen.test.RTSTest
-import be.cetic.rtsgen.timeseries.binary.{AndTimeSeries, FalseTimeSeries, TrueTimeSeries}
-import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
-import org.joda.time.LocalDateTime
-import com.github.nscala_time.time.Imports._
-
 
 class AndGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {

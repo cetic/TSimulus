@@ -25,9 +25,6 @@ import com.github.nscala_time.time.Imports._
 import org.joda.time.{Duration, LocalDateTime, LocalTime}
 import spray.json.{DefaultJsonProtocol, JsArray, JsNumber, JsObject, JsString, JsValue, RootJsonFormat, _}
 
-/**
-  * Created by mg on 29/09/16.
-  */
 /*
  * http://stackoverflow.com/questions/32721636/spray-json-serializing-inheritance-case-class
  */
