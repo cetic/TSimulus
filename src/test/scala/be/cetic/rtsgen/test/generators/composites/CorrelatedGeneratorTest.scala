@@ -14,41 +14,41 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.derivatives
+package be.cetic.rtsgen.test.generators.composites
 
-import be.cetic.rtsgen.config.DivideGenerator
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.CorrelatedGenerator
 
-class DivideGeneratorTest extends FlatSpec with Matchers
+class CorrelatedGeneratorTest extends FlatSpec with Matchers
 {
-   val divideSource =
+   val correlatedSource =
       """
         |{
-        |   "name": "divide-generator",
-        |   "type": "divide",
-        |   "numerator": "num-generator",
-        |   "denominator": "den-generator"
+        |   "name": "corr-generator",
+        |   "type": "correlated",
+        |   "generator": "daily-generator",
+        |   "coef": 0.8
         |}
       """.stripMargin
 
-   "A divide generator" should "be correctly read from a json document" in {
-      val document = divideSource.parseJson
+   "A correlated generator" should "be correctly read from a json document" in {
+      val document = correlatedSource.parseJson
 
-      val generator = document.convertTo[DivideGenerator]
+      val generator = document.convertTo[CorrelatedGenerator]
 
-      generator.name shouldBe Some("divide-generator")
-      generator.numerator shouldBe Left("num-generator")
-      generator.denominator shouldBe Left("den-generator")
+      generator.name shouldBe Some("corr-generator")
+      generator.generator shouldBe Left("daily-generator")
+      generator.coef shouldBe 0.8
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = new DivideGenerator(
-         Some("divide-generator"),
+      val generator = new CorrelatedGenerator(
+         Some("corr-generator"),
          Left("daily-generator"),
-         Left("daily-generator")
+         0.8
       )
-      generator shouldBe generator.toJson.convertTo[DivideGenerator]
+      generator shouldBe generator.toJson.convertTo[CorrelatedGenerator]
    }
 }

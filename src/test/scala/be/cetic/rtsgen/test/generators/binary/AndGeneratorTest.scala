@@ -16,10 +16,10 @@
 
 package be.cetic.rtsgen.test.generators.binary
 
-import be.cetic.rtsgen.config.AndGenerator
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.AndGenerator
 import be.cetic.rtsgen.timeseries.binary.{AndTimeSeries, FalseTimeSeries, TrueTimeSeries}
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 import org.joda.time.LocalDateTime

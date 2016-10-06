@@ -16,6 +16,7 @@
 
 package be.cetic.rtsgen.config
 
+import be.cetic.rtsgen.generators._
 import com.github.nscala_time.time.Imports._
 import org.joda.time.{Duration, LocalDateTime, LocalTime}
 import spray.json.{DefaultJsonProtocol, JsArray, JsNumber, JsObject, JsString, JsValue, RootJsonFormat, _}

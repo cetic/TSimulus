@@ -16,13 +16,13 @@
 
 package be.cetic.rtsgen.test.generators.binary
 
-import be.cetic.rtsgen.config.OrGenerator
 import be.cetic.rtsgen.timeseries.binary.{FalseTimeSeries, OrTimeSeries, TrueTimeSeries}
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 import org.joda.time.LocalDateTime
 import com.github.nscala_time.time.Imports._
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.OrGenerator
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 
 

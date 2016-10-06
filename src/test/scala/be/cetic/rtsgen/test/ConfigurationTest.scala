@@ -34,6 +34,7 @@ package be.cetic.rtsgen.test
 
 import be.cetic.rtsgen.config._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.{ARMAGenerator, AggregateGenerator, DailyGenerator, PartialGenerator}
 import org.joda.time.{Duration, LocalDateTime, LocalTime}
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._

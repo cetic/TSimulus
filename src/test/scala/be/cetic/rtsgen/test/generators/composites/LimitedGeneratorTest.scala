@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.derivatives
+package be.cetic.rtsgen.test.generators.composites
 
-import be.cetic.rtsgen.config.LimitedGenerator
 import org.joda.time.LocalDateTime
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.LimitedGenerator
 
 class LimitedGeneratorTest extends FlatSpec with Matchers
 {

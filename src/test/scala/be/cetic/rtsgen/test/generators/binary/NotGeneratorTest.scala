@@ -16,7 +16,6 @@
 
 package be.cetic.rtsgen.test.generators.binary
 
-import be.cetic.rtsgen.config.NotGenerator
 import be.cetic.rtsgen.timeseries.binary.{FalseTimeSeries, NotTimeSeries, TrueTimeSeries}
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
 import org.joda.time.LocalDateTime
@@ -24,6 +23,7 @@ import com.github.nscala_time.time.Imports._
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.NotGenerator
 
 class NotGeneratorTest extends FlatSpec with Matchers with Inspectors
 {

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.derivatives
+package be.cetic.rtsgen.test.generators.composites
 
-import be.cetic.rtsgen.config.LogisticGenerator
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.LogisticGenerator
 
 class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
 {

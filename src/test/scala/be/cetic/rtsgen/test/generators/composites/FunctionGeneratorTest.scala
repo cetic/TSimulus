@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.derivatives
+package be.cetic.rtsgen.test.generators.composites
 
-import be.cetic.rtsgen.config.{ConstantGenerator, FunctionGenerator}
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.{ConstantGenerator, FunctionGenerator}
 
 class FunctionGeneratorTest extends FlatSpec with Matchers
 {

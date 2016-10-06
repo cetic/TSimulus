@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.derivatives
+package be.cetic.rtsgen.test.generators.composites
 
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
-import be.cetic.rtsgen.config.PartialGenerator
+import be.cetic.rtsgen.generators.PartialGenerator
 import org.joda.time.LocalDateTime
 
 class PartialGeneratorTest extends FlatSpec with Matchers

@@ -16,12 +16,12 @@
 
 package be.cetic.rtsgen.test.generators.primary
 
-import be.cetic.rtsgen.config.{ARMAGenerator, ARMAModel}
+import be.cetic.rtsgen.config.ARMAModel
 import org.joda.time.Duration
 import org.scalatest.{FlatSpec, Matchers}
-
 import spray.json._
 import be.cetic.rtsgen.config.GeneratorLeafFormat._
+import be.cetic.rtsgen.generators.ARMAGenerator
 
 class ARMAGeneratorTest extends FlatSpec with Matchers
 {
