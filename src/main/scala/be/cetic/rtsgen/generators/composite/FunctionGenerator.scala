@@ -48,16 +48,11 @@ class FunctionGenerator(name: Option[String],
       case _ => false
    }
 
-   override def toJson: JsValue = {
-
-      val _generator = (generator match {
-         case Left(s) => s.toJson
-         case Right(g) => GeneratorFormat.write(g)
-      }).toJson
-
+   override def toJson: JsValue =
+   {
       val t = Map(
          "type" -> `type`.toJson,
-         "generator" -> _generator,
+         "generator" -> either2json(generator),
          "slope" -> slope.toJson,
          "intercept" -> intercept.toJson
       )

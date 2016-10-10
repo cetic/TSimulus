@@ -17,7 +17,7 @@
 package be.cetic.rtsgen.generators.composite
 
 import be.cetic.rtsgen.config._
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.AggregationTimeSeries
 import spray.json.{JsArray, JsObject, JsString, JsValue, _}
@@ -54,15 +54,12 @@ class AggregateGenerator(name: Option[String],
       case _ => false
    }
 
-   override def toJson: JsValue = {
-
+   override def toJson: JsValue =
+   {
       val t = Map(
          "type" -> `type`.toJson,
          "aggregator" -> aggregator.toJson,
-         "generators" -> generators.map {
-            case Left(s) => s.toJson
-            case Right(x) => x.toJson
-         }.toJson
+         "generators" -> generators.map(either2json).toJson
       )
 
       new JsObject(

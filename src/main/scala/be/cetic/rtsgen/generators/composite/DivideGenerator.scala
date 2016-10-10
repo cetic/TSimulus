@@ -50,21 +50,12 @@ class DivideGenerator(name: Option[String],
       case _ => false
    }
 
-   override def toJson: JsValue = {
-      val _numerator = (numerator match {
-         case Left(s) => s.toJson
-         case Right(x) => x.toJson
-      }).toJson
-
-      val _denominator = (denominator match {
-         case Left(s) => s.toJson
-         case Right(x) => x.toJson
-      }).toJson
-
+   override def toJson: JsValue =
+   {
       val t = Map(
          "type" -> `type`.toJson,
-         "numerator" -> _numerator,
-         "denominator" -> _denominator
+         "numerator" -> either2json(numerator),
+         "denominator" -> either2json(denominator)
       )
 
       new JsObject(

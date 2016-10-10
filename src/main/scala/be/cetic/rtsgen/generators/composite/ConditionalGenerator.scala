@@ -17,7 +17,7 @@
 package be.cetic.rtsgen.generators.composite
 
 import be.cetic.rtsgen.config.{GeneratorFormat, Model}
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.composite.ConditionalTimeSeries
 import be.cetic.rtsgen.timeseries.missing.UndefinedTimeSeries
@@ -63,21 +63,12 @@ class ConditionalGenerator(name: Option[String],
       case _ => false
    }
 
-   override def toJson: JsValue = {
-      val _condition = (condition match {
-         case Left(s) => s.toJson
-         case Right(g) => g.toJson
-      }).toJson
-
-      val _success = (success match {
-         case Left(s) => s.toJson
-         case Right(g) => g.toJson
-      }).toJson
-
+   override def toJson: JsValue =
+   {
       var t = Map(
          "type" -> `type`.toJson,
-         "condition" -> _condition,
-         "success" -> _success
+         "condition" -> either2json(condition),
+         "success" -> either2json(success)
       )
 
       if(failure.isDefined)

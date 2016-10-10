@@ -29,6 +29,7 @@ import spray.json.{JsObject, JsString, JsValue, _}
 class TimeShiftGenerator(name: Option[String],
                          val generator: Either[String, Generator[Any]],
                          val shift: Duration) extends Generator[Any](name, "time-shift")
+                                              with TimeToJson
 {
    override def timeseries(generators: (String) => Generator[Any]) =
    {
@@ -43,15 +44,10 @@ class TimeShiftGenerator(name: Option[String],
       case _ => false
    }
 
-   override def toJson: JsValue = {
-      val _generator = generator match
-      {
-         case Left(s) => s.toJson
-         case Right(g) => g.toJson
-      }
-
+   override def toJson: JsValue =
+   {
       var t = Map(
-         "generator" -> _generator,
+         "generator" -> either2json(generator),
          "shift" -> DurationFormat.write(shift),
          "type" -> `type`.toJson
       )

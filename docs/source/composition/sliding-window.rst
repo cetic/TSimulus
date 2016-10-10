@@ -43,9 +43,9 @@ window-length
 **Example**::
 
     {
-      "name": "windows-generator",
+      "name": "window-generator",
       "type": "window",
       "aggregator": "sum",
       "window-length" : 5000,
-      "generators": "daily-generator"
+      "generator": "daily-generator"
     }

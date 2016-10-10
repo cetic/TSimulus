@@ -48,7 +48,6 @@ class DefaultGeneratorTest extends FlatSpec with Matchers with Inspectors
          Some("default-generator"),
          Seq(Left("daily-generator"), Left("random-generator"))
       )
-      println(generator.toJson)
       generator shouldBe DefaultGenerator(generator.toJson)
    }
 }

@@ -16,8 +16,37 @@
 
 package be.cetic.rtsgen.test.generators.missing
 
-class UndefinedGeneratorTest
+import be.cetic.rtsgen.config.GeneratorFormat
+import be.cetic.rtsgen.generators.missing.{LimitedGenerator, PartialGenerator, UndefinedGenerator}
+import org.joda.time.LocalDateTime
+import org.scalatest.{FlatSpec, Inspectors, Matchers}
+import spray.json._
+
+
+class UndefinedGeneratorTest extends FlatSpec with Matchers with Inspectors
 {
+   val source =
+      """
+        |{
+        |  "name": "undefined-generator",
+        |  "type": "undefined"
+        |}
+      """.stripMargin
 
+   "An Undefined generator" should "be correctly read from a json document" in {
+      val generator = UndefinedGenerator(source.parseJson)
 
+      generator.name shouldBe Some("undefined-generator")
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
+   it should "be correctly exported to a json document" in {
+      val generator = new UndefinedGenerator(
+         Some("undefined-generator")
+      )
+      generator shouldBe UndefinedGenerator(generator.toJson)
+   }
 }

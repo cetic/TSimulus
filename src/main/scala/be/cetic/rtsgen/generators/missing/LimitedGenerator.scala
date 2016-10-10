@@ -43,15 +43,11 @@ class LimitedGenerator(name: Option[String],
       case _ => false
    }
 
-   override def toJson: JsValue = {
-      val _generator = generator match {
-         case Left(s) => s.toJson
-         case Right(g) => g.toJson
-      }
-
+   override def toJson: JsValue =
+   {
       val t = Map(
          "type" -> `type`.toJson,
-         "generator" -> _generator,
+         "generator" -> either2json(generator),
          "from" -> from.get.toJson,
          "to" -> to.get.toJson
       )

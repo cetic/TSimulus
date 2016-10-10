@@ -44,8 +44,6 @@ class SlidingWindowGenerator(name: Option[String],
          case _ => x.map(_._2).sum / x.size
       }}
 
-      val d = new Duration(duration)
-
       val base = Model.generator(generators)(generator).timeseries(generators) match {
          case t: TimeSeries[Double] => t
       }
@@ -63,14 +61,13 @@ class SlidingWindowGenerator(name: Option[String],
       case _ => false
    }
 
-   override def toJson: JsValue = {
-      val _generator = (generator match {
-         case Left(s) => s.toJson
-         case Right(g) => g.toJson
-      }).toJson
-
+   override def toJson: JsValue =
+   {
       var t = Map(
-         "window-length" -> duration.toJson
+         "window-length" -> duration.toJson,
+         "generator" -> either2json(generator),
+         "aggregator" -> aggregator.toJson,
+         "window-length" -> duration.getMillis.toJson
       )
 
       if(name.isDefined)
