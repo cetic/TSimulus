@@ -46,4 +46,9 @@ trait TimeToJson extends DefaultJsonProtocol
       def write(d: Duration) = d.getMillis.toJson
       def read(value: JsValue) = new Duration(value.toString.toLong)
    }
+
+   def either2json(element: Either[String,Generator[Any]]) = element match {
+      case Left(s) => s.toJson
+      case Right(g) => g.toJson
+   }
 }

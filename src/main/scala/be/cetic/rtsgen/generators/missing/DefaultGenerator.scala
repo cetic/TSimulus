@@ -17,7 +17,7 @@
 package be.cetic.rtsgen.generators.missing
 
 import be.cetic.rtsgen.config.{GeneratorFormat, Model}
-import be.cetic.rtsgen.generators.Generator
+import be.cetic.rtsgen.generators.{Generator, TimeToJson}
 import be.cetic.rtsgen.timeseries.TimeSeries
 import be.cetic.rtsgen.timeseries.missing.DefaultTimeSeries
 import spray.json.{JsArray, JsObject, JsString, JsValue, _}
@@ -26,6 +26,7 @@ import spray.json.{JsArray, JsObject, JsString, JsValue, _}
   * A generator for [[be.cetic.rtsgen.timeseries.missing.DefaultTimeSeries]].
   */
 class DefaultGenerator(name: Option[String], val gens: Seq[Either[String, Generator[Any]]]) extends Generator[Any](name, "first-of")
+                                                                                            with TimeToJson
 {
    override def timeseries(generators: (String) => Generator[Any]) =
    {
@@ -45,7 +46,8 @@ class DefaultGenerator(name: Option[String], val gens: Seq[Either[String, Genera
 
    override def toJson: JsValue = {
       val t = Map(
-         "type" -> `type`.toJson
+         "type" -> `type`.toJson,
+         "generators" -> gens.map(either2json).toJson
       )
 
       new JsObject(
