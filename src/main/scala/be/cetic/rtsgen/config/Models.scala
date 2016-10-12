@@ -64,6 +64,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("true") => TrueGenerator(known)
             case JsString("false") => FalseGenerator(known)
             case JsString("transition") => TransitionGenerator(known)
+            case JsString("binary-transition") => BinaryTransitionGenerator(known)
             case JsString("window") => SlidingWindowGenerator(known)
             case JsString("limited") => LimitedGenerator(known)
             case JsString("partial") => PartialGenerator(known)

@@ -38,7 +38,7 @@ class TransitionGenerator(name: Option[String],
 
       def interpolation = (a: Double, b: Double, ratio: Double) => a*(1-ratio) + ratio*b
 
-      def smooth(x: Double) = 3*x*x - 2*x*x*x // smooth is ~= cossig
+      def smooth(x: Double) = 3*x*x - 2*x*x*x // smooth ~= cossig, and smooth is faster to compute
       def cossig(x: Double) = (1 - math.cos(math.Pi*x)) / 2
       def exp(x: Double) = Math.expm1(x) / (Math.E - 1)
 
