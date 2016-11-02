@@ -1,6 +1,8 @@
 Operating Principles
 ********************
 
+.. _generator-ref:
+
 .. include:: purpose.rst
 
 
