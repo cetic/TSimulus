@@ -19,23 +19,26 @@ publishTo := {
 publishMavenStyle := true
 
 pomExtra := (
-   <url>TODO</url>
+   <url>https://github.com/cetic/rts-gen</url>
       <licenses>
          <license>
-            <name>BSD-style</name>
-            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
          </license>
       </licenses>
       <scm>
-         <url>git@github.com:jsuereth/scala-arm.git</url>
-         <connection>scm:git:git@github.com:jsuereth/scala-arm.git</connection>
+         <url>git@github.com:cetic/scala-arm.git</url>
+         <connection>scm:git:git@github.com:cetic/rts-gen.git</connection>
       </scm>
       <developers>
          <developer>
-            <id>jsuereth</id>
-            <name>Josh Suereth</name>
-            <url>http://jsuereth.com</url>
+            <id>mgoeminne</id>
+            <name>Mathieu Goeminne</name>
+            <email>mathieu.goeminne@cetic.be</email>
+            <url>https://www.cetic.be/Mathieu-Goeminne</url>
+            <organization>CETIC</organization>
+            <organizationUrl>https://www.cetic.be</organizationUrl>
          </developer>
       </developers>)
 
