@@ -42,14 +42,14 @@ pomExtra := (
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 libraryDependencies ++= Seq(
-   "com.github.nscala-time" % "nscala-time_2.11" % "2.12.0",
+   "com.github.nscala-time" %% "nscala-time" % "2.12.0",
    "org.apache.commons" % "commons-math3" % "3.6.1",
    "io.spray" %%  "spray-json" % "1.3.2"
 )
 
 libraryDependencies ++= Seq(
    "org.scala-lang" % "scala-reflect" % "2.11.7",
-   "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.4"
+   "org.scala-lang.modules" %% "scala-xml" % "1.0.4"
 )
 
 libraryDependencies ++= Seq(
