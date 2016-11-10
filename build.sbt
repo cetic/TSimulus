@@ -3,7 +3,7 @@
 organization := "be.cetic"
 version := "0.1.3"
 name := "rts-gen"
-scalaVersion := "2.11.8"
+crossScalaVersions := Seq("2.11.8", "2.12.0")
 
 // This forbids including Scala related libraries into the dependency
 autoScalaLibrary := false
@@ -42,7 +42,7 @@ pomExtra := (
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 libraryDependencies ++= Seq(
-   "com.github.nscala-time" %% "nscala-time" % "2.12.0",
+   "com.github.nscala-time" %% "nscala-time" % "2.14.0",
    "org.apache.commons" % "commons-math3" % "3.6.1",
    "io.spray" %%  "spray-json" % "1.3.2"
 )
