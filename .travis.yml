@@ -4,5 +4,5 @@ scala:
    - 2.11.8
    - 2.12.0
 
-env:
-   - JDK=oraclejdk8
+jdk:
+   - oraclejdk8
