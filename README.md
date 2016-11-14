@@ -15,3 +15,35 @@ In addition, the values of a time series may be related to those of an other tim
 
 The RTS-Gen project provides tools for specifying the shape of a time series (general patterns, cycles, importance of the added noise, etc.)
 and for converting this specification into time series values.
+
+More specifically, the project proposes:
+
+- A way to express time series constraints using JSON documents, as well as a Scala API for programmatically expressing these constraints.
+- A convenient way to combine constraint expressions in order to express higher-level constraints. 
+- An engine that generates time series values based on the described constraints.
+- A command line tool that relies on the engine to generate time series.
+- A stateless microservice that provides time series generation services.   
+
+
+# Installation
+
+RTS-Gen can be imported in your project by adding the following instruction in your build.sbt file:
+
+```
+libraryDependencies += "be.cetic" %% "rts-gen" % "0.1.3"
+```
+
+RTS-Gen requires a standard Java Runtime Environment, as well as the Scala library. 
+If this dependency is not locally available the first time you compile your project, the dependency manager will automatically download it for you.
+ 
+# Documentation
+
+The documentation of the latest release is available on [rts-gen.readthedocs.io](https://rts-gen.readthedocs.io).
+
+The sources of the documentation are available in the docs directory and can be compiled using Sphinx.
+
+# Credits
+
+RTS-Gen is release under the [Apache license](http://www.apache.org/licenses/) (version 2). 
+
+This library is part of the [EAM-SDI](https://www.cetic.be/EAM-SDI-2301) research project, founded by the Walloon Region.
