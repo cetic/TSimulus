@@ -40,6 +40,7 @@ class MonthlyGenerator(name: Option[String],
          "august" -> DateTimeConstants.AUGUST,
          "september" -> DateTimeConstants.SEPTEMBER,
          "october" -> DateTimeConstants.OCTOBER,
+         "november" -> DateTimeConstants.NOVEMBER,
          "december" -> DateTimeConstants.DECEMBER
       )
 

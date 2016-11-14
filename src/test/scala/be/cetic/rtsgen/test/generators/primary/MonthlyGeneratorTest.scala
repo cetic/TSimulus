@@ -57,4 +57,35 @@ class MonthlyGeneratorTest extends FlatSpec with Matchers
 
       generator shouldBe MonthlyGenerator(generator.toJson)
    }
+
+   "A monthly generator with all months" should "correctly be parsed" in {
+      val sourceComplete =
+      """
+        |{
+        |      "name": "monthly-generator",
+        |      "type": "monthly",
+        |      "points": {"january": 3.3, "february": 3.7, "march": 6.8, "april": 9.8, "may": 13.6, "june": 16.2,
+        |        "july": 18.4, "august": 18, "september": 14.9, "october": 11.1, "november": 6.8, "december": 3.9}
+        |}
+      """.stripMargin
+
+      val generator = MonthlyGenerator(sourceComplete.parseJson)
+
+      generator.name shouldBe Some("monthly-generator")
+      generator.`type` shouldBe "monthly"
+      generator.points shouldBe Map(
+         "january" -> 3.3,
+         "february" -> 3.7,
+         "march" -> 6.8,
+         "april" -> 9.8,
+         "may" -> 13.6,
+         "june" -> 16.2,
+         "july" -> 18.4,
+         "august" -> 18,
+         "september" -> 14.9,
+         "october" -> 11.1,
+         "november" -> 6.8,
+         "december" -> 3.9
+      )
+   }
 }
