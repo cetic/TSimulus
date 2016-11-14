@@ -1,3 +1,5 @@
+.. highlight:: none
+
 Getting Started
 ===============
 
@@ -41,11 +43,24 @@ According to the `Royal Meteorology Institute of Belgium <http://www.meteo.be/me
     * - December
       - 3.9
 
-So, we create a generator that describes the evolution of the temperator month per month:
+So, we create a generator that describes the evolution of the temperator month per month::
 
-TODO
+    {
+       "generators":[
+       {
+          "name": "monthly-basis",
+          "type": "monthly",
+          "points": {"january": 3.3, "february": 3.7, "march": 6.8, "april": 9.8, "may": 13.6, "june": 16.2,
+                     "july": 18.4, "august": 18, "september": 14.9, "october": 11.1, "november": 6.8, "december": 3.9}
+       }],
+       "exported":[
+          {"name": "temperature", "generator": "monthly-basis", "frequency": 60000}
+       ],
+       "from": "2016-01-01 00:00:00.000",
+       "to": "2017-12-31 23:59:59.999"
+    }
 
-(download this configuration)
+(`Download this configuration <https://www.github.com.org/cetic/rts-gen/blob/master/examples/get_started_1.json>`_)
 
 The name and the attributes of each objects in this JSON document are described further in the rest of this documentation. At the moment,
 we will only focus on the created configuration and the resulting values.
@@ -53,7 +68,7 @@ we will only focus on the created configuration and the resulting values.
 Save the configuration on a text file next to the downloaded application and run the application with the freshly created file as well as the limits of the
 time period of interest:
 
-java -jar rst-gen configuration1.json "2016-01-01 00:00:00.000" "2017-12-31 23:59:59.999"
+java -jar rst-gen get_started_1.json "2016-01-01 00:00:00.000" "2017-12-31 23:59:59.999"
 
 This will generate the values of the time series described in the configuration document, for points of times included between the two specified dates.
 If you represent them with your favourite plotting tool, you should obtain something like the following plot:
@@ -98,31 +113,160 @@ We therefore create a new generator that expresses the variation of the temperat
     * - 20:00
       - -2.3
     * - 22:00
-      - -3.5
+      - -2.7
 
-TODO
+::
+
+   {
+      "generators": [
+          {
+             "name": "monthly-basis",
+             "type": "monthly",
+             "points": {
+                "january": 3.3,
+                "february": 3.7,
+                "march": 6.8,
+                "april": 9.8,
+                "may": 13.6,
+                "june": 16.2,
+                "july": 18.4,
+                "augustus": 18,
+                "september": 14.9,
+                "october": 11.1,
+                "november": 6.8,
+                "december": 3.9
+             }
+          },
+          {
+             "name": "daily-variation",
+             "type": "daily",
+             "points": {
+                "00:00:00.000": -3,
+                "02:00:00.000": -3.9,
+                "04:00:00.000": -5,
+                "06:00:00.000": -4.6,
+                "08:00:00.000": -5.7,
+                "10:00:00.000": -2.2,
+                "12:00:00.000": 1,
+                "14:00:00.000": 3,
+                "16:00:00.000": 2.3,
+                "18:00:00.000": 0.9,
+                "20:00:00.000": -2.3,
+                "22:00:00.000": -2.7
+             }
+          },
+          {
+             "name": "result",
+             "type": "aggregate",
+             "aggregator": "sum",
+             "generators": [
+                "monthly-basis",
+                "daily-variation"
+             ]
+          }
+       ],
+       "exported": [
+          {
+             "name": "temperator",
+             "generator": "result",
+             "frequency": 60000
+          }
+       ],
+       "from": "2016-01-01 00:00:00.000",
+       "to": "2017-12-31 23:59:59.999"
+    }
+
+(`Download this configuration <https://www.github.com.org/cetic/rts-gen/blob/master/examples/get_started_2.json>`_)
 
 Please note that the values of this second generator are relative to an arbitrary "neutral" value.
-Plotting these values is therefore not relevant. However, we can now sum the monthly temperatures with the daily ones in order
-to obtain a more complex behaviour:
-
-TODO
-
-The resulting plot becomes more realistic:
+Plotting these values is therefore not relevant. However, we sum the monthly temperatures with the daily ones in order
+to obtain a more complex behaviour, and the more realistic resulting time series can be displayed:
 
 TODO: IMAGE
 
 However, a new further examination of the generated values reveals that the temperature variation remains unsatisfactory:
 during a calendar day, the temperatures varies unrealistically, and two identical days in different years (for instance, 2016-02-03 and 2017-02-03)
-have the same sequence of values. In the real life, the temperature slightly changes over time due to complex modification of the atmospheric conditions.
+have the same sequence of values. In the real life, the temperature slightly changes over time due to complex modifications of the atmospheric conditions.
 
 In order to simulate these small changes, we introduce a generator that describe a noisy time series, and we sum it with the previously
-defined generators:
+defined generators.
 
-TODO
+::
 
-The final result is now realistic enough for a basic simulation of the temperature over time. When observing the plot of its values,
-clear and realistic patterns emerge, while a realistic noise is also clearly present.
+   {
+      "generators": [
+         {
+            "name": "monthly-basis",
+            "type": "monthly",
+            "points": {
+               "january": 3.3,
+               "february": 3.7,
+               "march": 6.8,
+               "april": 9.8,
+               "may": 13.6,
+               "june": 16.2,
+               "july": 18.4,
+               "augustus": 18,
+               "september": 14.9,
+               "october": 11.1,
+               "november": 6.8,
+               "december": 3.9
+            }
+         },
+         {
+            "name": "daily-variation",
+            "type": "daily",
+            "points": {
+               "00:00:00.000": -3,
+               "02:00:00.000": -3.9,
+               "04:00:00.000": -5,
+               "06:00:00.000": -4.6,
+               "08:00:00.000": -5.7,
+               "10:00:00.000": -2.2,
+               "12:00:00.000": 1,
+               "14:00:00.000": 3,
+               "16:00:00.000": 2.3,
+               "18:00:00.000": 0.9,
+               "20:00:00.000": -2.3,
+               "22:00:00.000": -2.7
+            }
+         },
+         {
+            "name": "noise",
+            "type": "arma",
+            "model": {
+               "std": 0.2,
+               "c": 0,
+               "seed": 1234
+            },
+            "timestep": 300000
+         },
+         {
+            "name": "result",
+            "type": "aggregate",
+            "aggregator": "sum",
+            "generators": [
+               "monthly-basis",
+               "daily-variation",
+               "noise"
+            ]
+         }
+      ],
+      "exported": [
+         {
+            "name": "temperator",
+            "generator": "result",
+            "frequency": 60000
+         }
+      ],
+      "from": "2016-01-01 00:00:00.000",
+      "to": "2017-12-31 23:59:59.999"
+   }
+
+(`Download this configuration <https://www.github.com.org/cetic/rts-gen/blob/master/examples/get_started_3.json>`_)
+
+The final result is now realistic enough for a basic simulation of the temperature over time.
+When observing the plot of its values, clear and realistic patterns emerge, while a realistic noise is also clearly present.
 
 TODO: IMAGE
 
