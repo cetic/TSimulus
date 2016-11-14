@@ -30,7 +30,7 @@ More specifically, the project proposes:
 RTS-Gen can be imported in your project by adding the following instruction in your build.sbt file:
 
 ```
-libraryDependencies += "be.cetic" %% "rts-gen" % "0.1.3"
+libraryDependencies += "be.cetic" %% "rts-gen" % "0.1.4"
 ```
 
 RTS-Gen requires a standard Java Runtime Environment, as well as the Scala library. 
