@@ -55,9 +55,7 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
       val data_before = data.takeRight(2)
       val data_after = data.take(2)
       val final_data = data_before ++ data ++ data_after
-
-      print(final_dates.mkString(","))
-
+      
       new AkimaSplineInterpolator().interpolate(final_dates.toArray, final_data.toArray)
    }
 
