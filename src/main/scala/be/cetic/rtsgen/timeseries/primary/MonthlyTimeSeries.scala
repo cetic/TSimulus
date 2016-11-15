@@ -30,7 +30,7 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
 {
    /**
      * @param month A month in a particular year.
-     * @return The datetime that define the limit of the month.
+     * @return The datetime that defines the middle of the month.
      */
    private def month_threshold(month : YearMonth): LocalDateTime =
    {
@@ -46,16 +46,19 @@ case class MonthlyTimeSeries(controlPoints: Map[Int, Double]) extends Independan
    val interpolator = {
 
       val entries = controlPoints.map { case (key, value) => ((key-1).toDouble, value)}.toSeq.sortBy(entry => entry._1)
+      val dates = entries.map(_._1)
+      val dates_before = dates.takeRight(2).map(d => -(11 - d + 1))
+      val dates_after = dates.take(2).map(d => d+12)
+      val final_dates = dates_before ++ dates ++ dates_after
 
-      val tempo_date = entries.map(_._1)
-      val before_date = - (11 - tempo_date.last + 1)
-      val after_date = tempo_date.head + 12
-      val dates = (before_date +: tempo_date :+ after_date).toArray
+      val data = entries.map(_._2)
+      val data_before = data.takeRight(2)
+      val data_after = data.take(2)
+      val final_data = data_before ++ data ++ data_after
 
-      val tempo_values = entries.map(_._2)
-      val values = (tempo_values.last +: tempo_values :+ tempo_values.head).toArray
+      print(final_dates.mkString(","))
 
-      new AkimaSplineInterpolator().interpolate(dates, values)
+      new AkimaSplineInterpolator().interpolate(final_dates.toArray, final_data.toArray)
    }
 
    def compute(time: LocalDateTime): Option[Double] = {
