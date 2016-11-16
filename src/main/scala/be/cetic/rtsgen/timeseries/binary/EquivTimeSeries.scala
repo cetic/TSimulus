@@ -39,14 +39,10 @@ case class EquivTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) exten
          val valueA = element._1._2
          val valueB = element._2._2
 
-         val ret = (valueA, valueB) match {
-            case (None, _) => None[Boolean]
-            case (_, None) => None[Boolean]
-            case (Some(x), Some(y)) => x == y
-            case _ => None[Boolean]
-         }
+         val value = if(valueA.isEmpty || valueB.isEmpty) None
+                     else Some(valueA.get == valueB.get)
 
-         (timestamp, Some(ret))
+         (timestamp, value)
       })
    }
 }
