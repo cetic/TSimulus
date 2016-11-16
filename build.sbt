@@ -5,8 +5,6 @@ version := "0.1.4"
 name := "rts-gen"
 crossScalaVersions := Seq("2.11.8", "2.12.0")
 
-// This forbids including Scala related libraries into the dependency
-autoScalaLibrary := false
 
 publishTo := {
    val nexus = "https://oss.sonatype.org/"

@@ -66,16 +66,18 @@ Have a look at the Quick starter in order to learn how to generated personalized
 Licence and Source Code
 -----------------------
 
-RTS-Gen is released publicly under the `Apache Licence (version 2.0)<http://www.apache.org/licenses/LICENSE-2.0>`_ and
-has been initiated as part of `EAM-SDI<https://www.cetic.be/EAM-SDI-2300>`_, a CWALity research project of the Walloon region.
+RTS-Gen is released publicly under the `Apache Licence (version 2.0) <http://www.apache.org/licenses/LICENSE-2.0>`_ and
+has been initiated as part of `EAM-SDI <https://www.cetic.be/EAM-SDI-2300>`_, a CWALity research project of the Walloon region.
 
+The source code is available on Github: https://github.com/cetic/rts-gen
 
-Contents:
+Please feel free to contribute by submitting pull requests, bug reports and feature requests.
 
 .. toctree::
-    :caption: Overview
-    :maxdepth: 1
+   :caption: Overview
+   :maxdepth: 1
 
-    get_started
-    principles
-    deployment
+   installation
+   get_started
+   generators
+

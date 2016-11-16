@@ -1,11 +1,9 @@
-Operating Principles
-********************
+Generators
+**********
 
-.. _generator-ref:
+.. _generators:
 
 .. include:: purpose.rst
-
-
 .. include:: configuration_document.rst
 .. include:: primary/primary.rst
 .. include:: composition/composition.rst

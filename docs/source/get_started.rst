@@ -1,10 +1,10 @@
 .. highlight:: none
 
 Getting Started
-===============
+***************
 
 A First Generation
-------------------
+==================
 
 
 The simpliest way to test the RTS-Gen project is to download the `last version of a runnable Jar file<>`_ that contains an application based on the RTS-Gen library.
@@ -54,7 +54,7 @@ So, we create a generator that describes the evolution of the temperator month p
                      "july": 18.4, "august": 18, "september": 14.9, "october": 11.1, "november": 6.8, "december": 3.9}
        }],
        "exported":[
-          {"name": "temperature", "generator": "monthly-basis", "frequency": 60000}
+          {"name": "temperature", "generator": "monthly-basis", "frequency": 3600000}
        ],
        "from": "2016-01-01 00:00:00.000",
        "to": "2017-12-31 23:59:59.999"
@@ -70,14 +70,16 @@ time period of interest:
 
 java -jar rst-gen get_started_1.json "2016-01-01 00:00:00.000" "2017-12-31 23:59:59.999"
 
-This will generate the values of the time series described in the configuration document, for points of times included between the two specified dates.
-If you represent them with your favourite plotting tool, you should obtain something like the following plot:
+After a few seconds, you obtain a sequence of lines, each of them being a value entry made of a date, a series name, and a value separated by semicolons.
+In this demonstration, the series name is always "temperature". If you plot the series values with your favourite tool, you should obtain something like the following plot:
 
-TODO: IMAGE
+.. image:: images/get_started_1.png
+    :width: 300 px
+    :alt: First results
 
 
-Towards a Complexified Temperature Model
-----------------------------------------
+Towards a Complexified Model
+============================
 
 So it works! The temperature continuously varies, and for the middle of each month it complies with the values specified in the configuration.
 But you may be frustated by the regularity of the obtained values: they increase or decrease monotoneously from a month to the next one, which is not a
@@ -130,7 +132,7 @@ We therefore create a new generator that expresses the variation of the temperat
                 "may": 13.6,
                 "june": 16.2,
                 "july": 18.4,
-                "augustus": 18,
+                "august": 18,
                 "september": 14.9,
                 "october": 11.1,
                 "november": 6.8,
@@ -169,7 +171,7 @@ We therefore create a new generator that expresses the variation of the temperat
           {
              "name": "temperator",
              "generator": "result",
-             "frequency": 60000
+             "frequency": 600000
           }
        ],
        "from": "2016-01-01 00:00:00.000",
@@ -182,7 +184,12 @@ Please note that the values of this second generator are relative to an arbitrar
 Plotting these values is therefore not relevant. However, we sum the monthly temperatures with the daily ones in order
 to obtain a more complex behaviour, and the more realistic resulting time series can be displayed:
 
-TODO: IMAGE
+.. image:: images/get_started_2.png
+    :width: 400 px
+    :alt: Monthly + Daily temperature
+
+In this image, only values from the first and the second of January 2016 are displayed. A daily basis pattern is easily observable,
+while values are quite similar (although slightly different) from day to day.
 
 However, a new further examination of the generated values reveals that the temperature variation remains unsatisfactory:
 during a calendar day, the temperatures varies unrealistically, and two identical days in different years (for instance, 2016-02-03 and 2017-02-03)
@@ -206,7 +213,7 @@ defined generators.
                "may": 13.6,
                "june": 16.2,
                "july": 18.4,
-               "augustus": 18,
+               "august": 18,
                "september": 14.9,
                "october": 11.1,
                "november": 6.8,
@@ -256,7 +263,7 @@ defined generators.
          {
             "name": "temperator",
             "generator": "result",
-            "frequency": 60000
+            "frequency": 600000
          }
       ],
       "from": "2016-01-01 00:00:00.000",
@@ -268,39 +275,9 @@ defined generators.
 The final result is now realistic enough for a basic simulation of the temperature over time.
 When observing the plot of its values, clear and realistic patterns emerge, while a realistic noise is also clearly present.
 
-TODO: IMAGE
+.. image:: images/get_started_3.png
+    :width: 400 px
+    :alt: Monthly + Daily + Noise temperatures
 
-You can now create configuration documents for RTS-Gen. Many other :ref:`generator-ref`s are available in the library for expressing
-different constraints on the generated time series.
-
-
-
-Get Values from a Virtual Sensor
---------------------------------
-
-
-Use the library
----------------
-
-The library is available on the Maven Central Repository, and can therefore be used in your own applications by adding
-the following to your sbt build:
-
-.. parsed-literal::
-
-    libraryDependencies += "be.cetic" %% "rts-gen" % "\ |ProjectRelease|\ "
-
-
-Alternatively, you can use add the following in your pom document:
-
-.. parsed-literal::
-
-    <dependency>
-        <groupId>be.cetic</groupId>
-        <artifactId>rts-gen</artifactId>
-        <version>\ |ProjectRelease|\ </version>
-    </dependency>
-
-
-
-Deploy the microservice
------------------------
+Not satisfied by the realism of the generated values? Don't hesitate the modify the parameter of the generators described in the
+configuration file or try other generators_.

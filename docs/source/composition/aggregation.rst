@@ -45,7 +45,7 @@ generators
     Mandatory. A list of the generators describing the underlying time series.
 
 
-**Document Sample**::
+**Example**::
 
     {
       "name": "aggregate-generator",

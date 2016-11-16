@@ -26,7 +26,7 @@ b
 
 strict
     Optional. Specifies of the inequality is strict or not. If not specified, the inequality will be considered as
-non strict.
+    non strict.
 
 **Example**::
 

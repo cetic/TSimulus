@@ -1,7 +1,6 @@
 Configuration Document
 ======================
 
-
 Time Series Generators
 ----------------------
 

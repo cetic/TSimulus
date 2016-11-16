@@ -1,7 +1,7 @@
 .. _composition:
 
-Generator Composition
-=====================
+Composite Generators
+====================
 
 Time series generators can be composed in order to form composite generators. Two types of composite generators
  can be distinguished:
