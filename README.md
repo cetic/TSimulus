@@ -1,6 +1,6 @@
 # rts-gen
 
-[![Build Status](https://travis-ci.org/cetic/rts-gen.svg?branch=master)](https://travis-ci.org/cetic/rts-gen)
+[![Build Status](https://travis-ci.org/cetic/rts-gen.svg?branch=master)](https://travis-ci.org/cetic/rts-gen) [![Coverage Status](https://coveralls.io/repos/github/cetic/rts-gen/badge.svg?branch=master)](https://coveralls.io/github/cetic/rts-gen?branch=master)
 
 RTS-Gen is a tool for generating random, yet realistic, time series values. In this project, a time series is an orderly sequence of
 points in times, each of them being associated to at most a value. Time series are used in a wide variety of areas,
