@@ -74,6 +74,8 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("or") => OrGenerator(known)
             case JsString("not") => NotGenerator(known)
             case JsString("xor") => XorGenerator(known)
+            case JsString("then") => ThenGenerator(known)
+            case JsString("equiv") => EquivGenerator(known)
             case JsString("undefined") => UndefinedGenerator(known)
             case JsString("first-of") => DefaultGenerator(known)
             case JsString("greater-than") => GreaterThanGenerator(known)
