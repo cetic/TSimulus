@@ -11,7 +11,7 @@
         "may": 13.6,
         "june": 16.2,
         "july": 18.4,
-        "augustus": 18,
+        "august": 18,
         "september": 14.9,
         "october": 11.1,
         "november": 6.8,
@@ -50,7 +50,7 @@
     {
       "name": "temperator",
       "generator": "result",
-      "frequency": 60000
+      "frequency": 600000
     }
   ],
   "from": "2016-01-01 00:00:00.000",
