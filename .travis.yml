@@ -8,8 +8,8 @@ jdk:
    - oraclejdk8
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION test &&
-    sbt ++"2.11.8" clean coverage test coverageReport &&
+  - sbt ++$TRAVIS_SCALA_VERSION test
+  - sbt ++"2.11.8" clean coverage test coverageReport &&
     sbt ++"2.11.8" coverageAggregate
 
 
