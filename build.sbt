@@ -3,7 +3,10 @@
 organization := "be.cetic"
 version := "0.1.4"
 name := "rts-gen"
+
+scalaVersion := "2.11.8"
 crossScalaVersions := Seq("2.11.8", "2.12.0")
+
 coverageEnabled := true
 
 publishTo := {
