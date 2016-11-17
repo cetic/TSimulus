@@ -7,7 +7,7 @@ A First Generation
 ==================
 
 
-The simpliest way to test the RTS-Gen project is to download the `last version of a runnable Jar file<>`_ that contains an application based on the RTS-Gen library.
+The simpliest way to test the RTS-Gen project is to download the `last release of a runnable Jar file <https://github.com/cetic/rts-gen-cli/releases>`_ that contains an application based on the RTS-Gen library.
 You will also need `a Java Virtual Machine <https://java.com>`_ installed on your environment.
 
 For your first time series generation, we will specify a generator that propose a basic external temperature simulator for Uccle, Belgium.
