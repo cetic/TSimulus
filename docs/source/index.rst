@@ -55,16 +55,6 @@ Missing Values:
     Missing values may be conditionally replaced by "default" values and can be discarded from a collection of values before operating an aggregation.
 
 
-How to use it
--------------
-
-The  library is written in Scala, and is packaged as a jar archive that can be used as any JVM-based library.
-
-An application based on this library is proposed for reading time series configuration from a plain old text file and generating random values.
-A **microservice** is also proposed for generating time series values as the answer of a HTTP query.
-
-Have a look at the Quick starter in order to learn how to generated personalized time series values in five minutes.
-
 Licence and Source Code
 -----------------------
 
@@ -83,4 +73,5 @@ Please feel free to contribute by submitting pull requests, bug reports and feat
    get_started
    generators
    use_it
+   use_cases
 

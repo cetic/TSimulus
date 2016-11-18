@@ -1,10 +1,7 @@
 Installation
 ************
 
-How to use this library?
-========================
-
-The simplest way to use the RTS-Gen library is to add it as a dependency in your SBT file:
+The simplest way to install the RTS-Gen library is to add it as a dependency in your SBT file:
 
 .. parsed-literal::
 
@@ -28,5 +25,6 @@ You can also clone its `source code repository <https://github.com/cetic/rts-gen
     > cd rts-gen
     > sbt package
 
+If you are not interested in the development of this library, you more likely want to know :ref:`use_it`.
 
 
