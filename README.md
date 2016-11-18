@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/cetic/rts-gen.svg?branch=master)](https://travis-ci.org/cetic/rts-gen) 
 [![Coverage Status](https://coveralls.io/repos/github/cetic/rts-gen/badge.svg?branch=master)](https://coveralls.io/github/cetic/rts-gen?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/rts-gen/badge/?version=latest)](http://rts-gen.readthedocs.io/en/latest/?badge=latest)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 
