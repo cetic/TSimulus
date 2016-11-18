@@ -1,5 +1,7 @@
 .. highlight:: none
 
+.. _get_started:
+
 Getting Started
 ***************
 
@@ -60,7 +62,7 @@ So, we create a generator that describes the evolution of the temperator month p
        "to": "2017-12-31 23:59:59.999"
     }
 
-(`Download this configuration <https://www.github.com.org/cetic/rts-gen/blob/master/examples/get_started_1.json>`_)
+(`Download this configuration <https://raw.githubusercontent.com/cetic/rts-gen/master/examples/get_started_1.json>`_)
 
 The name and the attributes of each objects in this JSON document are described further in the rest of this documentation. At the moment,
 we will only focus on the created configuration and the resulting values.
@@ -68,7 +70,9 @@ we will only focus on the created configuration and the resulting values.
 Save the configuration on a text file next to the downloaded application and run the application with the freshly created file as well as the limits of the
 time period of interest:
 
-java -jar rst-gen get_started_1.json "2016-01-01 00:00:00.000" "2017-12-31 23:59:59.999"
+.. parsed-literal::
+
+    java -jar rst-gen-cli get_started_1.json
 
 After a few seconds, you obtain a sequence of lines, each of them being a value entry made of a date, a series name, and a value separated by semicolons.
 In this demonstration, the series name is always "temperature". If you plot the series values with your favourite tool, you should obtain something like the following plot:
@@ -76,10 +80,11 @@ In this demonstration, the series name is always "temperature". If you plot the 
 .. image:: images/get_started_1.png
     :width: 300 px
     :alt: First results
+    :align: center
 
 
-Towards a Complexified Model
-============================
+Towards a more Realistic Model
+==============================
 
 So it works! The temperature continuously varies, and for the middle of each month it complies with the values specified in the configuration.
 But you may be frustated by the regularity of the obtained values: they increase or decrease monotoneously from a month to the next one, which is not a
@@ -178,7 +183,7 @@ We therefore create a new generator that expresses the variation of the temperat
        "to": "2017-12-31 23:59:59.999"
     }
 
-(`Download this configuration <https://www.github.com.org/cetic/rts-gen/blob/master/examples/get_started_2.json>`_)
+(`Download this configuration <https://raw.githubusercontent.com/cetic/rts-gen/master/examples/get_started_2.json>`_)
 
 Please note that the values of this second generator are relative to an arbitrary "neutral" value.
 Plotting these values is therefore not relevant. However, we sum the monthly temperatures with the daily ones in order
@@ -270,7 +275,7 @@ defined generators.
       "to": "2017-12-31 23:59:59.999"
    }
 
-(`Download this configuration <https://www.github.com.org/cetic/rts-gen/blob/master/examples/get_started_3.json>`_)
+(`Download this configuration <https://raw.githubusercontent.com/cetic/rts-gen/master/examples/get_started_3.json>`_)
 
 The final result is now realistic enough for a basic simulation of the temperature over time.
 When observing the plot of its values, clear and realistic patterns emerge, while a realistic noise is also clearly present.
@@ -280,4 +285,4 @@ When observing the plot of its values, clear and realistic patterns emerge, whil
     :alt: Monthly + Daily + Noise temperatures
 
 Not satisfied by the realism of the generated values? Don't hesitate the modify the parameter of the generators described in the
-configuration file or try other generators_.
+configuration file or try other :ref:`generators`.

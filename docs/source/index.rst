@@ -23,6 +23,8 @@ In addition, the values of a time series may be related to those of an other tim
 The RTS-Gen project provides tools for specifying the shape of a time series (general patterns, cycles, importance of the added noise, etc.)
 and for converting this specification into time series values.
 
+This library is part of the `EAM-SDI <https://www.cetic.be/EAM-SDI-2301>`_ research project, founded by the Walloon Region.
+
 Features
 --------
 
@@ -80,4 +82,5 @@ Please feel free to contribute by submitting pull requests, bug reports and feat
    installation
    get_started
    generators
+   use_it
 

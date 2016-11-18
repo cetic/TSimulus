@@ -20,7 +20,7 @@ an undefined value is retrieved, regardless the aggregation function used on the
 While any time series can produce undefined values, some of them are specifically designed for transforming
 a defined value into an undefined one, and *vice versa*.
 
-.. include:: missing/undefined.rst
-.. include:: missing/limited.rst
-.. include:: missing/partial.rst
-.. include:: missing/default.rst
+.. include:: /missing/undefined.rst
+.. include:: /missing/limited.rst
+.. include:: /missing/partial.rst
+.. include:: /missing/default.rst

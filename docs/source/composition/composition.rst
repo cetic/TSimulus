@@ -20,10 +20,10 @@ of a composite generator.
 
 The inline definition of a generator consists in writing a JSON document representing this generator.
 
-.. include:: composition/affine.rst
-.. include:: composition/aggregation.rst
-.. include:: composition/division.rst
-.. include:: composition/correlation.rst
-.. include:: composition/time-shift.rst
-.. include:: composition/transition.rst
-.. include:: composition/sliding-window.rst
+.. include:: /composition/affine.rst
+.. include:: /composition/aggregation.rst
+.. include:: /composition/division.rst
+.. include:: /composition/correlation.rst
+.. include:: /composition/time-shift.rst
+.. include:: /composition/transition.rst
+.. include:: /composition/sliding-window.rst

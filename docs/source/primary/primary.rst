@@ -9,9 +9,9 @@ The values for the instants that don’t belong to any point are interpolated us
 for computing this interpolation implies that the user must specify at least three points for constraining the
 time series.
 
-.. include:: primary/daily.rst
-.. include:: primary/weekly.rst
-.. include:: primary/monthly.rst
-.. include:: primary/yearly.rst
-.. include:: primary/constant.rst
-.. include:: primary/stochastic.rst
+.. include:: /primary/daily.rst
+.. include:: /primary/weekly.rst
+.. include:: /primary/monthly.rst
+.. include:: /primary/yearly.rst
+.. include:: /primary/constant.rst
+.. include:: /primary/stochastic.rst
