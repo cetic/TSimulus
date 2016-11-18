@@ -2,16 +2,16 @@ Sliding Window
 --------------
 
 Time series values can be aggregated by using a sliding window. At any time, the value of a sliding window time series
-is defined as the aggregation of the recent values of an underlying time series. A typical use case of this time series
-is a mobile average over time.
+is defined as the aggregation of the *recent* values of a baseline time series. A typical use case of this time series
+is a mobile average.
 
-If no values are defined by the underlying time series for the considered time window, the produced value is undefined.
+If no values are defined by the baseline time series for the considered time window, the produced value is undefined.
 
-The number of underlying values considered in a time window only relies on the frequency of the sliding window
-time series, for the underlying time series only provides values for the instants specified by this time series.
+The number of baseline values considered in a time window only relies on the frequency of the sliding window
+time series, for the baseline time series only provides values for the instants specified by this time series.
 
-While the generator is design to apply any arbitrary aggregation function to the elements belonging to the time window,
-only some predefined aggregation functions can be specified in the configuration document.
+While the generator is designed to process any arbitrary aggregation function to the elements belonging to the time window,
+only some predefined aggregation functions can be specified in a configuration document.
 
 The following aggregation functions are available :
 

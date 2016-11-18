@@ -284,5 +284,5 @@ When observing the plot of its values, clear and realistic patterns emerge, whil
     :width: 400 px
     :alt: Monthly + Daily + Noise temperatures
 
-Not satisfied by the realism of the generated values? Don't hesitate the modify the parameter of the generators described in the
-configuration file or try other :ref:`generators`.
+Not satisfied by the realism of the generated values? Don't hesitate to modify the parameters of the generators described in the
+configuration file or to try other :ref:`generators`.

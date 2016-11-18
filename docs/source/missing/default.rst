@@ -1,8 +1,8 @@
 Default Time Series
 -------------------
 
-A common behavior time series pattern consists in retrieving the first defined value among those produced by time series.
-The default time series is based on an ordered list of time series, and produces the first defined value of these time series.
+A common behavior time series pattern consists in retrieving the first defined value among those produced by multiple time series.
+The default time series is based on an ordered list of baseline time series, and produces the first defined value of these time series.
 
 If the values of all time series are undefined, an undefined value is produced.
 
@@ -16,7 +16,7 @@ type
     Mandatory. Must be ‘first-of’.
 
 generators
-    Mandatory. A list of generators describing the underlying time series.
+    Mandatory. A list of generators describing the baseline time series.
 
 
 **Example**::

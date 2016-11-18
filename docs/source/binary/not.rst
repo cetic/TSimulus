@@ -2,9 +2,9 @@ Not
 ---
 
 A binary time series can be defined as the negation of an other binary time series.
-The values of the resulting time series will be true if the values of the base time series are false, and vice versa.
+The values of the resulting time series will be true if the values of the baseline time series are false, and vice versa.
 
-If the value of the base time series is not defined, then the value of the resulting time series is not defined.
+If the value of the baseline time series is not defined, then the value of the resulting time series is not defined.
 
 **Representation in the configuration document:**
 

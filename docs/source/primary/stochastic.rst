@@ -1,8 +1,8 @@
 Stochastic Generator
 --------------------
 
-In order to improve the realism of time series, a generator can be used to describe a random walk, based on an ARMA model.
-This model is made of four modules:
+In order to improve the realism of time series, a generator can be used to describe a random walk, based on an
+`ARMA model <https://en.wikipedia.org/wiki/Autoregressive%E2%80%93moving-average_model>`_. This model is made of four modules:
 
 * The ‘auto-regression’ module, represented by φ a parameter vector which represents the auto-correlation of the model.
 * The ‘mobile average’ module, represented by θ a parameter vector which represents the evolution of the average over time.
@@ -12,7 +12,14 @@ This model is made of four modules:
 
 From these four modules, a series of values is generated according to the following formula :
 
-    TODO
+.. image:: images/arma-formula.png
+    :width: 400 px
+    :align: center
+    :alt: Formula of the ARMA model
+
+(image from Wikipedia)
+
+Where ε represents the noise module.
 
 In practice, only a few parameters are enough for obtaining a convincing noise : the standard deviation and a
 1D autoregression vector provide, in most cases, a satisfying pseudo-random time series.

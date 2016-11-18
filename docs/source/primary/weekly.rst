@@ -5,7 +5,7 @@ A weekly time series is based on a weekly cycle. The user specifies the values o
 some days of the week.
 
 In the meteorological domain, a typical weekly generator would consist in a set of days (for instance, Monday)
-associated to a temperature of 6°. The time series generated based on this constraint will be such that every week,
+associated to a temperature of 6°. The corresponding time series will be such that every week,
 the temperature associated to Monday, 12AM will be 6°.
 
 **Representation in the configuration document:**

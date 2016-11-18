@@ -13,12 +13,12 @@ Time series generators can be composed in order to form composite generators. Tw
 Two methods are available for mentioning the generators describing a composed time series : **references** and
 **inline definitions**.
 
-A reference is a textual label corresponding to the name of the referred generator. There must be a generator having
-this name in the configuration document, otherwise an error occurs. A generator does not need to be defined
-before being referred, but referred generators need to be first-level generators, i.e., they cannot be defined as a part
+A reference is a text label corresponding to the name of the referred generator. There must be a generator having
+this name in the configuration document, otherwise an error occurs when converting the generators into time series. A generator does
+not need to be defined before being referred, but referred generators need to be first-level generators, i.e., they cannot be defined as a part
 of a composite generator.
 
-The inline definition of a generator consists in writing a JSON document representing this generator.
+The inline definition of a generator consists in writing a JSON object representing this generator.
 
 .. include:: /composition/affine.rst
 .. include:: /composition/aggregation.rst

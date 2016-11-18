@@ -5,7 +5,7 @@ A yearly time series is based on a yearly cycle. The user specifies the values o
 
 Contrary to daily, weekly, and monthly time series, a yearly time series cannot present any natural cycle,
 since the number of the year is on an open scale. Consequently, a cycle is artificially created by considering
-that the value following the next mentioned year will be equal to the value associated to the first mentioned year.
+that the value of the year following the last mentioned one, will be equal to the value associated to the first mentioned year.
 
 Similarly, the value of the year preceding the first mentioned year will be equal to the value associated
 to the last mentioned year.

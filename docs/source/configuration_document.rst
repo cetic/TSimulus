@@ -15,7 +15,7 @@ of generators that could be converted into time series. In this section, **compo
 can be specified in two different ways:
 
 - By writing nested objects in the document. When the specification of a generator requires a generator attribute, a JSON object describing
-  this attribute can simply be used. There is no limits to such nested, **online description**, in such a way specified generators can be as complex as desired.
+  this attribute can simply be used. There is no limits to such nested, **inline description**, in such a way specified generators can be as complex as desired.
 - By using a reference to a top-level generator. When some generator attributes must be used in several places, or when the generator
   designer prefer to explicitly declare intermediate generators in order to obtain configuration documents that can be more easily be read,
   intermediate generators can be declared in the *generators* section with a unique reference id. Everywhere in the document,

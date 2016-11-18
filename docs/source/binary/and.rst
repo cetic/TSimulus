@@ -2,7 +2,7 @@ And
 ---
 
 Two binary time series can be combined by a logical AND. The values of the resulting time series will be true
-if, and only if, the values of both base time series are true. If the value of at least one of the base time series
+if, and only if, the values of both baseline time series are true. If the value of at least one of the baseline time series
 is not defined, then the value of the resulting time series is not defined.
 
 **Representation in the configuration document:**

@@ -2,9 +2,9 @@ Or
 --
 
 Two binary time series can be combined by a logical OR. The values of the resulting time series will be true
-if the value of at least one of the base time series is true.
+if the value of at least one of the baseline time series is true.
 
-If the value of at least one of the base time series is not defined, then the value of the resulting
+If the value of at least one of the baseline time series is not defined, then the value of the resulting
 time series is not defined.
 
 **Representation in the configuration document:**

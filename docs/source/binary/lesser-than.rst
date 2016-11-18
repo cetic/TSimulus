@@ -7,7 +7,7 @@ If the value of at least one of the numeric time series is not defined, then the
 is not defined.
 
 Similarly to the "greater-than" time series, this time series is based on a more generic one that allows the use of
-an arbitrary comparator. However, this generic time series can not be expressed by using a generator,
+an arbitrary comparator. However, this generic time series can not be expressed by using a configuration document,
 and can therefore be only expressed programmatically.
 
 **Representation in the configuration document:**

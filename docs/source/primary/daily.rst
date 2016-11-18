@@ -2,7 +2,7 @@ Daily Generator
 ---------------
 
 A daily time series is based on a daily cycle. The user specifies the values the time series must generated for some
-times in the day, and these points are replicated in  any day for which the user could desire a value.
+points in time in the day, and these points are replicated in any day for which the user could desire a value.
 
 In the meteorological domain, a typical daily generator would consist in a set of times (for instance, 11AM) associated
 to a temperature of 6°. The time series generated based on this constraint will be such that every day,
@@ -18,7 +18,7 @@ type
     Mandatory. Must be ‘daily’.
 
 points
-    Mandatory. Contains the instants in the day, as well as the values associated to these instants.
+    Mandatory. Contains the points in time in the day, as well as the values associated to these instants.
     At least three points must be specified. If an instant is present several times in the points,
     only the last declaration of the point associated to this instant will be retained.
 

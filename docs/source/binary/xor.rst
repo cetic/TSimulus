@@ -2,9 +2,9 @@ XOR
 ---
 
 Two binary time series can be combined by a logical XOR. The values of the resulting time series will be true
-if, and only if, the values of the base time series are different.
+if, and only if, the values of the baseline time series are different.
 
-If the value of at least one of the base time series is not defined, then the value of the resulting time series
+If the value of at least one of the baseline time series is not defined, then the value of the resulting time series
 is not defined.
 
 **Representation in the configuration document:**

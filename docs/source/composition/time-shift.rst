@@ -1,8 +1,8 @@
 Time Shift
 ----------
 
-This transformation time series causes a time shift in an underlying series: a constant time shift is applied
-to each time point of a time series, so that the original time series seems to be ‘shifted’ on the time axis.
+This transformation time series causes a time shift in an baseline series: a constant time shift is applied
+to each time point of a time series, so that the baseline time series seems to be ‘shifted’ on the time axis.
 
 **Representation in the configuration document:**
 

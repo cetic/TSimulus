@@ -3,7 +3,7 @@ Conditional time series
 
 The values produced by a time series can be influenced by the values of a binary time series.
 The conditional time series takes a binary time series, called the condition, as a parameter, as well as
-one or two arbitrary times series.
+one or two arbitrary time series.
 
 The value produced by the conditional time series is determined by the following rules:
 

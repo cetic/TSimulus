@@ -3,7 +3,7 @@
 Constant Generator
 ------------------
 
-A time series generator whose values are constant over time can be described.
+A time series generator whose values are constant over time.
 
 **Representation in the configuration document:**
 
