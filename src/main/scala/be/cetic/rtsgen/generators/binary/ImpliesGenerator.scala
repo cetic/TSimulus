@@ -19,15 +19,15 @@ package be.cetic.rtsgen.generators.binary
 import be.cetic.rtsgen.config.{GeneratorFormat, Model}
 import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.TimeSeries
-import be.cetic.rtsgen.timeseries.binary.{AndTimeSeries, ThenTimeSeries}
+import be.cetic.rtsgen.timeseries.binary.{AndTimeSeries, ImpliesTimeSeries}
 import spray.json.{JsObject, JsString, JsValue, _}
 
 /**
-  * A generator for [[be.cetic.rtsgen.timeseries.binary.ThenTimeSeries]].
+  * A generator for [[be.cetic.rtsgen.timeseries.binary.ImpliesTimeSeries]].
   */
-class ThenGenerator(name: Option[String],
-                   val a: Either[String, Generator[Any]],
-                   val b: Either[String, Generator[Any]]) extends Generator[Any](name, "then")
+class ImpliesGenerator(name: Option[String],
+                       val a: Either[String, Generator[Any]],
+                       val b: Either[String, Generator[Any]]) extends Generator[Any](name, "then")
 {
    override def timeseries(generators: (String) => Generator[Any]) =
    {
@@ -39,13 +39,13 @@ class ThenGenerator(name: Option[String],
          case t: TimeSeries[Boolean] => t
       }
 
-      ThenTimeSeries(first, second)
+      ImpliesTimeSeries(first, second)
    }
 
    override def toString = "ThenGenerator(" + name + "," + a + "," + b + ")"
 
    override def equals(o: Any) = o match {
-      case that: ThenGenerator => that.name == this.name &&
+      case that: ImpliesGenerator => that.name == this.name &&
          that.a == this.a &&
          that.b == this.b
       case _ => false
@@ -76,9 +76,9 @@ class ThenGenerator(name: Option[String],
    }
 }
 
-object ThenGenerator extends DefaultJsonProtocol
+object ImpliesGenerator extends DefaultJsonProtocol
 {
-   def apply(value: JsValue): ThenGenerator = {
+   def apply(value: JsValue): ImpliesGenerator = {
       val fields = value.asJsObject.fields
 
       val name = fields.get("name").map(_.convertTo[String])
@@ -93,6 +93,6 @@ object ThenGenerator extends DefaultJsonProtocol
          case g => Right(GeneratorFormat.read(g))
       }
 
-      new ThenGenerator(name, a, b)
+      new ImpliesGenerator(name, a, b)
    }
 }

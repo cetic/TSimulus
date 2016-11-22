@@ -20,14 +20,14 @@ import be.cetic.rtsgen.timeseries.TimeSeries
 import org.joda.time.LocalDateTime
 
 /**
-  * A time series based on two binary time series and applying the "then" (=>) operator.
+  * A time series based on two binary time series and applying the "implies" (=>) operator.
   *
   * If at least one of the considered time series has unspecified value, the resulting value is unspecified, too.
   *
   * @param a An other time series.
   * @param b An other binary time series
   */
-case class ThenTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends TimeSeries[Boolean]
+case class ImpliesTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends TimeSeries[Boolean]
 {
    override def compute(times: Stream[LocalDateTime]): Stream[(LocalDateTime, Option[Boolean])] = {
       val vA = a.compute(times)
@@ -40,7 +40,7 @@ case class ThenTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extend
          val valueB = element._2._2
 
          val value = if(valueA.isEmpty || valueB.isEmpty) None
-                     else Some(valueA.get && valueB.get)
+                     else Some(!valueA.get || valueB.get)
 
          (timestamp, value)
       })
