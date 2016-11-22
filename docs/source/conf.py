@@ -60,7 +60,7 @@ author = 'Mathieu Goeminne'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1.6'
+version = '0.1.7'
 
 rst_epilog = """
 .. |ProjectVersion| replace:: {versionnum}
