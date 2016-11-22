@@ -48,4 +48,12 @@ class FalseGeneratorTest extends FlatSpec with Matchers with Inspectors
       )
       generator shouldBe FalseGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new FalseGenerator(
+         Some("false-generator")
+      )
+
+      generator.toString shouldBe """False(Some(false-generator))"""
+   }
 }

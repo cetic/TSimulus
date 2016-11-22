@@ -90,4 +90,15 @@ class LesserThanGeneratorTest extends FlatSpec with Matchers with Inspectors wit
 
       generator shouldBe LesserThanGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new LesserThanGenerator(
+         Some("lesser-than-generator"),
+         Left("a-generator"),
+         Left("b-generator"),
+         None
+      )
+
+      generator.toString shouldBe """LesserThan(Some(lesser-than-generator), Left(a-generator), Left(b-generator), None)"""
+   }
 }

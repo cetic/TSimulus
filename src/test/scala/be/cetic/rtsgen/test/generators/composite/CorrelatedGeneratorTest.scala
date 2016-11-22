@@ -53,4 +53,14 @@ class CorrelatedGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe CorrelatedGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new CorrelatedGenerator(
+         Some("corr-generator"),
+         Left("daily-generator"),
+         0.8
+      )
+
+      generator.toString shouldBe """Correlated(Some(corr-generator), Left(daily-generator), 0.8)"""
+   }
 }

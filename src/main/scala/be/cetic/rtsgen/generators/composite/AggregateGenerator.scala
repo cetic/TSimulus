@@ -47,7 +47,7 @@ class AggregateGenerator(name: Option[String],
       new AggregationTimeSeries[Double](agg, series)
    }
 
-   override def toString = "AggregateGenerator(" + name + "," + aggregator + "," + generators + ")"
+   override def toString = "Aggregate(" + name + ", " + aggregator + ", " + generators.mkString("[", ", ", "]") + ")"
 
    override def equals(o: Any) = o match {
       case that: AggregateGenerator => that.name == this.name && that.aggregator == this.aggregator && that.generators == this.generators

@@ -40,7 +40,7 @@ class CorrelatedGenerator(name: Option[String],
       }
    }
 
-   override def toString = "CorrelatedGenerator(" + name + "," + generator + "," + "coef" + ")"
+   override def toString = "Correlated(" + name + ", " + generator + ", " + coef + ")"
 
    override def equals(o: Any) = o match {
       case that: CorrelatedGenerator => that.name == this.name && that.generator == this.generator && that.coef == this.coef

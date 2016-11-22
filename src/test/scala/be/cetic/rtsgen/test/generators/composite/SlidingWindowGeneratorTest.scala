@@ -57,4 +57,15 @@ class SlidingWindowGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe SlidingWindowGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new SlidingWindowGenerator(
+         Some("window-generator"),
+         "sum",
+         Left("daily-generator"),
+         new Duration(5000)
+      )
+
+      generator.toString shouldBe """SlidingWindow(Some(window-generator), sum, Left(daily-generator), PT5S)"""
+   }
 }

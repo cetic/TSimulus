@@ -47,7 +47,7 @@ class LesserThanGenerator( name: Option[String],
       })
    }
 
-   override def toString = "LesserThan(" + name + "," + a + "," + b + ")"
+   override def toString = "LesserThan(" + name + ", " + a + ", " + b + ", " + strict + ")"
 
    override def equals(o: Any) = o match {
       case that: LesserThanGenerator => that.name == this.name &&

@@ -33,7 +33,7 @@ class LimitedGenerator(name: Option[String],
    override def timeseries(generators: (String) => Generator[Any]) =
       LimitedTimeSeries(Model.generator(generators)(generator).timeseries(generators), from, to)
 
-   override def toString = "LimitedGenerator(" + name + "," + generator + "," + from + "," + to + ")"
+   override def toString = "Limited(" + name + ", " + generator + ", " + from + ", " + to + ")"
 
    override def equals(o: Any) = o match {
       case that: LimitedGenerator => that.name == this.name &&

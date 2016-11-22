@@ -98,4 +98,17 @@ class TransitionGeneratorTest extends FlatSpec with Matchers with Inspectors
       fields.get("transition") shouldBe 'defined
       fields("transition") match { case JsString(x) => x shouldBe "sigmoid" }
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new TransitionGenerator(
+         Some("transition-generator"),
+         Left("a-generator"),
+         Left("b-generator"),
+         new LocalDateTime(2016, 6, 7, 3, 45, 0),
+         Some(new Duration(42)),
+         Some("sigmoid")
+      )
+
+      generator.toString shouldBe """Transition(Some(transition-generator), Left(a-generator), Left(b-generator), 2016-06-07T03:45:00.000, Some(PT0.042S), Some(sigmoid))"""
+   }
 }

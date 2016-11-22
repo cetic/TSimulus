@@ -37,7 +37,7 @@ class PartialGenerator(name: Option[String],
       PartialTimeSeries(ts, from, to, missingRate)
    }
 
-   override def toString = "PartialGenerator(" + name + "," + generator + "," + from + "," + to + "," + missingRate + ")"
+   override def toString = "Partial(" + name + ", " + generator + ", " + from + ", " + to + ", " + missingRate + ")"
 
    override def equals(o: Any) = o match {
       case that: PartialGenerator => that.name == this.name &&

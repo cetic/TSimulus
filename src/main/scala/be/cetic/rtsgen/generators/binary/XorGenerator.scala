@@ -42,7 +42,7 @@ class XorGenerator(name: Option[String],
       XorTimeSeries(first, second)
    }
 
-   override def toString = "XorGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "Xor(" + name + ", " + a + ", " + b + ")"
 
    override def equals(o: Any) = o match {
       case that: XorGenerator => that.name == this.name &&

@@ -54,4 +54,14 @@ class ImpliesGeneratorTest extends FlatSpec with Matchers with Inspectors with R
       )
       generator shouldBe ImpliesGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new ImpliesGenerator(
+         Some("implies-generator"),
+         Left("a-generator"),
+         Left("b-generator")
+      )
+
+      generator.toString shouldBe """Implies(Some(implies-generator), Left(a-generator), Left(b-generator))"""
+   }
 }

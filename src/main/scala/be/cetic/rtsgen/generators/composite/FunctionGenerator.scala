@@ -38,7 +38,7 @@ class FunctionGenerator(name: Option[String],
       }
    }
 
-   override def toString = "FunctionGenerator(" + name + "," + generator + "," + slope + "," + intercept + ")"
+   override def toString = "Function(" + name + ", " + generator + ", " + slope + ", " + intercept + ")"
 
    override def equals(o: Any) = o match {
       case that: FunctionGenerator => (that.name == this.name &&

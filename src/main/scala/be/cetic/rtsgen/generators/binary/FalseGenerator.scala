@@ -28,7 +28,7 @@ class FalseGenerator(name: Option[String]) extends Generator[Boolean](name, "fal
 
    override def timeseries(generators: (String) => Generator[Any]) = new FalseTimeSeries()
 
-   override def toString = "FalseGenerator(" + name + ")"
+   override def toString = "False(" + name + ")"
 
    override def equals(o: Any) = o match {
       case that: FalseGenerator => that.name == this.name

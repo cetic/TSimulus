@@ -53,4 +53,14 @@ class AggregateGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe AggregateGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new AggregateGenerator(
+         Some("aggregate-generator"),
+         "sum",
+         Seq(Left("a-generator"), Left("b-generator"))
+      )
+
+      generator.toString shouldBe """Aggregate(Some(aggregate-generator), sum, [Left(a-generator), Left(b-generator)])"""
+   }
 }

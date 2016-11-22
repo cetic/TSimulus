@@ -59,4 +59,15 @@ class FunctionGeneratorTest extends FlatSpec with Matchers
 
       generator shouldBe FunctionGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new FunctionGenerator(
+         Some("function-generator"),
+         Right(new ConstantGenerator(None, 42)),
+         1.4,
+         9.2
+      )
+
+      generator.toString shouldBe """Function(Some(function-generator), Right(Constant(None, 42.0)), 1.4, 9.2)"""
+   }
 }

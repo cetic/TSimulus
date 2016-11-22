@@ -42,7 +42,7 @@ class OrGenerator(name: Option[String],
       OrTimeSeries(first, second)
    }
 
-   override def toString = "OrGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "Or(" + name + ", " + a + ", " + b + ")"
 
    override def equals(o: Any) = o match {
       case that: OrGenerator => that.name == this.name &&

@@ -42,7 +42,7 @@ class LogisticGenerator(name: Option[String],
       }
    }
 
-   override def toString = "LogisticGenerator(" + name + "," + generator + "," + location + "," + scale + "," + seed + ")"
+   override def toString = "Logistic(" + name + ", " + generator + ", " + location + ", " + scale + ", " + seed + ")"
 
    override def equals(o: Any) = o match {
       case that: LogisticGenerator => that.name == this.name &&

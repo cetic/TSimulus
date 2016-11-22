@@ -53,4 +53,14 @@ class DivideGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe DivideGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new DivideGenerator(
+         Some("divide-generator"),
+         Left("a-generator"),
+         Left("b-generator")
+      )
+
+      generator.toString shouldBe """Divide(Some(divide-generator), Left(a-generator), Left(b-generator))"""
+   }
 }

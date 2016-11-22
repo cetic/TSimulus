@@ -31,7 +31,7 @@ class TrueGenerator(name: Option[String]) extends Generator[Boolean](name, "true
       new TrueTimeSeries()
    }
 
-   override def toString = "TrueGenerator(" + name + ")"
+   override def toString = "True(" + name + ")"
 
    override def equals(o: Any) = o match {
       case that: TrueGenerator => that.name == this.name

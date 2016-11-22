@@ -30,7 +30,7 @@ class ConstantGenerator(name: Option[String],
 {
    override def timeseries(generators: String => Generator[Any]) = ConstantTimeSeries(value)
 
-   override def toString = "ConstantGenerator(" + name + "," + value + ")"
+   override def toString = "Constant(" + name + ", " + value + ")"
 
    override def equals(o: Any) = o match {
       case that: ConstantGenerator => that.name == this.name && that.value == this.value

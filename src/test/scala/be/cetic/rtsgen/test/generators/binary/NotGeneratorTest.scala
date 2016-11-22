@@ -55,4 +55,13 @@ class NotGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       )
       generator shouldBe NotGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new NotGenerator(
+         Some("not-generator"),
+         Left("a-generator")
+      )
+
+      generator.toString shouldBe """Not(Some(not-generator), Left(a-generator))"""
+   }
 }

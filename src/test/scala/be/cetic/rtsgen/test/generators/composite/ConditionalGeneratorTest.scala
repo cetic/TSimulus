@@ -58,4 +58,15 @@ class ConditionalGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe ConditionalGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new ConditionalGenerator(
+         Some("conditional-generator"),
+         Right(new TrueGenerator(None)),
+         Right(new ConstantGenerator(None, 17)),
+         Some(Right(new ConstantGenerator(None, 42)))
+      )
+
+      generator.toString shouldBe """Conditional(Some(conditional-generator), Right(True(None)), Right(Constant(None, 17.0)), Some(Right(Constant(None, 42.0))))"""
+   }
 }

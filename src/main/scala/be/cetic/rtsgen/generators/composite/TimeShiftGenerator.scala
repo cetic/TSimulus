@@ -37,7 +37,7 @@ class TimeShiftGenerator(name: Option[String],
       TimeShiftTimeSeries(ts, shift)
    }
 
-   override def toString = "TimeShiftGenerator(" + name + "," + shift.getMillis + ")"
+   override def toString = "TimeShift(" + name + ", " + generator + ", " + shift.getMillis + ")"
 
    override def equals(o: Any) = o match {
       case that: TimeShiftGenerator => that.name == this.name && that.shift == this.shift

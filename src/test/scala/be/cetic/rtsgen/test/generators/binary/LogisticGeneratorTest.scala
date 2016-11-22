@@ -14,34 +14,36 @@
  * limitations under the License.
  */
 
-package be.cetic.rtsgen.test.generators.composite
+package be.cetic.rtsgen.test.generators.binary
 
 import be.cetic.rtsgen.config.GeneratorFormat
+import be.cetic.rtsgen.generators.binary.LogisticGenerator
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 import spray.json._
-import be.cetic.rtsgen.generators.binary.LogisticGenerator
+import be.cetic.rtsgen.test.RTSTest
 
-class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
+class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
    val source =
       """
         |{
-        |   "name": "logistic-generator",
-        |   "type": "logistic",
-        |   "generator": "daily-generator",
-        |   "location": 6,
-        |   "scale": 2.4,
-        |   "seed": 1809
+        |  "name": "logistic-generator",
+        |  "type": "logistic",
+        |  "generator": "g1",
+        |  "location": 6,
+        |  "scale": 2.4,
+        |  "seed": 1809
         |}
       """.stripMargin
 
+   val generator = LogisticGenerator(source.parseJson)
+
    "A logistic generator" should "be correctly read from a json document" in {
-      val generator = LogisticGenerator(source.parseJson)
 
       generator.name shouldBe Some("logistic-generator")
-      generator.generator shouldBe Left("daily-generator")
+      generator.generator shouldBe Left("g1")
       generator.location shouldBe 6
-      generator.scale shouldBe 2.4
+      generator.scale shouldBe 2.4 +- 0.001
       generator.seed shouldBe Some(1809)
    }
 
@@ -52,11 +54,23 @@ class LogisticGeneratorTest extends FlatSpec with Matchers with Inspectors
    it should "be correctly exported to a json document" in {
       val generator = new LogisticGenerator(
          Some("logistic-generator"),
-         Left("daily-generator"),
+         Left("g1"),
          6,
          2.4,
          Some(1809)
       )
       generator shouldBe LogisticGenerator(generator.toJson)
+   }
+
+   it should "have a correct textual representation" in {
+      val generator = new LogisticGenerator(
+         Some("logistic-generator"),
+         Left("g1"),
+         6,
+         2.4,
+         Some(1809)
+      )
+
+      generator.toString shouldBe """Logistic(Some(logistic-generator), Left(g1), 6.0, 2.4, Some(1809))"""
    }
 }

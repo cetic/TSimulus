@@ -37,7 +37,7 @@ class NotGenerator(name: Option[String],
       NotTimeSeries(base)
    }
 
-   override def toString = "Notenerator(" + name + "," + generator + ")"
+   override def toString = "Not(" + name + ", " + generator + ")"
 
    override def equals(o: Any) = o match {
       case that: NotGenerator => that.name == this.name &&

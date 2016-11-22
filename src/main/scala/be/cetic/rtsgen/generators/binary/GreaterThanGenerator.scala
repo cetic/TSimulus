@@ -47,7 +47,7 @@ class GreaterThanGenerator( name: Option[String],
       })
    }
 
-   override def toString = "GreaterThan(" + name + "," + a + "," + b + ")"
+   override def toString = "GreaterThan(" + name + ", " + a + ", " + b + ", " + strict + ")"
 
    override def equals(o: Any) = o match {
       case that: GreaterThanGenerator => that.name == this.name &&

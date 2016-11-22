@@ -54,4 +54,14 @@ class EquivGeneratorTest extends FlatSpec with Matchers with Inspectors with RTS
       )
       generator shouldBe EquivGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new EquivGenerator(
+         Some("equiv-generator"),
+         Left("a-generator"),
+         Left("b-generator")
+      )
+
+      generator.toString shouldBe """Equiv(Some(equiv-generator), Left(a-generator), Left(b-generator))"""
+   }
 }

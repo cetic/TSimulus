@@ -70,7 +70,7 @@ class TransitionGenerator(name: Option[String],
       TransitionTimeSeries[Double](firstBase, secondBase, time, t)
    }
 
-   override def toString = "TransitionGenerator(" + name + "," + first + "," + second + "," + time + "," + interval + "," + f + ")"
+   override def toString = "Transition(" + name + ", " + first + ", " + second + ", " + time + ", " + interval + ", " + f + ")"
 
    override def equals(o: Any) = o match {
       case that: TransitionGenerator => that.name == this.name &&

@@ -42,7 +42,7 @@ class EquivGenerator(name: Option[String],
       EquivTimeSeries(first, second)
    }
 
-   override def toString = "EquivGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "Equiv(" + name + ", " + a + ", " + b + ")"
 
    override def equals(o: Any) = o match {
       case that: EquivGenerator => that.name == this.name &&

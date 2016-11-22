@@ -43,7 +43,7 @@ class DivideGenerator(name: Option[String],
       new DivideTimeSeries(num, den)
    }
 
-   override def toString = "DivideGenerator(" + name + "," + numerator + "," + denominator + ")"
+   override def toString = "Divide(" + name + ", " + numerator + ", " + denominator + ")"
 
    override def equals(o: Any) = o match {
       case that: DivideGenerator => that.name == this.name && that.numerator == this.numerator && that.denominator == this.denominator

@@ -59,4 +59,14 @@ class OrGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTes
       )
       generator shouldBe OrGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new OrGenerator(
+         Some("or-generator"),
+         Left("a-generator"),
+         Left("b-generator")
+      )
+
+      generator.toString shouldBe """Or(Some(or-generator), Left(a-generator), Left(b-generator))"""
+   }
 }

@@ -47,4 +47,12 @@ class TrueGeneratorTest extends FlatSpec with Matchers with Inspectors
       )
       generator shouldBe TrueGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new TrueGenerator(
+         Some("true-generator")
+      )
+
+      generator.toString shouldBe """True(Some(true-generator))"""
+   }
 }

@@ -60,4 +60,16 @@ class PartialGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe PartialGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new PartialGenerator(
+         Some("partial-generator"),
+         Left("daily-generator"),
+         Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0)),
+         Some(0.2)
+      )
+
+      generator.toString shouldBe """Partial(Some(partial-generator), Left(daily-generator), Some(2016-04-06T00:00:00.000), Some(2016-04-23T00:00:00.000), Some(0.2))"""
+   }
 }

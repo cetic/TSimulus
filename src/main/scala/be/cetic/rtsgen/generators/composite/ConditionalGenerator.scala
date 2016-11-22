@@ -53,7 +53,7 @@ class ConditionalGenerator(name: Option[String],
       ConditionalTimeSeries(cond, a, b)
    }
 
-   override def toString = "ConditionalGenerator(" + name + "," + condition + "," + success + "," + failure + ")"
+   override def toString = "Conditional(" + name + ", " + condition + ", " + success + ", " + failure + ")"
 
    override def equals(o: Any) = o match {
       case that: ConditionalGenerator =>  that.name == this.name &&

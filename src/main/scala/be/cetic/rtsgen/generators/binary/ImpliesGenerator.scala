@@ -42,7 +42,7 @@ class ImpliesGenerator(name: Option[String],
       ImpliesTimeSeries(first, second)
    }
 
-   override def toString = "ThenGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "Implies(" + name + ", " + a + ", " + b + ")"
 
    override def equals(o: Any) = o match {
       case that: ImpliesGenerator => that.name == this.name &&

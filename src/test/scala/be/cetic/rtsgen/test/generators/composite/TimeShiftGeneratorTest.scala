@@ -54,4 +54,14 @@ class TimeShiftGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe TimeShiftGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new TimeShiftGenerator(
+         Some("time-shifted-generator"),
+         Left("daily-generator"),
+         new Duration(-8000)
+      )
+
+      generator.toString shouldBe """TimeShift(Some(time-shifted-generator), Left(daily-generator), -8000)"""
+   }
 }

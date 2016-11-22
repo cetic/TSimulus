@@ -57,4 +57,15 @@ class LimitedGeneratorTest extends FlatSpec with Matchers
       )
       generator shouldBe LimitedGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new LimitedGenerator(
+         Some("limited-generator"),
+         Left("daily-generator"),
+         Some(new LocalDateTime(2016, 4, 6, 0, 0, 0)),
+         Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
+      )
+
+      generator.toString shouldBe """Limited(Some(limited-generator), Left(daily-generator), Some(2016-04-06T00:00:00.000), Some(2016-04-23T00:00:00.000))"""
+   }
 }

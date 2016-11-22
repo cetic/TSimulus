@@ -89,4 +89,15 @@ class GreaterThanGeneratorTest extends FlatSpec with Matchers with Inspectors wi
 
       generator shouldBe GreaterThanGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new GreaterThanGenerator(
+         Some("greater-than-generator"),
+         Left("a-generator"),
+         Left("b-generator"),
+         None
+      )
+
+      generator.toString shouldBe """GreaterThan(Some(greater-than-generator), Left(a-generator), Left(b-generator), None)"""
+   }
 }

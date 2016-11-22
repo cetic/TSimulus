@@ -59,4 +59,14 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       )
       generator shouldBe XorGenerator(generator.toJson)
    }
+
+   it should "have a correct textual representation" in {
+      val generator = new XorGenerator(
+         Some("xor-generator"),
+         Left("a-generator"),
+         Left("b-generator")
+      )
+
+      generator.toString shouldBe """Xor(Some(xor-generator), Left(a-generator), Left(b-generator))"""
+   }
 }

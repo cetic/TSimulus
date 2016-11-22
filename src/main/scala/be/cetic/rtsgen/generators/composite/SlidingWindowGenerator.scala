@@ -51,7 +51,7 @@ class SlidingWindowGenerator(name: Option[String],
       SlidingWindowTimeSeries[Double](base, duration, aggregation)
    }
 
-   override def toString = "SlidingWindowGenerator(" + name + "," + aggregator + "," + generator + "," + duration + ")"
+   override def toString = "SlidingWindow(" + name + ", " + aggregator + ", " + generator + ", " + duration + ")"
 
    override def equals(o: Any) = o match {
       case that: SlidingWindowGenerator => that.name == this.name &&

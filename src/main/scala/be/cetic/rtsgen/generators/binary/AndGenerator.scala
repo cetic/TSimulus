@@ -42,7 +42,7 @@ class AndGenerator(name: Option[String],
       AndTimeSeries(first, second)
    }
 
-   override def toString = "AndGenerator(" + name + "," + a + "," + b + ")"
+   override def toString = "And(" + name + ", " + a + ", " + b + ")"
 
    override def equals(o: Any) = o match {
       case that: AndGenerator => that.name == this.name &&

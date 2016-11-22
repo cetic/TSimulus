@@ -55,5 +55,13 @@ class AndGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       generator shouldBe AndGenerator(generator.toJson)
    }
 
+   it should "have a correct textual representation" in {
+      val generator = new AndGenerator(
+         Some("and-generator"),
+         Left("a-generator"),
+         Left("b-generator")
+      )
 
+      generator.toString shouldBe """And(Some(and-generator), Left(a-generator), Left(b-generator))"""
+   }
 }
