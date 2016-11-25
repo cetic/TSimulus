@@ -60,7 +60,7 @@ author = 'Mathieu Goeminne'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1.7'
+version = '0.1.8'
 
 rst_epilog = """
 .. |ProjectVersion| replace:: {versionnum}
@@ -69,7 +69,7 @@ rst_epilog = """
 )
 
 # The full version, including alpha/beta/rc tags.
-release = '0.1.6'
+release = '0.1.8'
 
 rst_epilog = """
 .. |ProjectRelease| replace:: {releasenum}

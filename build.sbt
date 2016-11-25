@@ -1,7 +1,7 @@
 // http://www.scala-sbt.org/0.13/docs/Multi-Project.html
 
 organization := "be.cetic"
-version := "0.1.7"
+version := "0.1.8"
 name := "rts-gen"
 
 scalaVersion := "2.11.8"
