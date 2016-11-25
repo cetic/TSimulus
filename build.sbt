@@ -7,8 +7,6 @@ name := "rts-gen"
 scalaVersion := "2.11.8"
 crossScalaVersions := Seq("2.11.8", "2.12.0")
 
-coverageEnabled := true
-
 publishTo := {
    val nexus = "https://oss.sonatype.org/"
    if (isSnapshot.value)

@@ -8,7 +8,7 @@ jdk:
    - oraclejdk8
 
 before_script:
-  - sbt clean coverage test coverageReport
+  - sbt clean coverage test
 
 after_success:
   - sbt coverageReport coveralls
