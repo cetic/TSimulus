@@ -5,10 +5,7 @@ Time series values can be aggregated by using a sliding window. At any time, the
 is defined as the aggregation of the *recent* values of a baseline time series. A typical use case of this time series
 is a mobile average.
 
-If no values are defined by the baseline time series for the considered time window, the produced value is undefined.
-
-The number of baseline values considered in a time window only relies on the frequency of the sliding window
-time series, for the baseline time series only provides values for the instants specified by this time series.
+If no values are defined by the underlying time series for the considered time window, the produced value is undefined.
 
 While the generator is designed to process any arbitrary aggregation function to the elements belonging to the time window,
 only some predefined aggregation functions can be specified in a configuration document.
@@ -40,6 +37,9 @@ generator
 window-length
     The length, in milliseconds, of the considered time window.
 
+n
+    The number of evenly spaced moments in the time window to take into account.
+
 **Example**::
 
     {
@@ -47,5 +47,6 @@ window-length
       "type": "window",
       "aggregator": "sum",
       "window-length" : 5000,
-      "generator": "daily-generator"
+      "generator": "daily-generator",
+      "n": 5
     }

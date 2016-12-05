@@ -58,6 +58,9 @@ seed
 timestep
     Mandatory. The duration, in milliseconds, between two successive steps.
 
+origin
+    Mandatory. The moment at which the time series is starting.
+
 **Example**::
 
     {
@@ -70,5 +73,6 @@ timestep
         "c": 4.2,
         "seed": 1809
       },
-      "timestep": 180000
+      "timestep": 180000,
+      "origin": "2016-01-01 12:34:56.789"
     }

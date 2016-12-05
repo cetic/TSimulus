@@ -81,6 +81,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("first-of") => DefaultGenerator(known)
             case JsString("greater-than") => GreaterThanGenerator(known)
             case JsString("lesser-than") => LesserThanGenerator(known)
+            case JsString("gaussian") => GaussianNoiseGenerator(known)
             case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
       case unknown => deserializationError(s"unknown  Generator object: $unknown")
