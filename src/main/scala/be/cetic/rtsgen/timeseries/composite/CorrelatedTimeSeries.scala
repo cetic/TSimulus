@@ -17,7 +17,7 @@
 package be.cetic.rtsgen.timeseries.composite
 
 import be.cetic.rtsgen.timeseries.TimeSeries
-import org.joda.time.LocalDateTime
+import org.joda.time.{DateTimeZone, LocalDateTime}
 
 import scala.util.Random
 
@@ -42,5 +42,15 @@ case class CorrelatedTimeSeries(base: TimeSeries[Double],
       val r = new Random(seed)
       base.compute(times)
           .map {case(t,v) => (t, v.map(a => (rho * a) + (math.sqrt(1 - rho_square) * r.nextGaussian)))}
+   }
+
+   override def compute(time: LocalDateTime): Option[Double] =
+   {
+      val r = new Random(seed+time.toDateTime(DateTimeZone.UTC).getMillis)
+
+      base.compute(time) match {
+         case None => None
+         case Some(x) => Some((rho * x) + (math.sqrt(1 - rho_square) * r.nextGaussian))
+      }
    }
 }

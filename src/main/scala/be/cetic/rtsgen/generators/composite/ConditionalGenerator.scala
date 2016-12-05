@@ -48,7 +48,7 @@ class ConditionalGenerator(name: Option[String],
 
       val b = failure.map(f => Model.generator(generators)(f).timeseries(generators) match {
          case t: TimeSeries[Any] => t
-      }).getOrElse(new UndefinedTimeSeries())
+         }).getOrElse(new UndefinedTimeSeries())
 
       ConditionalTimeSeries(cond, a, b)
    }

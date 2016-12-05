@@ -60,31 +60,48 @@ case class TransitionTimeSeries[T](first: TimeSeries[T],
          val v1 = s1._2
          val v2 = s2._2
 
-         val mixed = if(t <= time) v1
-                     else
-                     {
-                        transition match {
-                           case None => v2
-                           case Some((duration, f)) => {
-                              if(t > time + duration) v2
-                              else // Real mixing
-                              {
-                                 if(v1.isEmpty) v2
-                                 else if(v2.isEmpty) v1
-                                 else {
-                                    val ratio = new Duration(
-                                       time.toDateTime(DateTimeZone.UTC),
-                                       t.toDateTime(DateTimeZone.UTC)
-                                    ).getMillis / duration.getMillis.toDouble
-
-                                    Some(f(v1.get, v2.get, ratio))
-                                 }
-                              }
-                           }
-                        }
-                     }
-
-         (t, mixed)
+         (t, process(t, v1, v2))
       }}
+   }
+
+   override def compute(time: LocalDateTime): Option[T] = process(time, first.compute(time), second.compute(time))
+
+   private def process(t: LocalDateTime, v1: Option[T], v2: Option[T]): Option[T] =
+   {
+      if (t <= time) v1
+      else
+      {
+         transition match
+         {
+            case None => v2
+            case Some((duration, f)) =>
+            {
+               if (t > time + duration)
+               {
+                  v2
+               }
+               else // Real mixing
+               {
+                  if (v1.isEmpty)
+                  {
+                     v2
+                  }
+                  else if (v2.isEmpty)
+                       {
+                          v1
+                       }
+                  else
+                  {
+                     val ratio = new Duration(
+                        time.toDateTime(DateTimeZone.UTC),
+                        t.toDateTime(DateTimeZone.UTC)
+                     ).getMillis / duration.getMillis.toDouble
+
+                     Some(f(v1.get, v2.get, ratio))
+                  }
+               }
+            }
+         }
+      }
    }
 }

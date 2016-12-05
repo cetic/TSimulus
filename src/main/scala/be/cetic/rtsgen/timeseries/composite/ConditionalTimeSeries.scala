@@ -49,4 +49,13 @@ case class ConditionalTimeSeries[T](condition: TimeSeries[Boolean], success: Tim
          }
       }}
    }
+
+   override def compute(time: LocalDateTime): Option[T] =
+   {
+      condition.compute(time) match {
+         case None => None
+         case Some(true) => success.compute(time)
+         case Some(false) => failure.compute(time)
+      }
+   }
 }

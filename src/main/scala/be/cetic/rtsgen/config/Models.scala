@@ -21,6 +21,7 @@ import be.cetic.rtsgen.generators.binary._
 import be.cetic.rtsgen.generators.composite._
 import be.cetic.rtsgen.generators.missing.{DefaultGenerator, LimitedGenerator, PartialGenerator, UndefinedGenerator}
 import be.cetic.rtsgen.generators.primary._
+import org.joda.time.LocalDateTime
 import spray.json.{JsString, _}
 
 object Model

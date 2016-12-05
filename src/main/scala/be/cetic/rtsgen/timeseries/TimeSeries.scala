@@ -24,9 +24,19 @@ import org.joda.time.LocalDateTime
 trait TimeSeries[+T]
 {
    /**
-     * @param times a series of time for which values must be computed. Each time must be greater than or equal to
+     * Calculates the values of the time series of a series of moments.
+     *
+     * @param times a series of moments for which values must be calculated. Each time must be greater than or equal to
      *              the previous one.
-     * @return the values associated to the specified times, if specified.
+     * @return the values associated to the specified moments, if defined.
      */
    def compute(times: Stream[LocalDateTime]): Stream[(LocalDateTime, Option[T])]
+
+   /**
+     * Calculates the value of the time series for a single date.
+     *
+     * @param time the moment for which the time series value must be calculated.
+     * @return the value associated to the specified moment, if defined.
+     */
+   def compute(time: LocalDateTime): Option[T]
 }

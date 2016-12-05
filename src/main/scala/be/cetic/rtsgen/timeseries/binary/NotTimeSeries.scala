@@ -28,4 +28,6 @@ import org.joda.time.LocalDateTime
 case class NotTimeSeries(base: TimeSeries[Boolean]) extends TimeSeries[Boolean]
 {
    override def compute(times: Stream[LocalDateTime]) = base.compute(times).map { case (t,v) => (t, v.map(!_)) }
+
+   override def compute(time: LocalDateTime): Option[Boolean] = base.compute(time).map(!_)
 }

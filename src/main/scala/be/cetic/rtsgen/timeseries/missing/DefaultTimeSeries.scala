@@ -43,4 +43,6 @@ case class DefaultTimeSeries[T](generators: Seq[TimeSeries[T]]) extends TimeSeri
          }
       }
    }
+
+   override def compute(time: LocalDateTime): Option[T] = generators.map(g => g.compute(time)).flatten.headOption
 }

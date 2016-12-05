@@ -16,13 +16,13 @@
 
 package be.cetic.rtsgen.timeseries.primary
 
-import be.cetic.rtsgen.timeseries.TimeSeries
+import be.cetic.rtsgen.timeseries.{IndependantTimeSeries}
 import org.joda.time.LocalDateTime
 
 /**
   * A time series that only have undefined values.
   */
-class UndefinedTimeSeries[T] extends TimeSeries[T]
+class UndefinedTimeSeries[T] extends IndependantTimeSeries[T]
 {
-   override def compute(times: Stream[LocalDateTime]) = times.map(t => (t,None))
+   override def compute(time: LocalDateTime): Option[T] = None
 }

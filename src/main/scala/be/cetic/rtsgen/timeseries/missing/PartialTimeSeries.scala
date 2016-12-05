@@ -38,7 +38,6 @@ case class PartialTimeSeries[T](base: TimeSeries[T],
 {
    override def compute(times: Stream[LocalDateTime]) =
    {
-
       base.compute(times).map
       { case (t, v) =>
       {
@@ -56,6 +55,20 @@ case class PartialTimeSeries[T](base: TimeSeries[T],
             }
          }))
       }
+      }
+   }
+
+   override def compute(time: LocalDateTime): Option[T] =
+   {
+      if ((from.isDefined && time < from.get) || (to.isDefined && time > to.get)) None
+      else
+      {
+         missingRate match
+         {
+            case None => base.compute(time)
+            case Some(odds) => if (Random.nextDouble() < odds) None
+                               else base.compute(time)
+         }
       }
    }
 }

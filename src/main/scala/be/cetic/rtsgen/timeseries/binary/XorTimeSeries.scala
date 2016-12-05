@@ -42,4 +42,13 @@ case class XorTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends
          (time, value)
       }}
    }
+
+   override def compute(time: LocalDateTime): Option[Boolean] =
+   {
+      val x = a.compute(time)
+      val y = b.compute(time)
+
+      if(x.isEmpty || y.isEmpty) None
+      else Some(x.get != y.get)
+   }
 }

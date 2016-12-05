@@ -35,7 +35,15 @@ class AggregationTimeSeries[T](val aggregator: Seq[T] => T, val generators: Seq[
                                                                      case seq => Some(aggregator(seq))
                                                                   }))
 
-   override def toString = "AggregationTimeSeries(" + aggregator + "," + generators + ")"
+
+
+
+   override def toString = "AggregationTimeSeries(" + aggregator + ", " + generators + ")"
+
+   override def compute(time: LocalDateTime): Option[T] = generators.flatMap(c => c.compute(time)) match {
+      case Seq() => None
+      case seq => Some(aggregator(seq))
+   }
 }
 
 

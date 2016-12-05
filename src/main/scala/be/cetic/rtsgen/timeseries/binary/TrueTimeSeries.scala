@@ -16,13 +16,13 @@
 
 package be.cetic.rtsgen.timeseries.binary
 
-import be.cetic.rtsgen.timeseries.TimeSeries
+import be.cetic.rtsgen.timeseries.{IndependantTimeSeries}
 import org.joda.time.LocalDateTime
 
 /**
   * A binary time series for which all values are true.
   */
-class TrueTimeSeries extends TimeSeries[Boolean]
+class TrueTimeSeries extends IndependantTimeSeries[Boolean]
 {
-   override def compute(times: Stream[LocalDateTime]) = times.map(t => (t, Some(true)))
+   override def compute(time: LocalDateTime): Option[Boolean] = Some(true)
 }

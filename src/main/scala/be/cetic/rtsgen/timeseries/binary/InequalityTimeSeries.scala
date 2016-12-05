@@ -45,4 +45,13 @@ case class InequalityTimeSeries( val a: TimeSeries[Double],
          (time, value)
       }}
    }
+
+   override def compute(time: LocalDateTime): Option[Boolean] =
+   {
+      val x = a.compute(time)
+      val y = b.compute(time)
+
+      if(x.isEmpty || y.isEmpty) None
+      else Some(comparator(x.get, y.get))
+   }
 }

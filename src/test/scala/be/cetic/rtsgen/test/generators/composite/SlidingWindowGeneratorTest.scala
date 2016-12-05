@@ -30,6 +30,7 @@ class SlidingWindowGeneratorTest extends FlatSpec with Matchers
         |  "name": "window-generator",
         |  "type": "window",
         |  "aggregator": "sum",
+        |  "n": 5,
         |  "window-length" : 5000,
         |  "generator": "daily-generator"
         |}
@@ -53,6 +54,7 @@ class SlidingWindowGeneratorTest extends FlatSpec with Matchers
          Some("window-generator"),
          "sum",
          Left("daily-generator"),
+         5,
          new Duration(5000)
       )
       generator shouldBe SlidingWindowGenerator(generator.toJson)
@@ -63,6 +65,7 @@ class SlidingWindowGeneratorTest extends FlatSpec with Matchers
          Some("window-generator"),
          "sum",
          Left("daily-generator"),
+         5,
          new Duration(5000)
       )
 

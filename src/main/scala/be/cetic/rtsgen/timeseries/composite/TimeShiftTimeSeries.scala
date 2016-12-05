@@ -31,4 +31,6 @@ case class TimeShiftTimeSeries[T](generator: TimeSeries[T], shift: Duration) ext
 {
    override def compute(times: Stream[LocalDateTime]): Stream[(LocalDateTime, Option[T])] =
       generator.compute(times.map(t => t + shift))
+
+   override def compute(time: LocalDateTime): Option[T] = generator.compute(time + shift)
 }

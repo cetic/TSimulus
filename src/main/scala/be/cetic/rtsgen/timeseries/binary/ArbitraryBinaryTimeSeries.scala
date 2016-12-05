@@ -29,4 +29,6 @@ import org.joda.time.LocalDateTime
 case class ArbitraryBinaryTimeSeries[T](base: TimeSeries[T], predicate: T => Boolean) extends TimeSeries[Boolean]
 {
    override def compute(times: Stream[LocalDateTime]) = base.compute(times).map { case (t,v) => (t,v.map(predicate))}
+
+   override def compute(time: LocalDateTime): Option[Boolean] = base.compute(time).map(predicate)
 }

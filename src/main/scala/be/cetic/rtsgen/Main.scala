@@ -16,9 +16,10 @@
 
 package be.cetic.rtsgen
 
-import be.cetic.rtsgen.config.Configuration
+import be.cetic.rtsgen.config.{ARMAModel, Configuration}
+import be.cetic.rtsgen.generators.primary.ARMAGenerator
 import be.cetic.rtsgen.timeseries._
-import be.cetic.rtsgen.timeseries.primary.{ARMA, MonthlyTimeSeries, WeeklyTimeSeries}
+import be.cetic.rtsgen.timeseries.primary.{ARMA, MonthlyTimeSeries, RandomWalkTimeSeries, WeeklyTimeSeries}
 import com.github.nscala_time.time.Imports._
 import org.joda.time.DateTimeConstants
 import spray.json._
@@ -58,115 +59,13 @@ object Main
 
    def main(args: Array[String]): Unit =
    {
-      val model = ARMA(std = 0.1, c = 0)
-      val dtf = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss")
+      val dates = sampling(new LocalDateTime(2016, 1, 2, 0, 0), new LocalDateTime(2016, 1, 3, 0, 0), 1 minute)
+      val ts = new RandomWalkTimeSeries(ARMA(Array(), Array(), 0.01, 0, 42), new LocalDateTime(2016, 1, 2, 5, 0), 5 minutes)
 
-      // model.series take 500 foreach (e => println(e.formatted("%2f")))
-
-     val monthly = MonthlyTimeSeries(Map(
-         DateTimeConstants.JANUARY -> -6.3,
-         DateTimeConstants.FEBRUARY -> -6.9,
-         DateTimeConstants.MARCH -> -2.7,
-         DateTimeConstants.APRIL -> 0.1,
-         DateTimeConstants.MAY -> 2.8,
-         DateTimeConstants.JUNE -> 6.4,
-         DateTimeConstants.JULY -> 8.8,
-         DateTimeConstants.AUGUST -> 8.6,
-         DateTimeConstants.SEPTEMBER -> 2.5,
-         DateTimeConstants.OCTOBER -> -0.4,
-         DateTimeConstants.NOVEMBER -> -0.9,
-         DateTimeConstants.DECEMBER -> -1))
-
-      val weekly = WeeklyTimeSeries(Map(
-         DateTimeConstants.MONDAY -> 0,
-         DateTimeConstants.TUESDAY -> 0.5,
-         DateTimeConstants.WEDNESDAY -> 1,
-         DateTimeConstants.THURSDAY -> 2,
-         DateTimeConstants.FRIDAY -> 2.5,
-         DateTimeConstants.SATURDAY -> 1.5,
-         DateTimeConstants.SUNDAY -> 0.5
-      ))
-
-       val document =
-         """
-           |{
-           |   "generators": [
-           |      {
-           |         "name": "normal-cst",
-           |         "type": "constant",
-           |         "value": 0.1
-           |      },
-           |      {
-           |         "name": "noise",
-           |         "type": "arma",
-           |         "model": {
-           |            "std": 0.05,
-           |            "c": 0
-           |         },
-           |         "timestep": 30000
-           |      },
-           |      {
-           |         "name": "normal",
-           |         "type": "aggregate",
-           |         "aggregator": "max",
-           |         "generators": [{
-           |            "type": "constant",
-           |            "value": 0
-           |         },
-           |         {
-           |            "type": "aggregate",
-           |            "aggregator": "sum",
-           |            "generators": ["normal-cst", "noise"]
-           |         }]
-           |      },
-           |      {
-           |         "name": "rush",
-           |         "type": "aggregate",
-           |         "aggregator": "max",
-           |         "generators": [{
-           |            "type": "constant",
-           |            "value": 0
-           |         },
-           |         {
-           |            "type": "aggregate",
-           |            "aggregator": "sum",
-           |            "generators": ["noise", {"type": "constant", "value": 4} ]
-           |         }]
-           |      },
-           |      {
-           |         "name": "actual",
-           |         "type": "transition",
-           |         "first": "normal",
-           |         "second": {
-           |            "type": "transition",
-           |            "first": "rush",
-           |            "second": "normal",
-           |            "time": "2016-01-01 10:00:00.000",
-           |            "duration": 1200000,
-           |            "transition": "exp"
-           |         },
-           |         "time": "2016-01-01 02:00:00.000",
-           |         "duration": 28800000,
-           |         "transition": "exp"
-           |      }
-           |   ],
-           |   "exported": [
-           |      {
-           |         "name": "actual",
-           |         "generator": "actual",
-           |         "frequency": 30000
-           |      }
-           |   ],
-           |   "from": "2016-01-01 00:00:00.000",
-           |   "to": "2016-01-02 00:00:00.000"
-           |}
-         """.stripMargin.parseJson
-
-      val config = Configuration(document)
-
-      println("date;series;value")
-
-      generate(config2Results(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
+      dates.foreach(d => {
+         val v = ts.compute(d)
+         println(d.toString + ";" + v.get)
+      })
 
 
    }

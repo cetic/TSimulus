@@ -40,4 +40,14 @@ class DivideTimeSeries(val numerator: TimeSeries[Double], val denominator: TimeS
    }
 
    override def toString = "DivideTimeSeries(" + numerator + "," + denominator + ")"
+
+
+   override def compute(time: LocalDateTime): Option[Double] =
+   {
+      val x = numerator.compute(time)
+      val y = denominator.compute(time)
+
+      if(x.isEmpty || y.isEmpty) None
+      else Some(x.get / y.get)
+   }
 }

@@ -60,7 +60,8 @@ class ConfigurationTest extends FlatSpec with Matchers with Inspectors
         |            {
         |                "type": "arma",
         |                "model": { "phi": [0.5], "std": 0.25, "c": 0, "seed": 159357},
-        |                "timestep": 180000
+        |                "timestep": 180000,
+        |                "origin": "2016-01-01 12:34:56.789"
         |            }
         |         ]
         |      },
@@ -108,7 +109,8 @@ class ConfigurationTest extends FlatSpec with Matchers with Inspectors
         |            {
         |                "type": "arma",
         |                "model": { "phi": [0.5], "std": 0.25, "c" : 0, "seed": 159357},
-        |                "timestep": 180000
+        |                "timestep": 180000,
+        |                "origin": "2016-01-01 12:34:56.789"
         |            }
         |         ]
         |      },
@@ -156,6 +158,7 @@ class ConfigurationTest extends FlatSpec with Matchers with Inspectors
                   new ARMAGenerator(
                      None,
                      ARMAModel(Some(Seq(0.5)), None, 0.25, 0, Some(159357)),
+                     new LocalDateTime(2016, 1, 1, 12, 34, 56, 789),
                      new Duration(180000)
                   )
                )

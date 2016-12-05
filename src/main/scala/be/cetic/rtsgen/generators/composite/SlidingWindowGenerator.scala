@@ -30,25 +30,47 @@ import spray.json.{JsObject, JsString, JsValue, _}
 class SlidingWindowGenerator(name: Option[String],
                              val aggregator: String,
                              val generator: Either[String, Generator[Any]],
+                             val n: Int,
                              val duration: Duration) extends Generator[Double](name, "window")
 {
    override def timeseries(generators: (String) => Generator[Any]) = {
 
       val aggregation = { x: Seq[(Duration, Double)] => aggregator match {
-         case "sum" => x.map(_._2).sum
-         case "product" => x.map(_._2).sum
-         case "min" => x.map(_._2).min
-         case "max" => x.map(_._2).max
-         case "mean" => x.map(_._2).sum / x.size
-         case "median" => StatUtils.percentile(x.map(_._2).toArray, 50)
-         case _ => x.map(_._2).sum / x.size
+         case "sum" => x match {
+            case Seq() => None
+            case s => Some(x.map(_._2).sum)
+         }
+         case "product" => x match {
+            case Seq() => None
+            case s => Some(x.map(_._2).product)
+         }
+         case "min" => x match {
+            case Seq() => None
+            case s => Some(x.map(_._2).min)
+         }
+         case "max" => x match {
+            case Seq() => None
+            case s => Some(x.map(_._2).max)
+         }
+         case "mean" => x match {
+            case Seq() => None
+            case s => Some(x.map(_._2).sum / x.size)
+         }
+         case "median" => x match {
+            case Seq() => None
+            case s => Some(StatUtils.percentile(x.map(_._2).toArray, 50))
+         }
+         case _ => x match {
+            case Seq() => None
+            case s => Some(x.map(_._2).sum / x.size)
+         }
       }}
 
       val base = Model.generator(generators)(generator).timeseries(generators) match {
          case t: TimeSeries[Double] => t
       }
 
-      SlidingWindowTimeSeries[Double](base, duration, aggregation)
+      SlidingWindowTimeSeries[Double](base, duration, n, aggregation)
    }
 
    override def toString = "SlidingWindow(" + name + ", " + aggregator + ", " + generator + ", " + duration + ")"
@@ -67,6 +89,7 @@ class SlidingWindowGenerator(name: Option[String],
          "window-length" -> duration.toJson,
          "generator" -> either2json(generator),
          "aggregator" -> aggregator.toJson,
+         "n" -> n.toJson,
          "window-length" -> duration.getMillis.toJson
       )
 
@@ -92,9 +115,13 @@ object SlidingWindowGenerator extends DefaultJsonProtocol with TimeToJson
          case g => Right(GeneratorFormat.read(g))
       }
 
+      val n = fields("n") match {
+         case JsNumber(n) => n.toInt
+      }
+
       val aggregator = fields("aggregator") match { case JsString(x) => x }
       val duration = fields("window-length").convertTo[Duration]
 
-      new SlidingWindowGenerator(name, aggregator, generator, duration)
+      new SlidingWindowGenerator(name, aggregator, generator, n, duration)
    }
 }

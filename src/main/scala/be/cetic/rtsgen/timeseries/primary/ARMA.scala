@@ -63,6 +63,9 @@ case class ARMA(phi: Array[Double] = Array(),
 
       rec_generate(0D, 0D, new Random(seed))
    }
+
+   def reverse_series: Stream[Double] = series
+
 }
 
 /**

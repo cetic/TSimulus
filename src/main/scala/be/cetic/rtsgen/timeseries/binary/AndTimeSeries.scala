@@ -23,7 +23,7 @@ import org.joda.time.LocalDateTime
   * A binary time series based on two time series. This time series is true iff both
   * base time series are true.
   *
-  * If the value is not defined for at least one of the base time series, then the AND value is not defined.
+  * If the value is not defined for at least one of the base time series, then the AND value is also undefined.
   */
 case class AndTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends TimeSeries[Boolean]
 {
@@ -41,5 +41,14 @@ case class AndTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends
 
          (time, value)
       }}
+   }
+
+   override def compute(time: LocalDateTime): Option[Boolean] =
+   {
+      val x = a.compute(time)
+      val y = b.compute(time)
+
+      if(x.isEmpty || y.isEmpty) None
+      else Some(x.get && y.get)
    }
 }

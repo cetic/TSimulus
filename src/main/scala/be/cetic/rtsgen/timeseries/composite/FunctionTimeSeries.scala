@@ -31,4 +31,6 @@ case class FunctionTimeSeries[T](generator: TimeSeries[T], f: (LocalDateTime, T)
   override def compute(times: Stream[LocalDateTime]) =
        generator.compute(times)
                 .map {case (t,v) => (t, v.flatMap(f(t, _)))}
+
+   override def compute(time: LocalDateTime): Option[T] = generator.compute(time).flatMap(x => f(time, x))
 }

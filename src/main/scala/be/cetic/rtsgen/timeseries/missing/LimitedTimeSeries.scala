@@ -47,4 +47,20 @@ case class LimitedTimeSeries[T] (base: TimeSeries[T], from: Option[LocalDateTime
          (t, modified)
       }}
    }
+
+   override def compute(time: LocalDateTime): Option[T] =
+   {
+      val fromCondition = from match {
+         case None => true
+         case Some(x) => time >= x
+      }
+
+      val toCondition = to match {
+         case None => true
+         case Some(x) => time <= x
+      }
+
+      if(fromCondition && toCondition) None
+      else base.compute(time)
+   }
 }

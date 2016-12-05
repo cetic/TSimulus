@@ -17,7 +17,7 @@
 package be.cetic.rtsgen.test.generators.primary
 
 import be.cetic.rtsgen.config.{ARMAModel, GeneratorFormat}
-import org.joda.time.Duration
+import org.joda.time.{Duration, LocalDateTime}
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 import be.cetic.rtsgen.generators.primary.ARMAGenerator
@@ -35,7 +35,8 @@ class ARMAGeneratorTest extends FlatSpec with Matchers
                       |      "c": 4.2,
                       |      "seed": 1809
                       |   },
-                      |   "timestep": 180000
+                      |   "timestep": 180000,
+                      |   "origin": "2016-01-01 12:34:56.789"
                       |}
                     """.stripMargin
 
@@ -61,6 +62,7 @@ class ARMAGeneratorTest extends FlatSpec with Matchers
             4.2,
             Some(1809)
          ),
+         new LocalDateTime(2016, 1, 2, 12, 34, 56, 789),
          new Duration(180000)
       )
       generator shouldBe ARMAGenerator(generator.toJson)

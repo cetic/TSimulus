@@ -17,7 +17,7 @@
 package be.cetic.rtsgen.timeseries.binary
 
 import be.cetic.rtsgen.timeseries.TimeSeries
-import org.joda.time.LocalDateTime
+import org.joda.time.{DateTimeZone, LocalDateTime}
 
 import scala.util.Random
 
@@ -53,5 +53,13 @@ case class LogisticTimeSeries(base: TimeSeries[Double],
       def logit(x: Double) = 1 / (1 + Math.exp(- ((x - location) / scale)))
 
       base.compute(times).map { case (t,v) => (t, v.map(x => r.nextDouble() < logit(x) ))}
+   }
+
+   override def compute(time: LocalDateTime): Option[Boolean] =
+   {
+      val r = new Random(seed+time.toDateTime(DateTimeZone.UTC).getMillis)
+      def logit(x: Double) = 1 / (1 + Math.exp(- ((x - location) / scale)))
+
+      base.compute(time).map(x => r.nextDouble() < logit(x))
    }
 }

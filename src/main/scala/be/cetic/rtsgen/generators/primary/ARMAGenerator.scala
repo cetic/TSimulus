@@ -27,9 +27,15 @@ import scala.util.Random
 
 /**
   * A generator for [[be.cetic.rtsgen.timeseries.primary.RandomWalkTimeSeries]].
+  *
+  * @param name The generator name.
+  * @param model The model expressing the constraints
+  * @param origin The moment at which the ARMA steps start.
+  * @param timestep The duration between two steps.
   */
 class ARMAGenerator(name: Option[String],
                     val model: ARMAModel,
+                    val origin: LocalDateTime,
                     val timestep: Duration) extends Generator[Double](name, "arma")
 {
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
@@ -43,13 +49,17 @@ class ARMAGenerator(name: Option[String],
             model.c,
             model.seed.getOrElse(Random.nextLong())
          ),
+         origin,
          timestep
       )
 
-   override def toString = "ARMAGenerator(" + model + "," + timestep + ")"
+   override def toString = "ARMAGenerator(" + model + ", " + origin + ", " + timestep + ")"
 
    override def equals(o: Any) = o match {
-      case that: ARMAGenerator => that.name == this.name && that.model == this.model && that.timestep == this.timestep
+      case that: ARMAGenerator => that.name == this.name &&
+                                  that.model == this.model &&
+                                  that.timestep == this.timestep &&
+                                  that.origin == this.origin
       case _ => false
    }
 
@@ -57,6 +67,7 @@ class ARMAGenerator(name: Option[String],
 
       val t = Map(
          "type" -> `type`.toJson,
+         "origin" -> origin.toJson,
          "model" -> model.toJson,
          "timestep" -> timestep.toJson
       )
@@ -72,13 +83,16 @@ object ARMAGenerator extends DefaultJsonProtocol with TimeToJson
    implicit val armaModelFormat = jsonFormat5(ARMAModel)
 
    def apply(json: JsValue): ARMAGenerator = {
-      val name = json.asJsObject.fields.get("name") .map(f => f match {
+
+      val fields = json.asJsObject.fields
+      val name = fields.get("name") .map(f => f match {
          case JsString(x) => x
       })
 
-      val model = json.asJsObject.fields("model").convertTo[ARMAModel]
-      val timestep = json.asJsObject.fields("timestep").convertTo[Duration]
+      val model = fields("model").convertTo[ARMAModel]
+      val origin = fields("origin").convertTo[LocalDateTime]
+      val timestep = fields("timestep").convertTo[Duration]
 
-      new ARMAGenerator(name, model, timestep)
+      new ARMAGenerator(name, model, origin, timestep)
    }
 }
