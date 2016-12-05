@@ -16,7 +16,7 @@
 
 package be.cetic.rtsgen.timeseries.composite
 
-import be.cetic.rtsgen.timeseries.TimeSeries
+import be.cetic.rtsgen.timeseries.{BinaryTimeSeries, TimeSeries}
 import org.joda.time.LocalDateTime
 
 /**
@@ -25,29 +25,6 @@ import org.joda.time.LocalDateTime
   * @param numerator the generator that represents the numerator.
   * @param denominator the generator that represents the denominator.
   */
-class DivideTimeSeries(val numerator: TimeSeries[Double], val denominator: TimeSeries[Double]) extends TimeSeries[Double]
-{
-   override def compute(times: Stream[LocalDateTime]) =
-   {
-      val fractions = (numerator.compute(times) zip denominator.compute(times)).map( entry => entry._1._1 -> (entry._1._2, entry._2._2))
-
-      fractions.map {
-         case (time, (None, _)) => (time, None)
-         case (time, (_, None)) => (time, None)
-         case (time, (_, Some(0))) => (time, None)
-         case (time, (Some(num), Some(den))) => (time, Some(num / den))
-      }
-   }
-
-   override def toString = "DivideTimeSeries(" + numerator + "," + denominator + ")"
-
-
-   override def compute(time: LocalDateTime): Option[Double] =
-   {
-      val x = numerator.compute(time)
-      val y = denominator.compute(time)
-
-      if(x.isEmpty || y.isEmpty) None
-      else Some(x.get / y.get)
-   }
-}
+class DivideTimeSeries(numerator: TimeSeries[Double],
+                       denominator: TimeSeries[Double]) extends BinaryTimeSeries[Double, Double](numerator, denominator, (x,y) => if(x.isEmpty || y.isEmpty) None
+                                                                                                                                  else Some(x.get / y.get))

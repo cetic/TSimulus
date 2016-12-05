@@ -39,7 +39,7 @@ class OrGenerator(name: Option[String],
          case t: TimeSeries[Boolean] => t
       }
 
-      OrTimeSeries(first, second)
+      new OrTimeSeries(first, second)
    }
 
    override def toString = "Or(" + name + ", " + a + ", " + b + ")"

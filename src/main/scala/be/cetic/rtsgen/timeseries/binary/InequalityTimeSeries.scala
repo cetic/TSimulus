@@ -16,7 +16,7 @@
 
 package be.cetic.rtsgen.timeseries.binary
 
-import be.cetic.rtsgen.timeseries.TimeSeries
+import be.cetic.rtsgen.timeseries.{BinaryTimeSeries, TimeSeries}
 import org.joda.time.LocalDateTime
 
 /**
@@ -25,33 +25,8 @@ import org.joda.time.LocalDateTime
   * @param b   An other time series.
   * @param comparator The comparator used to determine which value must be generated.
   */
-case class InequalityTimeSeries( val a: TimeSeries[Double],
-                                 val b: TimeSeries[Double],
-                                 val comparator: (Double, Double) => Boolean
-                               ) extends TimeSeries[Boolean]
-{
-   override def compute(times: Stream[LocalDateTime]): Stream[(LocalDateTime, Option[Boolean])] =
-   {
-      val aSeries = a.compute(times)
-      val bSeries = b.compute(times)
-
-      (aSeries zip bSeries).map { case (x,y) => {
-         val time = x._1
-         assert(time equals y._1)
-
-         val value = if(x._2.isEmpty || y._2.isEmpty) None
-                     else Some(comparator(x._2.get, y._2.get))
-
-         (time, value)
-      }}
-   }
-
-   override def compute(time: LocalDateTime): Option[Boolean] =
-   {
-      val x = a.compute(time)
-      val y = b.compute(time)
-
-      if(x.isEmpty || y.isEmpty) None
-      else Some(comparator(x.get, y.get))
-   }
-}
+class InequalityTimeSeries( a: TimeSeries[Double],
+                            b: TimeSeries[Double],
+                            val comparator: (Double, Double) => Boolean
+) extends BinaryTimeSeries[Double, Boolean](a, b, (x,y) => if(x.isEmpty || y.isEmpty) None
+                                                           else Some(comparator(x.get, y.get)))

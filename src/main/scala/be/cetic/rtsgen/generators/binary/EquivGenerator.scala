@@ -39,7 +39,7 @@ class EquivGenerator(name: Option[String],
          case t: TimeSeries[Boolean] => t
       }
 
-      EquivTimeSeries(first, second)
+      new EquivTimeSeries(first, second)
    }
 
    override def toString = "Equiv(" + name + ", " + a + ", " + b + ")"

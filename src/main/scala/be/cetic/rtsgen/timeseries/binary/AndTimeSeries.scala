@@ -16,8 +16,7 @@
 
 package be.cetic.rtsgen.timeseries.binary
 
-import be.cetic.rtsgen.timeseries.TimeSeries
-import org.joda.time.LocalDateTime
+import be.cetic.rtsgen.timeseries.{BinaryTimeSeries, TimeSeries}
 
 /**
   * A binary time series based on two time series. This time series is true iff both
@@ -25,30 +24,6 @@ import org.joda.time.LocalDateTime
   *
   * If the value is not defined for at least one of the base time series, then the AND value is also undefined.
   */
-case class AndTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends TimeSeries[Boolean]
-{
-   override def compute(times: Stream[LocalDateTime]) =
-   {
-      val aSeries = a.compute(times)
-      val bSeries = b.compute(times)
-
-      (aSeries zip bSeries).map { case (x,y) => {
-         val time = x._1
-         assert(time equals y._1)
-
-         val value = if(x._2.isEmpty || y._2.isEmpty) None
-                     else Some(x._2.get && y._2.get)
-
-         (time, value)
-      }}
-   }
-
-   override def compute(time: LocalDateTime): Option[Boolean] =
-   {
-      val x = a.compute(time)
-      val y = b.compute(time)
-
-      if(x.isEmpty || y.isEmpty) None
-      else Some(x.get && y.get)
-   }
-}
+class AndTimeSeries(a: TimeSeries[Boolean],
+                    b: TimeSeries[Boolean]) extends BinaryTimeSeries[Boolean, Boolean](a, b, (x,y) => if(x.isEmpty || y.isEmpty) None
+                                                                                                      else Some(x.get && y.get))

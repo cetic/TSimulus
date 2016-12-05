@@ -28,4 +28,10 @@ class ConstantTimeSeriesTest extends FlatSpec with Matchers with Inspectors with
          case _ => false
       }}
    }
+
+   "A constant time series" should "produce the same values by batch and individually" in {
+
+      val ts = ConstantTimeSeries(42.0)
+      dates.map(d => ts.compute(d)) shouldBe ts.compute(dates).map(_._2)
+   }
 }

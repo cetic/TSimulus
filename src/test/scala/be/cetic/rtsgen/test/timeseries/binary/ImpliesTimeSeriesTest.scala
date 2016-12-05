@@ -23,38 +23,38 @@ import org.scalatest.{FlatSpec, Inspectors, Matchers}
 class ImpliesTimeSeriesTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
    "True IMPLIES True" should "be True" in {
-      forAll (ImpliesTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (new ImpliesTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "True IMPLIES False" should "be False" in {
-      forAll (ImpliesTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (new ImpliesTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "False IMPLIES True" should "be True" in {
-      forAll (ImpliesTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (new ImpliesTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "False IMPLIES False" should "be TRUE" in {
-      forAll (ImpliesTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (new ImpliesTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "True IMPLIES Undefined" should "be Undefined" in {
-      forAll (ImpliesTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new ImpliesTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined IMPLIES True" should "be Undefined" in {
-      forAll (ImpliesTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new ImpliesTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined IMPLIES Undefined" should "be Undefined" in {
-      forAll (ImpliesTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new ImpliesTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "False IMPLIES Undefined" should "be Undefined" in {
-      forAll (ImpliesTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new ImpliesTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined IMPLIES False" should "be Undefined" in {
-      forAll (ImpliesTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new ImpliesTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
    }
 }

@@ -25,38 +25,38 @@ class AndTimeSeriesTest extends FlatSpec with Matchers
                                             with RTSTest
 {
    "True AND True" should "be True" in {
-      forAll (AndTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (new AndTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "True AND False" should "be False" in {
-      forAll (AndTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (new AndTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "False AND True" should "be False" in {
-      forAll (AndTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (new AndTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "False AND False" should "be False" in {
-      forAll (AndTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (new AndTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "True AND Undefined" should "be Undefined" in {
-      forAll (AndTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new AndTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined AND True" should "be Undefined" in {
-      forAll (AndTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new AndTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined AND Undefined" should "be Undefined" in {
-      forAll (AndTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new AndTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "False AND Undefined" should "be Undefined" in {
-      forAll (AndTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new AndTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined AND False" should "be Undefined" in {
-      forAll (AndTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new AndTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
    }
 }

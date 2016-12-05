@@ -39,7 +39,7 @@ class AndGenerator(name: Option[String],
          case t: TimeSeries[Boolean] => t
       }
 
-      AndTimeSeries(first, second)
+      new AndTimeSeries(first, second)
    }
 
    override def toString = "And(" + name + ", " + a + ", " + b + ")"

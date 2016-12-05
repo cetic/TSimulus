@@ -39,7 +39,7 @@ class XorGenerator(name: Option[String],
          case t: TimeSeries[Boolean] => t
       }
 
-      XorTimeSeries(first, second)
+      new XorTimeSeries(first, second)
    }
 
    override def toString = "Xor(" + name + ", " + a + ", " + b + ")"

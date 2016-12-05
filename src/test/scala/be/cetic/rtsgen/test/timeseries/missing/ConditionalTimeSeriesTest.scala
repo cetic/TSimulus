@@ -18,6 +18,7 @@ package be.cetic.rtsgen.test.timeseries.missing
 
 import be.cetic.rtsgen.test.RTSTest
 import be.cetic.rtsgen.timeseries.composite.ConditionalTimeSeries
+import be.cetic.rtsgen.timeseries.primary.ConstantTimeSeries
 import org.scalatest.{FlatSpec, Inspectors, Matchers}
 
 class ConditionalTimeSeriesTest extends FlatSpec with Matchers with Inspectors with RTSTest

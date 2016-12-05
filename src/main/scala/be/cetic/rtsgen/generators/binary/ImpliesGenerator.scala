@@ -39,7 +39,7 @@ class ImpliesGenerator(name: Option[String],
          case t: TimeSeries[Boolean] => t
       }
 
-      ImpliesTimeSeries(first, second)
+      new ImpliesTimeSeries(first, second)
    }
 
    override def toString = "Implies(" + name + ", " + a + ", " + b + ")"

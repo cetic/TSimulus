@@ -16,7 +16,7 @@
 
 package be.cetic.rtsgen.timeseries.binary
 
-import be.cetic.rtsgen.timeseries.TimeSeries
+import be.cetic.rtsgen.timeseries.{BinaryTimeSeries, TimeSeries}
 import org.joda.time.LocalDateTime
 
 /**
@@ -27,31 +27,6 @@ import org.joda.time.LocalDateTime
   * @param a An other time series.
   * @param b An other binary time series
   */
-case class ImpliesTimeSeries(a: TimeSeries[Boolean], b: TimeSeries[Boolean]) extends TimeSeries[Boolean]
-{
-   override def compute(times: Stream[LocalDateTime]): Stream[(LocalDateTime, Option[Boolean])] = {
-      val vA = a.compute(times)
-      val vB = b.compute(times)
-
-      (vA zip vB).map(element => {
-         val timestamp = element._1._1
-
-         val valueA = element._1._2
-         val valueB = element._2._2
-
-         val value = if(valueA.isEmpty || valueB.isEmpty) None
-                     else Some(!valueA.get || valueB.get)
-
-         (timestamp, value)
-      })
-   }
-
-   override def compute(time: LocalDateTime): Option[Boolean] =
-   {
-      val x = a.compute(time)
-      val y = b.compute(time)
-
-      if(x.isEmpty || y.isEmpty) None
-      else Some(!x.get || y.get)
-   }
-}
+class ImpliesTimeSeries(a: TimeSeries[Boolean],
+                        b: TimeSeries[Boolean]) extends BinaryTimeSeries[Boolean, Boolean](a, b, (x,y) => if(x.isEmpty || y.isEmpty) None
+                                                                                                          else Some(!x.get || y.get))

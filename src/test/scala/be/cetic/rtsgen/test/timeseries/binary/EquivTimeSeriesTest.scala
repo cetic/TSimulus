@@ -23,38 +23,38 @@ import org.scalatest.{FlatSpec, Inspectors, Matchers}
 class EquivTimeSeriesTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
    "True Equiv True" should "be True" in {
-      forAll (EquivTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (new EquivTimeSeries(t, t).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "True Equiv False" should "be False" in {
-      forAll (EquivTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (new EquivTimeSeries(t, f).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "False Equiv True" should "be False" in {
-      forAll (EquivTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(false)}
+      forAll (new EquivTimeSeries(f, t).compute(dates)) { result => result._2 shouldBe Some(false)}
    }
 
    "False Equiv False" should "be TRUE" in {
-      forAll (EquivTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(true)}
+      forAll (new EquivTimeSeries(f, f).compute(dates)) { result => result._2 shouldBe Some(true)}
    }
 
    "True Equiv Undefined" should "be Undefined" in {
-      forAll (EquivTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new EquivTimeSeries(t, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined Equiv True" should "be Undefined" in {
-      forAll (EquivTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new EquivTimeSeries(u, t).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined Equiv Undefined" should "be Undefined" in {
-      forAll (EquivTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new EquivTimeSeries(u, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "False Equiv Undefined" should "be Undefined" in {
-      forAll (EquivTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new EquivTimeSeries(f, u).compute(dates)) { result => result._2 shouldBe None}
    }
 
    "Undefined Equiv False" should "be Undefined" in {
-      forAll (EquivTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
+      forAll (new EquivTimeSeries(u, f).compute(dates)) { result => result._2 shouldBe None}
    }
 }
