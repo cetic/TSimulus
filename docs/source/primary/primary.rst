@@ -16,3 +16,4 @@ time series.
 .. include:: /primary/yearly.rst
 .. include:: /primary/constant.rst
 .. include:: /primary/stochastic.rst
+.. include:: /primary/gaussian.rst
