@@ -45,7 +45,7 @@ According to the `Royal Meteorology Institute of Belgium <http://www.meteo.be/me
     * - December
       - 3.9
 
-So, we create a generator that describes the evolution of the temperator month per month::
+So, we create a generator that describes the evolution of the temperature month per month::
 
     {
        "generators":[
@@ -174,7 +174,7 @@ We therefore create a new generator that expresses the variation of the temperat
        ],
        "exported": [
           {
-             "name": "temperator",
+             "name": "temperature",
              "generator": "result",
              "frequency": 600000
           }
@@ -251,7 +251,8 @@ defined generators.
                "c": 0,
                "seed": 1234
             },
-            "timestep": 300000
+            "timestep": 300000,
+            "origin": "2016-01-01 00:00:00.000"
          },
          {
             "name": "result",
@@ -266,7 +267,7 @@ defined generators.
       ],
       "exported": [
          {
-            "name": "temperator",
+            "name": "temperature",
             "generator": "result",
             "frequency": 600000
          }
