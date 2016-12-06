@@ -16,7 +16,7 @@
 
 package be.cetic.rtsgen.test.timeseries.primary
 
-import be.cetic.rtsgen.Main
+import be.cetic.rtsgen.Utils
 import be.cetic.rtsgen.test.RTSTest
 import be.cetic.rtsgen.timeseries.primary.{ARMA, RandomWalkTimeSeries}
 import org.joda.time.LocalDateTime
@@ -27,7 +27,7 @@ import com.github.nscala_time.time.Imports._
 class RandomWalkTimeSeriesTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
    "A random walk time series" should "provide identical results, by each moment at a time, or on a batch, when the origin is before the dates" in {
-      val dates = Main.sampling(new LocalDateTime(2016, 1, 1, 0, 0), new LocalDateTime(2016, 1, 2, 0, 0), 100)
+      val dates = Utils.sampling(new LocalDateTime(2016, 1, 1, 0, 0), new LocalDateTime(2016, 1, 2, 0, 0), 100)
       val ts = new RandomWalkTimeSeries(ARMA(Array(), Array(), 0.01, 0, 42), new LocalDateTime(2015, 12, 30, 0, 0), 1 minute)
 
       val individuals = dates.map(d => ts.compute(d).get)
@@ -37,7 +37,7 @@ class RandomWalkTimeSeriesTest extends FlatSpec with Matchers with Inspectors wi
    }
 
    "A random walk time series" should "provide identical results, by each moment at a time, or on a batch, when the origin is among the dates" in {
-      val dates = Main.sampling(new LocalDateTime(2016, 1, 1, 0, 0), new LocalDateTime(2016, 1, 2, 0, 0), 100)
+      val dates = Utils.sampling(new LocalDateTime(2016, 1, 1, 0, 0), new LocalDateTime(2016, 1, 2, 0, 0), 100)
       val ts = new RandomWalkTimeSeries(ARMA(Array(), Array(), 0.01, 0, 42), new LocalDateTime(2016, 1, 1, 2, 0), 1 minute)
 
       val individuals = dates.map(d => ts.compute(d).get)
@@ -47,7 +47,7 @@ class RandomWalkTimeSeriesTest extends FlatSpec with Matchers with Inspectors wi
    }
 
    "A random walk time series" should "provide identical results, by each moment at a time, or on a batch, when the origin is after the dates" in {
-      val dates = Main.sampling(new LocalDateTime(2016, 1, 1, 0, 0), new LocalDateTime(2016, 1, 2, 0, 0), 100)
+      val dates = Utils.sampling(new LocalDateTime(2016, 1, 1, 0, 0), new LocalDateTime(2016, 1, 2, 0, 0), 100)
       val ts = new RandomWalkTimeSeries(ARMA(Array(), Array(), 0.01, 0, 42), new LocalDateTime(2016, 2, 1, 0, 0), 1 minute)
 
       val individuals = dates.map(d => ts.compute(d).get)

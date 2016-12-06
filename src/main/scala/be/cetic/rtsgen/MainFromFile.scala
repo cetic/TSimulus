@@ -38,6 +38,6 @@ object MainFromFile
 
       println("date;series;value")
 
-      Main.generate(Main.config2Results(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
+      Utils.generate(Utils.config2Results(config)) foreach (e => println(dtf.print(e._1) + ";" + e._2 + ";" + e._3))
    }
 }

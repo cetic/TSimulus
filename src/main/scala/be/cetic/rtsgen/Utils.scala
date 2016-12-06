@@ -25,7 +25,7 @@ import org.joda.time.DateTimeConstants
 import spray.json._
 
 
-object Main
+object Utils
 {
    /**
      * Creates a sequence of times, from a start time to a given limit.
@@ -56,22 +56,13 @@ object Main
       sampling(start, end, new Duration(duration.getMillis / (nbTimes-1)))
    }
 
-
-   def main(args: Array[String]): Unit =
-   {
-      val dates = sampling(new LocalDateTime(2016, 1, 2, 0, 0), new LocalDateTime(2016, 1, 3, 0, 0), 1 minute)
-      val ts = new RandomWalkTimeSeries(ARMA(Array(), Array(), 0.01, 0, 42), new LocalDateTime(2016, 1, 2, 5, 0), 5 minutes)
-
-      dates.foreach(d => {
-         val v = ts.compute(d)
-         println(d.toString + ";" + v.get)
-      })
-
-
-   }
-
    def config2Results(config: Configuration): Map[String, Stream[(LocalDateTime, Any)]] =
       timeSeries2Results(config.timeSeries, config.from, config.to)
+
+   def eval(config: Configuration, date: LocalDateTime) =
+   {
+      config.timeSeries.map{ case (name, x) => (name, x._1.compute(date)) }
+   }
 
    def timeSeries2Results(ts: Map[String, (TimeSeries[Any], _root_.com.github.nscala_time.time.Imports.Duration)],
                           from: LocalDateTime,
@@ -82,7 +73,7 @@ object Main
          val name = series._1
          val frequency = series._2._2
          val values = series._2._1
-         val times = Main.sampling(from, to, frequency)
+         val times = Utils.sampling(from, to, frequency)
 
          name -> values.compute(times).filter(e => e._2.isDefined).map(e => (e._1, e._2.get))
       })
