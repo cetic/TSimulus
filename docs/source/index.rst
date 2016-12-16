@@ -1,15 +1,15 @@
-.. ts-generator documentation master file, created by
+.. TSimulus documentation master file, created by
    sphinx-quickstart on Mon Aug 22 10:53:11 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-RTS-Gen - A realistic time series generator
+TSimulus - A realistic time series generator
 ===========================================
 
 About
 -----
 
-RTS-Gen is a tool for generating random, yet realistic, time series. In this project, a time series is nothing but a orderly sequence of
+TSimulus is a toolkit for generating random, yet realistic, time series. In this project, a time series is nothing but a orderly sequence of
 points in times, each of them being associated to at most a value. Time series are used in a wide variety of areas,
 including finance, weather forecasting, and signal processing.
 
@@ -20,7 +20,7 @@ including the simulation of data acquisition in the aforementioned areas.
 In order to make realistic time series, a *convincing* noise must generally be added to some specified patterns.
 In addition, the values of a time series may be related to those of an other time series.
 
-The RTS-Gen project provides tools for specifying the shape of a time series (general patterns, cycles, importance of the added noise, etc.)
+The TSimulus project provides tools for specifying the shape of a time series (general patterns, cycles, importance of the added noise, etc.)
 and for converting this specification into time series values.
 
 This library is part of the `EAM-SDI <https://www.cetic.be/EAM-SDI-2301>`_ research project, founded by the Walloon Region.
@@ -29,7 +29,7 @@ Features
 --------
 
 Generators:
-    The RTS-Gen library provides a domain specific language (DSL) that can be used for specifying **generators**
+    The TSimulus library provides a domain specific language (DSL) that can be used for specifying **generators**
     that describe the shape of the desired time series (evolutionary patterns, cycles, noise, etc.). Alternatively, these
     generators can be programmatically specified using a Java/Scala API. The generators can be converted into time series values
     for a considered time period.
@@ -58,10 +58,10 @@ Missing Values:
 Licence and Source Code
 -----------------------
 
-RTS-Gen is released publicly under the `Apache Licence (version 2.0) <http://www.apache.org/licenses/LICENSE-2.0>`_ and
+TSimulus is released under the `Apache Licence (version 2.0) <http://www.apache.org/licenses/LICENSE-2.0>`_ and
 has been initiated as part of `EAM-SDI <https://www.cetic.be/EAM-SDI-2300>`_, a CWALity research project of the Walloon region.
 
-The source code is available on Github: https://github.com/cetic/rts-gen
+The source code is available on Github: https://github.com/cetic/tsimulus
 
 Please feel free to contribute by submitting pull requests, bug reports and feature requests.
 

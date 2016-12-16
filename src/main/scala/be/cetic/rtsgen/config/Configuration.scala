@@ -43,7 +43,7 @@ case class Configuration(generators: Option[Seq[Generator[Any]]],
       }).toMap
    }
 
-   private def firstOrderGenerators: Map[String, Generator[Any]] =
+   def firstOrderGenerators: Map[String, Generator[Any]] =
    {
       generators match {
          case None => Map()
