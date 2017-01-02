@@ -9,7 +9,7 @@ A First Generation
 ==================
 
 
-The simpliest way to test the RTS-Gen project is to download the `last release of a runnable Jar file <https://github.com/cetic/rts-gen-cli/releases>`_ that contains an application based on the RTS-Gen library.
+The simplest way to test the TSimulus project is to download the `last release of a runnable Jar file <https://github.com/cetic/tsimulus-cli/releases>`_ that contains an application based on the TSimulus library.
 You will also need `a Java Virtual Machine <https://java.com>`_ installed on your environment.
 
 For your first time series generation, we will specify a generator that propose a basic external temperature simulator for Uccle, Belgium.
@@ -45,7 +45,7 @@ According to the `Royal Meteorology Institute of Belgium <http://www.meteo.be/me
     * - December
       - 3.9
 
-So, we create a generator that describes the evolution of the temperator month per month::
+So, we create a generator that describes the evolution of the temperature month per month::
 
     {
        "generators":[
@@ -62,7 +62,7 @@ So, we create a generator that describes the evolution of the temperator month p
        "to": "2017-12-31 23:59:59.999"
     }
 
-(`Download this configuration <https://raw.githubusercontent.com/cetic/rts-gen/master/examples/get_started_1.json>`_)
+(`Download this configuration <https://raw.githubusercontent.com/cetic/tsimulus/master/examples/get_started_1.json>`_)
 
 The name and the attributes of each objects in this JSON document are described further in the rest of this documentation. At the moment,
 we will only focus on the created configuration and the resulting values.
@@ -174,7 +174,7 @@ We therefore create a new generator that expresses the variation of the temperat
        ],
        "exported": [
           {
-             "name": "temperator",
+             "name": "temperature",
              "generator": "result",
              "frequency": 600000
           }
@@ -183,7 +183,7 @@ We therefore create a new generator that expresses the variation of the temperat
        "to": "2017-12-31 23:59:59.999"
     }
 
-(`Download this configuration <https://raw.githubusercontent.com/cetic/rts-gen/master/examples/get_started_2.json>`_)
+(`Download this configuration <https://raw.githubusercontent.com/cetic/tsimulus/master/examples/get_started_2.json>`_)
 
 Please note that the values of this second generator are relative to an arbitrary "neutral" value.
 Plotting these values is therefore not relevant. However, we sum the monthly temperatures with the daily ones in order
@@ -251,7 +251,8 @@ defined generators.
                "c": 0,
                "seed": 1234
             },
-            "timestep": 300000
+            "timestep": 300000,
+            "origin": "2016-01-01 00:00:00.000"
          },
          {
             "name": "result",
@@ -266,7 +267,7 @@ defined generators.
       ],
       "exported": [
          {
-            "name": "temperator",
+            "name": "temperature",
             "generator": "result",
             "frequency": 600000
          }
@@ -275,7 +276,7 @@ defined generators.
       "to": "2017-12-31 23:59:59.999"
    }
 
-(`Download this configuration <https://raw.githubusercontent.com/cetic/rts-gen/master/examples/get_started_3.json>`_)
+(`Download this configuration <https://raw.githubusercontent.com/cetic/tsimulus/master/examples/get_started_3.json>`_)
 
 The final result is now realistic enough for a basic simulation of the temperature over time.
 When observing the plot of its values, clear and realistic patterns emerge, while a realistic noise is also clearly present.

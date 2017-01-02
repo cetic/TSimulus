@@ -16,7 +16,7 @@
 
 package be.cetic.rtsgen.timeseries.composite
 
-import be.cetic.rtsgen.Main
+import be.cetic.rtsgen.Utils
 import be.cetic.rtsgen.timeseries.{IndependantTimeSeries, TimeSeries}
 import org.joda.time.{Duration, LocalDateTime}
 import com.github.nscala_time.time.Imports._
@@ -41,7 +41,7 @@ case class SlidingWindowTimeSeries[T](base: TimeSeries[T], duration: Duration, n
    override def compute(time: LocalDateTime): Option[T] =
    {
       val start = time - duration
-      val dates = Main.sampling(start, time, n)
+      val dates = Utils.sampling(start, time, n)
       val values = base.compute(dates).map(v => v match {
          case (l: LocalDateTime, Some(x)) => Some((new Duration(l.toDateTime(DateTimeZone.UTC), time.toDateTime(DateTimeZone.UTC)), x))
          case (l: LocalDateTime, None) => None

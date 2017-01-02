@@ -36,7 +36,7 @@ import scala.util.Random
   */
 class GaussianNoiseGenerator(name: Option[String],
                     val seed: Int,
-                    val std: Float) extends Generator[Double](name, "gaussian")
+                    val std: Double) extends Generator[Double](name, "gaussian")
 {
    override def timeseries(generators: String => Generator[Any]) = GaussianNoiseTimeSeries(seed, std)
 
@@ -72,7 +72,7 @@ object GaussianNoiseGenerator extends DefaultJsonProtocol with TimeToJson
       })
 
       val seed = fields("seed").convertTo[Int]
-      val std = fields("std").convertTo[Float]
+      val std = fields("std").convertTo[Double]
 
       new GaussianNoiseGenerator(name, seed, std)
    }

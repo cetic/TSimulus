@@ -1,4 +1,4 @@
-# rts-gen
+# TSimulus
 
 [![Build Status](https://travis-ci.org/cetic/rts-gen.svg?branch=master)](https://travis-ci.org/cetic/rts-gen) 
 [![Coverage Status](https://coveralls.io/repos/github/cetic/rts-gen/badge.svg?branch=master)](https://coveralls.io/github/cetic/rts-gen?branch=master)
@@ -6,8 +6,7 @@
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 
-RTS-Gen is a tool for generating random, yet realistic, time series values. In this project, a time series is an orderly sequence of
-points in times, each of them being associated to at most a value. Time series are used in a wide variety of areas,
+TSimulus (formally, RTS-Gen) is a tool for generating random, yet realistic, time series values. In this project, a time series is an orderly sequence of points in times, each of them being associated to at most a value. Time series are used in a wide variety of areas,
 including finance, weather forecasting, and signal processing.
 
 While random-number generators can easily be used for producing sequences of unrelated (or, at least, hardly predictable) numbers,
@@ -17,7 +16,7 @@ including the simulation of data acquisition in the aforementioned areas.
 In order to make realistic time series, a *convincing* noise must generally be added to some specified patterns.
 In addition, the values of a time series may be related to those of an other time series.
 
-The RTS-Gen project provides tools for specifying the shape of a time series (general patterns, cycles, importance of the added noise, etc.)
+The TSimulus project provides tools for specifying the shape of a time series (general patterns, cycles, importance of the added noise, etc.)
 and for converting this specification into time series values.
 
 More specifically, the project proposes:
@@ -31,13 +30,13 @@ More specifically, the project proposes:
 
 # Installation
 
-RTS-Gen can be imported in your project by adding the following instruction in your build.sbt file:
+TSimulus can be imported in your project by adding the following instruction in your build.sbt file:
 
 ```
-libraryDependencies += "be.cetic" %% "rts-gen" % "0.1.9"
+libraryDependencies += "be.cetic" %% "rts-gen" % "0.1.11"
 ```
 
-RTS-Gen requires a standard Java Runtime Environment, as well as the Scala library. 
+TSimulus requires a standard Java Runtime Environment, as well as the Scala library. 
 If this dependency is not locally available the first time you compile your project, the dependency manager will automatically download it for you.
  
 # Documentation
@@ -48,6 +47,6 @@ The sources of the documentation are available in the docs directory and can be 
 
 # Credits
 
-RTS-Gen is release under the [Apache license](http://www.apache.org/licenses/) (version 2). 
+TSimulus is release under the [Apache license](http://www.apache.org/licenses/) (version 2). 
 
 This library is part of the [EAM-SDI](https://www.cetic.be/EAM-SDI-2301) research project, founded by the Walloon Region.
