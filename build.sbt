@@ -1,8 +1,8 @@
 // http://www.scala-sbt.org/0.13/docs/Multi-Project.html
 
 organization := "be.cetic"
-version := "0.1.13"
-name := "rts-gen"
+version := "0.1.14"
+name := "tsimulus"
 
 scalaVersion := "2.11.8"
 crossScalaVersions := Seq("2.11.8", "2.12.0")
@@ -20,7 +20,7 @@ publishTo := {
 publishMavenStyle := true
 
 pomExtra := (
-   <url>https://github.com/cetic/rts-gen</url>
+   <url>https://github.com/cetic/TSimulus</url>
       <licenses>
          <license>
             <name>Apache License, Version 2.0</name>
@@ -29,8 +29,8 @@ pomExtra := (
          </license>
       </licenses>
       <scm>
-         <url>git@github.com:cetic/scala-arm.git</url>
-         <connection>scm:git:git@github.com:cetic/rts-gen.git</connection>
+         <url>git@github.com:cetic/TSimulus.git</url>
+         <connection>scm:git:git@github.com:cetic/TSimulus.git</connection>
       </scm>
       <developers>
          <developer>
