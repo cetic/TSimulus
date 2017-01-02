@@ -20,6 +20,7 @@ import be.cetic.rtsgen.generators.Generator
 import be.cetic.rtsgen.timeseries.primary.DailyTimeSeries
 import com.github.nscala_time.time.Imports._
 import org.joda.time.LocalTime
+import org.joda.time.format.DateTimeFormatterBuilder
 import spray.json._
 
 /**
@@ -50,7 +51,14 @@ class DailyGenerator(name: Option[String],
 }
 
 object DailyGenerator extends DefaultJsonProtocol {
-   private val ttf = DateTimeFormat.forPattern("HH:mm:ss.SSS")
+   private val ttf = {
+      val parsers = Array(
+         DateTimeFormat.forPattern("HH:mm:ss.SSS").getParser,
+         DateTimeFormat.forPattern("HH:mm:ss").getParser
+      )
+
+      new DateTimeFormatterBuilder().append(null, parsers).toFormatter()
+   }
 
    def apply(value: JsValue) =
    {

@@ -17,6 +17,7 @@
 package be.cetic.rtsgen.generators
 
 import com.github.nscala_time.time.Imports._
+import org.joda.time.format.DateTimeFormatterBuilder
 import org.joda.time.{Duration, LocalDateTime, LocalTime}
 import spray.json.{JsString, JsValue, RootJsonFormat, _}
 
@@ -26,10 +27,28 @@ trait TimeToJson extends DefaultJsonProtocol
    val dtf = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss.SSS")
    val ttf = DateTimeFormat.forPattern("HH:mm:ss.SSS")
 
+   val datetimeFormatter = {
+      val parsers = Array(
+         DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss.SSS").getParser,
+         DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss").getParser
+      )
+
+      new DateTimeFormatterBuilder().append(null, parsers).toFormatter()
+   }
+
+   val timeFormatter = {
+      val parsers = Array(
+         DateTimeFormat.forPattern("HH:mm:ss.SSS").getParser,
+         DateTimeFormat.forPattern("HH:mm:ss").getParser
+      )
+
+      new DateTimeFormatterBuilder().append(null, parsers).toFormatter()
+   }
+
    implicit object LocalDateTimeJsonFormat extends RootJsonFormat[LocalDateTime] {
       def write(d: LocalDateTime) = JsString(dtf.print(d))
       def read(value: JsValue) = value match {
-         case JsString(s) => dtf.parseLocalDateTime(s)
+         case JsString(s) => datetimeFormatter.parseLocalDateTime(s)
          case unrecognized => serializationError(s"Serialization problem $unrecognized")
       }
    }
@@ -37,7 +56,7 @@ trait TimeToJson extends DefaultJsonProtocol
    implicit object LocalTimeJsonFormat extends RootJsonFormat[LocalTime] {
       def write(t: LocalTime) = JsString(ttf.print(t))
       def read(value: JsValue) = value match {
-         case JsString(s) => ttf.parseLocalTime(s)
+         case JsString(s) => timeFormatter.parseLocalTime(s)
          case unknown => deserializationError(s"unknown LocalTime object: $unknown")
       }
    }

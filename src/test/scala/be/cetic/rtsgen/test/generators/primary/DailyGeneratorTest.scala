@@ -33,6 +33,15 @@ class DailyGeneratorTest extends FlatSpec with Matchers
         |}
       """.stripMargin
 
+   val shortSource =
+      """
+        |{
+        |    "name": "daily-generator",
+        |    "type": "daily",
+        |    "points": {"11:00:00" : 6, "17:00:00.000" : 8, "07:00:00" : 2}
+        |}
+      """.stripMargin
+
    "A daily generator" should "be correctly read from a json document" in {
       val generator = DailyGenerator(source.parseJson)
 
@@ -55,5 +64,20 @@ class DailyGeneratorTest extends FlatSpec with Matchers
          new LocalTime(7,0,0) -> 2))
 
       generator shouldBe DailyGenerator(generator.toJson)
+   }
+
+   "A daily generator with short times" should "be correctly read from a json document" in {
+      val generator = DailyGenerator(shortSource.parseJson)
+
+      generator.name shouldBe Some("daily-generator")
+      generator.`type` shouldBe "daily"
+      generator.points shouldBe Map(
+         new LocalTime(11,0,0) -> 6,
+         new LocalTime(17,0,0) -> 8,
+         new LocalTime(7,0,0) -> 2)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      noException should be thrownBy GeneratorFormat.read(shortSource.parseJson)
    }
 }
