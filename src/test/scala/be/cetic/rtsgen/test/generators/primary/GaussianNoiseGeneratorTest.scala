@@ -39,7 +39,7 @@ class GaussianNoiseGeneratorTest extends FlatSpec with Matchers
       generator.name shouldBe Some("generator")
       generator.`type` shouldBe "gaussian"
       generator.seed shouldBe 42
-      generator.std should equal (0.5F +- 0.0001F)
+      generator.std should equal (0.5 +- 0.0001)
    }
 
    it should "be correctly extracted from the global extractor" in {
