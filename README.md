@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/cetic/TSimulus.svg?branch=master)](https://travis-ci.org/cetic/rts-gen) 
 [![Coverage Status](https://coveralls.io/repos/github/cetic/TSimulus/badge.svg?branch=master)](https://coveralls.io/github/cetic/TSimulus?branch=master)
-[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](http://tsimulus.readthedocs.io/en/latest/?badge=latest)
 [![License](http://img.shields.io/:license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 
