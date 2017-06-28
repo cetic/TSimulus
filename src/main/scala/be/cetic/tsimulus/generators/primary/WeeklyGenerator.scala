@@ -16,6 +16,9 @@
 
 package be.cetic.tsimulus.generators.primary
 
+
+import java.security.InvalidParameterException
+
 import be.cetic.tsimulus.generators.Generator
 import be.cetic.tsimulus.timeseries.primary.WeeklyTimeSeries
 import org.joda.time.DateTimeConstants
@@ -29,15 +32,16 @@ class WeeklyGenerator(name: Option[String],
 {
    override def timeseries(generators: String => Generator[Any]) =
    {
-      val day = Map(
-         "monday" -> DateTimeConstants.MONDAY,
-         "tuesday" -> DateTimeConstants.TUESDAY,
-         "wednesday" -> DateTimeConstants.WEDNESDAY,
-         "thurdsay" -> DateTimeConstants.THURSDAY,
-         "friday" -> DateTimeConstants.FRIDAY,
-         "saturday" -> DateTimeConstants.SATURDAY,
-         "sunday" -> DateTimeConstants.SUNDAY
-      )
+      def day = (s: String) => s match {
+         case "monday" => DateTimeConstants.MONDAY
+         case "tuesday" => DateTimeConstants.TUESDAY
+         case "wednesday" => DateTimeConstants.WEDNESDAY
+         case "thursday" => DateTimeConstants.THURSDAY
+         case "friday" => DateTimeConstants.FRIDAY
+         case "saturday" => DateTimeConstants.SATURDAY
+         case "sunday" => DateTimeConstants.SUNDAY
+         case _ => throw new InvalidParameterException(s"'${s}' is not a valid day name.")
+      }
 
       WeeklyTimeSeries(points map {case (k,v) => (day(k), v)})
    }
@@ -77,6 +81,10 @@ object WeeklyGenerator
       }
 
       val r = points map { case (k,v) => (k, v match { case JsNumber(x) => x.toDouble })}
+
+      val validDayNames = List("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+      val unmatchingDayNames = r.keySet.filterNot(validDayNames contains _)
+      if(!unmatchingDayNames.isEmpty) throw new InvalidParameterException("The following day names are not valid: " + unmatchingDayNames)
 
       new WeeklyGenerator(name, r)
    }

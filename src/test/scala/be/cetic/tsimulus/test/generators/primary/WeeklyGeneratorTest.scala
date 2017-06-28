@@ -16,6 +16,8 @@
 
 package be.cetic.tsimulus.test.generators.primary
 
+import java.security.InvalidParameterException
+
 import be.cetic.tsimulus.config.GeneratorFormat
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
@@ -54,6 +56,30 @@ class WeeklyGeneratorTest extends FlatSpec with Matchers
          "sunday" -> 10.9))
 
       generator shouldBe WeeklyGenerator(generator.toJson)
+   }
+
+   it should "support all the days of the week" in {
+      val data = """
+        |{
+        |   "name": "weekly-generator",
+        |   "type": "weekly",
+        |   "points": {"monday": 8.7, "tuesday": 1.3, "wednesday": 5.7, "thursday": 8.4, "friday": -3.6, "saturday": 9.52, "sunday" : 10.9}
+        |}
+      """.stripMargin
+
+      noException should be thrownBy WeeklyGenerator(data.parseJson)
+   }
+
+   it should "reject invalid day names" in {
+      val data = """
+                   |{
+                   |   "name": "weekly-generator",
+                   |   "type": "weekly",
+                   |   "points": {"X": 8.7}
+                   |}
+                 """.stripMargin
+
+      an [InvalidParameterException] should be thrownBy WeeklyGenerator(data.parseJson)
    }
 
 }
