@@ -69,7 +69,7 @@ rst_epilog = """
 )
 
 # The full version, including alpha/beta/rc tags.
-release = '0.1.13'
+release = '0.1.15'
 
 rst_epilog = """
 .. |ProjectRelease| replace:: {releasenum}
