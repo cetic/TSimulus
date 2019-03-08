@@ -25,13 +25,14 @@ import spray.json.{JsArray, JsObject, JsString, JsValue, _}
 /**
   * A generator for [[be.cetic.tsimulus.timeseries.composite.AggregationTimeSeries]].
   */
-class AggregateGenerator(name: Option[String],
+class AggregateGenerator[U](name: Option[String],
                          val aggregator: String,
-                         val generators: Seq[Either[String, Generator[Any]]]) extends Generator[Double](name, "aggregate")
+                         val generators: Seq[Either[String, Generator[Any]]]) extends Generator[U](name, "aggregate")
 {
    override def timeseries(gen: String => Generator[Any]) =
    {
       val agg = aggregationFunction(aggregator)
+
 
       val ts = generators.map
       {
@@ -44,13 +45,13 @@ class AggregateGenerator(name: Option[String],
          case _ => None
       }
 
-      new AggregationTimeSeries[Double](agg, series)
+      new AggregationTimeSeries[Double, U](agg, series)
    }
 
    override def toString = "Aggregate(" + name + ", " + aggregator + ", " + generators.mkString("[", ", ", "]") + ")"
 
    override def equals(o: Any) = o match {
-      case that: AggregateGenerator => that.name == this.name && that.aggregator == this.aggregator && that.generators == this.generators
+      case that: AggregateGenerator[U] => that.name == this.name && that.aggregator == this.aggregator && that.generators == this.generators
       case _ => false
    }
 
@@ -70,7 +71,7 @@ class AggregateGenerator(name: Option[String],
 
 object AggregateGenerator extends DefaultJsonProtocol
 {
-   def apply(value: JsValue): AggregateGenerator = {
+   def apply[U](value: JsValue): AggregateGenerator[U] = {
       val fields = value.asJsObject.fields
 
       val name = fields.get("name").map
