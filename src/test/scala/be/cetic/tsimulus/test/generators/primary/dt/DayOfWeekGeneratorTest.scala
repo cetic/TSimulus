@@ -17,25 +17,25 @@
 package be.cetic.tsimulus.test.generators.primary.dt
 
 import be.cetic.tsimulus.config.GeneratorFormat
-import be.cetic.tsimulus.generators.primary.dt.DayOfMonthGenerator
+import be.cetic.tsimulus.generators.primary.dt.DayOfWeekGenerator
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
 
 
-class DayMonthGeneratorTest extends FlatSpec with Matchers
+class DayOfWeekGeneratorTest extends FlatSpec with Matchers
 {
    val source = """
                   |{
                   |  "name": "g1",
-                  |  "type": "dom"
+                  |  "type": "dow"
                   |}
                 """.stripMargin
 
-   "A DayOfMonth generator" should "be correctly read from a json document" in {
-      val generator = DayOfMonthGenerator(source.parseJson)
+   "A DayOfWeek generator" should "be correctly read from a json document" in {
+      val generator = DayOfWeekGenerator(source.parseJson)
 
       generator.name shouldBe Some("g1")
-      generator.`type` shouldBe "dom"
+      generator.`type` shouldBe "dow"
    }
 
    it should "be extracted from the global extractor without any error" in {
@@ -43,12 +43,12 @@ class DayMonthGeneratorTest extends FlatSpec with Matchers
    }
 
    it should "be correctly extracted from the global extractor" in {
-      GeneratorFormat.read(source.parseJson) shouldBe DayOfMonthGenerator(source.parseJson)
+      GeneratorFormat.read(source.parseJson) shouldBe DayOfWeekGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {
-      val generator = new DayOfMonthGenerator(Some("g1"))
-      generator shouldBe DayOfMonthGenerator(generator.toJson)
+      val generator = new DayOfWeekGenerator(Some("g1"))
+      generator shouldBe DayOfWeekGenerator(generator.toJson)
    }
 }
 

@@ -17,22 +17,22 @@
 package be.cetic.tsimulus.generators.primary.dt
 
 import be.cetic.tsimulus.generators.{Generator, TimeToJson}
-import be.cetic.tsimulus.timeseries.primary.dt.{DayOfMonthTimeSeries, MonthTimeSeries}
+import be.cetic.tsimulus.timeseries.primary.dt.DayOfWeekTimeSeries
 import spray.json.{DefaultJsonProtocol, JsObject, JsString, JsValue, _}
 
 /**
-  * A generator for [[be.cetic.tsimulus.timeseries.primary.dt.DayOfMonthTimeSeries]].
+  * A generator for [[be.cetic.tsimulus.timeseries.primary.dt.DayOfWeekTimeSeries]].
   *
   * @param name The generator name.
   */
-class DayOfMonthGenerator(name: Option[String]) extends Generator[Int](name, "dom")
+class DayOfWeekGenerator(name: Option[String]) extends Generator[Int](name, "dow")
 {
-   override def timeseries(generators: String => Generator[Any]) = DayOfMonthTimeSeries()
+   override def timeseries(generators: String => Generator[Any]) = DayOfWeekTimeSeries()
 
-   override def toString = "DayOfMonthGenerator()"
+   override def toString = "DayOfWeekGenerator()"
 
    override def equals(o: Any) = o match {
-      case that: DayOfMonthGenerator => that.name == this.name
+      case that: DayOfWeekGenerator => that.name == this.name
       case _ => false
    }
 
@@ -48,16 +48,16 @@ class DayOfMonthGenerator(name: Option[String]) extends Generator[Int](name, "do
    }
 }
 
-object DayOfMonthGenerator extends DefaultJsonProtocol with TimeToJson
+object DayOfWeekGenerator extends DefaultJsonProtocol with TimeToJson
 {
-   def apply(json: JsValue): DayOfMonthGenerator = {
+   def apply(json: JsValue): DayOfWeekGenerator = {
 
       val fields = json.asJsObject.fields
       val name = fields.get("name") .map(f => f match {
          case JsString(x) => x
       })
 
-      new DayOfMonthGenerator(name)
+      new DayOfWeekGenerator(name)
    }
 }
 
