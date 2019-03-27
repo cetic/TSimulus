@@ -86,6 +86,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("year") => YearGenerator(known)
             case JsString("month") => MonthGenerator(known)
             case JsString("dom") => DayOfMonthGenerator(known)
+            case JsString("hour") => DayOfMonthGenerator(known)
             case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
       case unknown => deserializationError(s"unknown  Generator object: $unknown")
