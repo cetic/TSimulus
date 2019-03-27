@@ -21,7 +21,7 @@ import be.cetic.tsimulus.generators.binary._
 import be.cetic.tsimulus.generators.composite._
 import be.cetic.tsimulus.generators.missing.{DefaultGenerator, LimitedGenerator, PartialGenerator, UndefinedGenerator}
 import be.cetic.tsimulus.generators.primary._
-import be.cetic.tsimulus.generators.primary.dt._
+import be.cetic.tsimulus.generators.dt._
 import org.joda.time.LocalDateTime
 import spray.json.{JsString, _}
 
@@ -93,6 +93,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("week") => WeekGenerator(known)
             case JsString("dow") => DayOfWeekGenerator(known)
             case JsString("doy") => DayOfYearGenerator(known)
+            case JsString("now") => NowGenerator(known)
             case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
       case unknown => deserializationError(s"unknown  Generator object: $unknown")
