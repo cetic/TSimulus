@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package be.cetic.tsimulus.test
+package be.cetic.tsimulus.test.timeseries.primary.dt
 
-import be.cetic.tsimulus.timeseries.binary.{FalseTimeSeries, TrueTimeSeries}
-import be.cetic.tsimulus.timeseries.missing.UndefinedTimeSeries
-import org.joda.time.LocalDateTime
-import com.github.nscala_time.time.Imports._
+import be.cetic.tsimulus.test.RTSTest
+import be.cetic.tsimulus.timeseries.primary.dt.YearTimeSeries
+import org.scalatest.{FlatSpec, Inspectors, Matchers}
 
-trait RTSTest
+class YearTimeSeriesTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
-   val t = new TrueTimeSeries()
-   val f = new FalseTimeSeries()
-   val u = new UndefinedTimeSeries()
-
-   val dates = Seq(
-      LocalDateTime.now(),
-      LocalDateTime.now() + 5.seconds,
-      LocalDateTime.now() + 10.seconds
-   ).toStream
-
-   val fixedDate = new LocalDateTime(2019, 3, 27, 10, 33, 17, 0)
+   "A Year time series" should "produce the year of the underlying timestamp" in
+      {
+         (YearTimeSeries().compute(fixedDate)) match
+         {
+            case Some(x) => x == 2019
+            case _ => false
+         }
+      }
 }

@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package be.cetic.tsimulus.test
+package be.cetic.tsimulus.timeseries.primary.dt
 
-import be.cetic.tsimulus.timeseries.binary.{FalseTimeSeries, TrueTimeSeries}
-import be.cetic.tsimulus.timeseries.missing.UndefinedTimeSeries
+import be.cetic.tsimulus.timeseries.IndependantTimeSeries
 import org.joda.time.LocalDateTime
-import com.github.nscala_time.time.Imports._
 
-trait RTSTest
+/**
+  * A time series providing the hour of day of its timestamp
+  */
+case class HourTimeSeries() extends IndependantTimeSeries[Int]
 {
-   val t = new TrueTimeSeries()
-   val f = new FalseTimeSeries()
-   val u = new UndefinedTimeSeries()
-
-   val dates = Seq(
-      LocalDateTime.now(),
-      LocalDateTime.now() + 5.seconds,
-      LocalDateTime.now() + 10.seconds
-   ).toStream
-
-   val fixedDate = new LocalDateTime(2019, 3, 27, 10, 33, 17, 0)
+   override def compute(time: LocalDateTime) = Some(time.getHourOfDay)
 }
