@@ -88,6 +88,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("dom") => DayOfMonthGenerator(known)
             case JsString("hour") => HourGenerator(known)
             case JsString("second") => SecondTimeGenerator(known)
+            case JsString("ms") => MillisecondTimeGenerator(known)
             case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
       case unknown => deserializationError(s"unknown  Generator object: $unknown")
