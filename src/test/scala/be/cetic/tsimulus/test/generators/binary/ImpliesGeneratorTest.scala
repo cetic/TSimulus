@@ -42,8 +42,12 @@ class ImpliesGeneratorTest extends FlatSpec with Matchers with Inspectors with R
       generator.b shouldBe Left("monthly-generator")
    }
 
-   it should "be correctly extracted from the global extractor" in {
+   it should "be extracted from the global extractor without any error" in {
       noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      GeneratorFormat.read(source.parseJson) shouldBe ImpliesGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

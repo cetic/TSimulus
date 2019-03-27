@@ -45,8 +45,12 @@ class SlidingWindowGeneratorTest extends FlatSpec with Matchers
       generator.generator shouldBe Left("daily-generator")
    }
 
-   it should "be correctly extracted from the global extractor" in {
+   it should "be extracted from the global extractor without any error" in {
       noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      GeneratorFormat.read(source.parseJson) shouldBe SlidingWindowGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

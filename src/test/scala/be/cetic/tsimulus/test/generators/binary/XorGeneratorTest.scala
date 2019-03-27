@@ -29,7 +29,7 @@ import be.cetic.tsimulus.test.RTSTest
 class XorGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
 
-   val xorSource =
+   val source =
       """
         |{
         |   "name": "xor-generator",
@@ -40,15 +40,19 @@ class XorGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       """.stripMargin
 
    "A XOR generator" should "be correctly read from a json document" in {
-      val generator = XorGenerator(xorSource.parseJson)
+      val generator = XorGenerator(source.parseJson)
 
       generator.name shouldBe Some("xor-generator")
       generator.a shouldBe Left("daily-generator")
       generator.b shouldBe Left("monthly-generator")
    }
 
+   it should "be extracted from the global extractor without any error" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
    it should "be correctly extracted from the global extractor" in {
-      noException should be thrownBy GeneratorFormat.read(xorSource.parseJson)
+      GeneratorFormat.read(source.parseJson) shouldBe XorGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

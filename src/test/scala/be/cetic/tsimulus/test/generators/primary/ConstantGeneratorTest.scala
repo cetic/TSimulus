@@ -40,9 +40,14 @@ class ConstantGeneratorTest extends FlatSpec with Matchers
       generator.value shouldBe 17.5
    }
 
-   it should "be correctly extracted from the global extractor" in {
+   it should "be extracted from the global extractor without any error" in {
       noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
+
+   it should "be correctly extracted from the global extractor" in {
+      GeneratorFormat.read(source.parseJson) shouldBe ConstantGenerator(source.parseJson)
+   }
+
 
    it should "be correctly exported to a json document" in {
       val generator = new ConstantGenerator(Some("constant-generator"), 17.5)

@@ -41,9 +41,14 @@ class YearlyGeneratorTest extends FlatSpec with Matchers
       generator.points shouldBe Map(2015 -> 42.12, 2016 -> 13.37, 2017 -> 6.022)
    }
 
-   it should "be correctly extracted from the global extractor" in {
+   it should "be extracted from the global extractor without any error" in {
       noException should be thrownBy GeneratorFormat.read(source.parseJson)
    }
+
+   it should "be correctly extracted from the global extractor" in {
+      GeneratorFormat.read(source.parseJson) shouldBe YearlyGenerator(source.parseJson)
+   }
+
 
    it should "be correctly exported to a json document" in {
       val generator = new YearlyGenerator(Some("yearly-generator"), Map(

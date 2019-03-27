@@ -23,7 +23,7 @@ import be.cetic.tsimulus.generators.composite.AggregateGenerator
 
 class AggregateGeneratorTest extends FlatSpec with Matchers
 {
-   val aggregateSource =
+   val source =
       """
         |{
         |   "name": "aggregate-generator",
@@ -34,15 +34,19 @@ class AggregateGeneratorTest extends FlatSpec with Matchers
       """.stripMargin
 
    "An aggregate generator" should "be correctly read from a json document" in {
-      val generator = AggregateGenerator(aggregateSource.parseJson)
+      val generator = AggregateGenerator(source.parseJson)
 
       generator.name shouldBe Some("aggregate-generator")
       generator.aggregator shouldBe "sum"
       generator.generators shouldBe Seq(Left("daily-generator"), Left("monthly-generator"))
    }
 
+   it should "be extracted from the global extractor without any error" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
    it should "be correctly extracted from the global extractor" in {
-      noException should be thrownBy GeneratorFormat.read(aggregateSource.parseJson)
+      GeneratorFormat.read(source.parseJson) shouldBe AggregateGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

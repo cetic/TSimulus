@@ -44,8 +44,12 @@ class LimitedGeneratorTest extends FlatSpec with Matchers
       generator.to shouldBe Some(new LocalDateTime(2016, 4, 23, 0, 0, 0))
    }
 
-   it should "be correctly extracted from the global extractor" in {
+   it should "be extracted from the global extractor without any error" in {
       noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      GeneratorFormat.read(source.parseJson) shouldBe LimitedGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

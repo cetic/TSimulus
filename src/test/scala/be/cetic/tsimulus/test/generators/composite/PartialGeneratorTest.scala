@@ -46,8 +46,12 @@ class PartialGeneratorTest extends FlatSpec with Matchers
       generator.missingRate shouldBe Some(0.001)
    }
 
-   it should "be correctly extracted from the global extractor" in {
+   it should "be extracted from the global extractor without any error" in {
       noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      GeneratorFormat.read(source.parseJson) shouldBe PartialGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

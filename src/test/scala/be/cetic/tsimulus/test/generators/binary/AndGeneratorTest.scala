@@ -42,8 +42,12 @@ class AndGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       generator.b shouldBe Left("monthly-generator")
    }
 
-   it should "be correctly extracted from the global extractor" in {
+   it should "be extracted from the global extractor without any error" in {
       noException should be thrownBy GeneratorFormat.read(andSource.parseJson)
+   }
+
+   it should "be correctly extracted from the global extractor" in {
+      GeneratorFormat.read(andSource.parseJson) shouldBe AndGenerator(andSource.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

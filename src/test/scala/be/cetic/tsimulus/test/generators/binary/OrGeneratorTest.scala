@@ -29,7 +29,7 @@ import be.cetic.tsimulus.test.RTSTest
 
 class OrGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
-  val orSource =
+  val source =
       """
         |{
         |   "name": "or-generator",
@@ -40,15 +40,19 @@ class OrGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTes
       """.stripMargin
 
    "A OR generator" should "be correctly read from a json document" in {
-      val generator = OrGenerator(orSource.parseJson)
+      val generator = OrGenerator(source.parseJson)
 
       generator.name shouldBe Some("or-generator")
       generator.a shouldBe Left("daily-generator")
       generator.b shouldBe Left("monthly-generator")
    }
 
+   it should "be extracted from the global extractor without any error" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
    it should "be correctly extracted from the global extractor" in {
-      noException should be thrownBy GeneratorFormat.read(orSource.parseJson)
+      GeneratorFormat.read(source.parseJson) shouldBe OrGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {

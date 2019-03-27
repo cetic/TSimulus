@@ -28,7 +28,7 @@ import be.cetic.tsimulus.test.RTSTest
 
 class NotGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTest
 {
-   val notSource =
+   val source =
       """
         |{
         |   "name": "not-generator",
@@ -38,14 +38,18 @@ class NotGeneratorTest extends FlatSpec with Matchers with Inspectors with RTSTe
       """.stripMargin
 
    "A NOT generator" should "be correctly read from a json document" in {
-      val generator = NotGenerator(notSource.parseJson)
+      val generator = NotGenerator(source.parseJson)
 
       generator.name shouldBe Some("not-generator")
       generator.generator shouldBe Left("binary-generator")
    }
 
+   it should "be extracted from the global extractor without any error" in {
+      noException should be thrownBy GeneratorFormat.read(source.parseJson)
+   }
+
    it should "be correctly extracted from the global extractor" in {
-      noException should be thrownBy GeneratorFormat.read(notSource.parseJson)
+      GeneratorFormat.read(source.parseJson) shouldBe NotGenerator(source.parseJson)
    }
 
    it should "be correctly exported to a json document" in {
