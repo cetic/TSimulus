@@ -18,3 +18,4 @@ the extracted property can be included in a comparison generator for instance.
 .. include:: /dt/ms.rst
 .. include:: /dt/doy.rst
 .. include:: /dt/dow.rst
+.. include:: /dt/diff.rst
