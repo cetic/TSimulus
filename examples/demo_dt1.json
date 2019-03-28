@@ -1,0 +1,21 @@
+{
+  "generators": [
+    {
+      "name": "week",
+      "type": "week",
+      "base": {
+        "name": "now",
+        "type": "now"
+      }
+    }
+  ],
+  "exported": [
+    {
+      "name": "current time",
+      "generator": "week",
+      "frequency": 1000
+    }
+  ],
+  "from": "2016-01-01 00:00:00.000",
+  "to": "2016-01-02 00:00:00.000"
+}
