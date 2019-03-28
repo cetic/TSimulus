@@ -32,7 +32,7 @@ More specifically, the project proposes:
 TSimulus can be imported in your project by adding the following instruction in your build.sbt file:
 
 ```
-libraryDependencies += "be.cetic" %% "rts-gen" % "0.1.15"
+libraryDependencies += "be.cetic" %% "rts-gen" % "0.1.16"
 ```
 
 TSimulus requires a standard Java Runtime Environment, as well as the Scala library. 
