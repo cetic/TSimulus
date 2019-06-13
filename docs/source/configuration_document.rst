@@ -20,7 +20,7 @@ can be specified in two different ways:
   designer prefer to explicitly declare intermediate generators in order to obtain configuration documents that can be more easily be read,
   intermediate generators can be declared in the *generators* section with a unique reference id. Everywhere in the document,
   when a generator is required, the unique id can be used instead of an explicit JSON object representing the generator. This description by reference
-  only works if referenced generators are defined at the top level of the generators section. In other words, **generators with online description in a nested object
+  only works if referenced generators are defined at the top level of the generators section. In other words, **generators with inline description in a nested object
   cannot be used by reference**.
 
 exported
@@ -30,7 +30,7 @@ This section of the configuration document lists the generators that must be con
 containing the following attributes:
 
 - **name**: the name that must be associated to the time series.
-- **generator**: a description of the generator representing the time series to generate. This may be an online description.
+- **generator**: a description of the generator representing the time series to generate. This may be an inline description.
 - **frequency**: the period, in milliseconds, at which time series values must be generated.
 
 
