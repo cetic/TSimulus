@@ -48,4 +48,7 @@ The sources of the documentation are available in the docs directory and can be 
 
 TSimulus is release under the [Apache license](http://www.apache.org/licenses/) (version 2). 
 
-This library is part of the [EAM-SDI](https://www.cetic.be/EAM-SDI-2301) research project, founded by the Walloon Region.
+This library has been partly funded by
+ 
+ - [EAM-SDI](https://www.cetic.be/EAM-SDI-2301), a CWALity research project of the Walloon Region.
+ - [WavenetCity 2.0](https://www.cetic.be/WavenetCity-2-0), an other CWALity research project of the Walloon Region.

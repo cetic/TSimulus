@@ -61,8 +61,8 @@ Licence and Source Code
 TSimulus is released under the `Apache Licence (version 2.0) <http://www.apache.org/licenses/LICENSE-2.0>`_ and
 has been partly funded by
 
-* `EAM-SDI <https://www.cetic.be/EAM-SDI-2300>`_, a CWALity research project of the Walloon region.
-* `Wavenetcity 2.0 <https://www.cetic.be/WavenetCity-2-0>`_, an other CWALity research project of the Walloon region.
+* `EAM-SDI <https://www.cetic.be/EAM-SDI-2300>`_, a CWALity research project of the Walloon Region.
+* `WavenetCity 2.0 <https://www.cetic.be/WavenetCity-2-0>`_, an other CWALity research project of the Walloon Region.
 
 The source code is available on Github: https://github.com/cetic/tsimulus
 
