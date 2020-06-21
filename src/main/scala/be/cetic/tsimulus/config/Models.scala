@@ -95,6 +95,7 @@ object GeneratorFormat extends JsonFormat[Generator[Any]]
             case JsString("doy") => DayOfYearGenerator(known)
             case JsString("now") => NowGenerator(known)
             case JsString("dt::diff") => DateTimeDifferenceGenerator(known)
+            case JsString("sinus") => SinusGenerator(known)
             case unknown => deserializationError(s"unknown Generator object: $unknown")
          }
       case unknown => deserializationError(s"unknown  Generator object: $unknown")
