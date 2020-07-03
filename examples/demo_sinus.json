@@ -1,0 +1,19 @@
+{
+  "generators": [
+    {
+      "name": "daily-generator1",
+      "type": "sinus",
+      "origin":  "2020-07-03 01:02:03",
+      "period": 5000
+    }
+  ],
+  "exported": [
+    {
+      "name": "tlm_1",
+      "generator": "daily-generator1",
+      "frequency": 1000
+    }
+  ],
+  "from": "2020-07-03 00:00:00.000",
+  "to": "2020-07-04 00:00:00.000"
+}

@@ -1,7 +1,7 @@
 // http://www.scala-sbt.org/0.13/docs/Multi-Project.html
 
 organization := "be.cetic"
-version := "0.1.17"
+version := "0.1.18"
 name := "tsimulus"
 
 scalaVersion := "2.11.8"
